@@ -102,7 +102,7 @@ void world::frame::drawLine(const glm::vec2 &a, const glm::vec2 &b,
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
 
   const glm::vec2 dir = b - a;
-  const glm::vec2 perp = glm::normalize(cwPerp(dir)) * size * SCALE;
+  const glm::vec2 perp = glm::normalize(cw_perp(dir)) * size * SCALE;
   // a----->b
   // |
   // p

@@ -9,4 +9,13 @@ Scene::~Scene() = default;
 
 import debug;
 
-void Scene::init() {}
+import vector;
+import bvh;
+import aabb;
+
+void Scene::init() {
+  std::vector<aabb_t> objs = vec::New<aabb_t>();
+
+  // bvh::tree_t tree{};
+  // tree.print();
+}

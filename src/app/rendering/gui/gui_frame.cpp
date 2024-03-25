@@ -18,9 +18,7 @@ import <format>;
 gui::frame::frame() {}
 gui::frame::~frame() = default;
 
-void gui::frame::render() const {
-  text(std::format("{}", glm::to_string(InputHandler::cursorPos)));
-}
+void gui::frame::render() const {}
 
 static unsigned short charWidthConvert(const unsigned char w) {
   return static_cast<unsigned short>(
