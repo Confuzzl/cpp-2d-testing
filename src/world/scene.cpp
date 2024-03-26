@@ -14,8 +14,8 @@ import bvh;
 import aabb;
 
 void Scene::init() {
-  std::vector<aabb_t> objs = vec::New<aabb_t>();
+  std::vector<aabb_t> objs{4, {{0, 0}, {1, 1}}};
 
-  // bvh::tree_t tree{};
-  // tree.print();
+  bvh::tree_t tree{objs};
+  tree.print();
 }
