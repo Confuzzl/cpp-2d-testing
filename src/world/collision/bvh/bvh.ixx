@@ -68,6 +68,7 @@ struct tree_t {
   void topDownRecurse(const std::size_t nodeIndex, obj_list::iterator begin,
                       obj_list::iterator end) {
     // construct nodes?
+    nodes.emplace_back({});
     node_t &working_node = nodes[nodeIndex];
 
     const std::size_t count = end - begin;
