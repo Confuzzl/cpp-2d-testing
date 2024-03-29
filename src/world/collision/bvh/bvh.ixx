@@ -20,9 +20,9 @@ struct tree_t {
   struct node_t {
     aabb_t box{};
     int left = -1, right = -1;
-    unsigned int begin, end;
+    unsigned int begin = 0, end = 0;
 
-    bool isLeaf() const { return end - begin == 0; }
+    bool isLeaf() const { return begin == end; }
   };
   auto getBegin(node_t &node) { return objs.begin() + node.begin; }
   auto getEnd(node_t &node) { return objs.begin() + node.end; }
@@ -67,8 +67,7 @@ struct tree_t {
   void topDown() { topDownRecurse(0, objs.begin(), objs.end()); }
   void topDownRecurse(const std::size_t nodeIndex, obj_list::iterator begin,
                       obj_list::iterator end) {
-    // construct nodes?
-    nodes.emplace_back({});
+    nodes.emplace_back();
     node_t &working_node = nodes[nodeIndex];
 
     const std::size_t count = end - begin;
