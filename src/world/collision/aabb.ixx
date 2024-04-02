@@ -40,3 +40,13 @@ export struct aabb_t {
   float area() const { return width() * height(); }
   glm::vec2 median() const { return min + size() / 2.0f; }
 };
+
+import <format>;
+
+export template <> struct std::formatter<aabb_t> {
+  constexpr auto parse(std::format_parse_context &ctx) { return ctx.begin(); }
+  auto format(const aabb_t &aabb, std::format_context &ctx) const {
+    return std::format_to(ctx.out(), "[{}, {}]", vec_string(aabb.min),
+                          vec_string(aabb.max));
+  }
+};

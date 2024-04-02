@@ -9,6 +9,7 @@ export module bvh;
 import <vector>;
 import aabb;
 import debug;
+import glm;
 
 export namespace bvh {
 struct tree_t {
@@ -22,7 +23,7 @@ struct tree_t {
     int left = -1, right = -1;
     unsigned int begin = 0, end = 0;
 
-    bool isLeaf() const { return begin == end; }
+    bool isLeaf() const { return begin != end; }
   };
   auto getBegin(node_t &node) { return objs.begin() + node.begin; }
   auto getEnd(node_t &node) { return objs.begin() + node.end; }
@@ -32,60 +33,99 @@ struct tree_t {
 
   std::vector<node_t> nodes{};
 
+  bool debugging = true;
+
+  template <typename... Args>
+  void debug(std::format_string<Args...> str, Args &&...args) {
+    if (debugging)
+      println(std::format(str, std::forward<Args>(args)...));
+  }
+  template <typename T> void debug(const T &s) { debug("{}", s); }
+
   tree_t(const std::vector<aabb_t> &o) : objs{o} {
-    const std::size_t upperLeafSize = std::bit_ceil(o.size());
+    const std::size_t nodeCount = o.size() / MAX_OBJECTS_PER_LEAF;
+    const std::size_t upperLeafSize = std::bit_ceil(nodeCount);
+    const std::size_t upperNodeCount = 2 * upperLeafSize - 1;
+    debug(upperNodeCount);
     // upper bound of tree size = size of perfect tree
-    nodes.reserve(2 * upperLeafSize - 1);
-
-    // nodes.resize(2 * o.size() - 1);
-    // leaf nodes = ceil(o.size / MAX_OBJECTS_PER_LEAF)
-
-    // nodes.resize(
-    //    2 * static_cast<std::size_t>(std::ceil(static_cast<double>(o.size()) /
-    //                                           MAX_OBJECTS_PER_LEAF)) -
-    //    1);
+    nodes.resize(upperNodeCount);
   }
 
-  aabb_t computeBounds(obj_list::iterator begin, obj_list::iterator end) {
+  aabb_t computeBounds(const obj_list::iterator begin,
+                       const obj_list::iterator end) {
     aabb_t out{};
-    for (const aabb_t &obj : objs)
+    for (const aabb_t &obj : std::ranges::subrange{begin, end})
       out.expand(obj);
     return out;
   }
 
   obj_list::iterator partitionNode(node_t &node) {
-    const glm::vec2 bounds = node.box.size();
-    // largest axis: 0 = x>y 1 = x<y
-    const bool axis = bounds.x < bounds.y;
-    const float middle = bounds[axis] / 2;
+    debug("\tpartitioning");
+    const glm::vec2 size = node.box.size();
+    // debug("\t\tsize: {}", vec_string(size));
+    //  largest axis: 0 = x>y 1 = x<y
+    const bool axis = size.x < size.y;
+    const float middle = node.box.median()[axis];
+    debug("\t\tmiddle: {:d} {}", axis, middle);
     return std::partition(getBegin(node), getEnd(node),
                           [axis, middle](const aabb_t &obj) {
+                            // debug("\t\t\tmed: {:+.2f}",
+                            // obj.median()[axis]);
                             return obj.median()[axis] < middle;
                           });
   }
 
-  void topDown() { topDownRecurse(0, objs.begin(), objs.end()); }
-  void topDownRecurse(const std::size_t nodeIndex, obj_list::iterator begin,
-                      obj_list::iterator end) {
-    nodes.emplace_back();
-    node_t &working_node = nodes[nodeIndex];
+  void topDown() {
+    std::size_t nodeCount = 1;
+    topDownRecurse(0, objs.begin(), objs.end(), nodeCount);
+    nodes.resize(nodeCount);
+  }
+  void topDownRecurse(const std::size_t nodeIndex,
+                      const obj_list::iterator begin,
+                      const obj_list::iterator end, std::size_t &nodeCount) {
+    debug("working node: {}", nodeIndex);
+    debug("\tit: {} {}", std::distance(objs.begin(), begin),
+          std::distance(objs.begin(), end));
 
     const std::size_t count = end - begin;
+    debug("\tcount: {}", count);
+    if (count == 0)
+      return;
+
+    node_t &working_node = nodes[nodeIndex];
+
     working_node.box = computeBounds(begin, end);
+    debug("\tbox: {}", working_node.box);
+
+    working_node.begin =
+        static_cast<unsigned int>(std::distance(objs.begin(), begin));
+    working_node.end =
+        static_cast<unsigned int>(std::distance(objs.begin(), end));
+    debug("\tnode: [{} {}]", working_node.begin, working_node.end);
+
     if (count <= MAX_OBJECTS_PER_LEAF) {
-      working_node.begin =
-          static_cast<unsigned int>(std::distance(objs.begin(), begin));
-      working_node.end =
-          static_cast<unsigned int>(std::distance(objs.begin(), end));
+
     } else {
-      working_node.left = static_cast<int>(nodeIndex * 2 + 1);
-      working_node.right = static_cast<int>(nodeIndex * 2 + 2);
+      working_node.left = static_cast<int>(nodeCount++);
+      working_node.right = static_cast<int>(nodeCount++);
       const obj_list::iterator part = partitionNode(working_node);
-      topDownRecurse(working_node.left, objs.begin(), part);
-      topDownRecurse(working_node.right, part, objs.end());
+      working_node.begin = 0;
+      working_node.end = 0;
+      debug("\tleft: {} right: {}", std::distance(begin, part),
+            std::distance(part, end));
+      topDownRecurse(working_node.left, begin, part, nodeCount);
+      topDownRecurse(working_node.right, part, end, nodeCount);
     }
   }
 
-  void print() const { println(std::log2(nodes.size() + 1)); }
+  void print() const {
+    println(nodes.size());
+
+    for (int i = 0; i < nodes.size(); i++) {
+      const node_t &node = nodes[i];
+      println("[{}] {}: [{},{}] [{},{}]", i, node.isLeaf() ? "leaf" : "branch",
+              node.left, node.right, node.begin, node.end);
+    }
+  }
 };
 }; // namespace bvh

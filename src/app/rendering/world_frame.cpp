@@ -11,11 +11,18 @@ import shader;
 import buffer_objects;
 import vertices;
 import mesh;
+import aabb;
+import scene;
 
 void world::frame::render() const {
   drawGrid();
-  for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
-    obj->draw();
+  // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
+  //   obj->draw();
+  // }
+  for (const auto &o : MAIN_SCENE.objs2) {
+    drawBoxFromTo(o.min, o.max);
+  }
+  for (const auto &n : MAIN_SCENE.tree.nodes) {
   }
 }
 
