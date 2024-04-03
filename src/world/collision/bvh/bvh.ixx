@@ -11,6 +11,8 @@ import aabb;
 import debug;
 import glm;
 
+import color;
+
 export namespace bvh {
 struct tree_t {
   using obj_list = std::vector<aabb_t>;
@@ -23,6 +25,10 @@ struct tree_t {
     int left = -1, right = -1;
     unsigned int begin = 0, end = 0;
 
+    unsigned int depth = 0;
+
+    color_t color = colors::random();
+
     bool isLeaf() const { return begin != end; }
   };
   auto getBegin(node_t &node) { return objs.begin() + node.begin; }
@@ -32,8 +38,9 @@ struct tree_t {
   }
 
   std::vector<node_t> nodes{};
+  unsigned int maxDepth = 0;
 
-  bool debugging = true;
+  bool debugging = false;
 
   template <typename... Args>
   void debug(std::format_string<Args...> str, Args &&...args) {
@@ -77,12 +84,19 @@ struct tree_t {
 
   void topDown() {
     std::size_t nodeCount = 1;
-    topDownRecurse(0, objs.begin(), objs.end(), nodeCount);
+    topDownRecurse(0, objs.begin(), objs.end(), nodeCount, 0);
     nodes.resize(nodeCount);
+
+    std::sort(nodes.begin(), nodes.end(), [](const node_t &a, const node_t &b) {
+      return a.depth < b.depth;
+    });
+    maxDepth = nodes.back().depth;
+    // maxDepth = nodes[]
   }
   void topDownRecurse(const std::size_t nodeIndex,
                       const obj_list::iterator begin,
-                      const obj_list::iterator end, std::size_t &nodeCount) {
+                      const obj_list::iterator end, std::size_t &nodeCount,
+                      const unsigned int depth) {
     debug("working node: {}", nodeIndex);
     debug("\tit: {} {}", std::distance(objs.begin(), begin),
           std::distance(objs.begin(), end));
@@ -93,6 +107,8 @@ struct tree_t {
       return;
 
     node_t &working_node = nodes[nodeIndex];
+
+    working_node.depth = depth;
 
     working_node.box = computeBounds(begin, end);
     debug("\tbox: {}", working_node.box);
@@ -113,8 +129,8 @@ struct tree_t {
       working_node.end = 0;
       debug("\tleft: {} right: {}", std::distance(begin, part),
             std::distance(part, end));
-      topDownRecurse(working_node.left, begin, part, nodeCount);
-      topDownRecurse(working_node.right, part, end, nodeCount);
+      topDownRecurse(working_node.left, begin, part, nodeCount, depth + 1);
+      topDownRecurse(working_node.right, part, end, nodeCount, depth + 1);
     }
   }
 
@@ -123,8 +139,9 @@ struct tree_t {
 
     for (int i = 0; i < nodes.size(); i++) {
       const node_t &node = nodes[i];
-      println("[{}] {}: [{},{}] [{},{}]", i, node.isLeaf() ? "leaf" : "branch",
-              node.left, node.right, node.begin, node.end);
+      println("[{}] {}: [{},{}] [{},{}] {}", i,
+              node.isLeaf() ? "leaf" : "branch", node.left, node.right,
+              node.begin, node.end, node.depth);
     }
   }
 };

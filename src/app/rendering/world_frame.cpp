@@ -19,10 +19,10 @@ void world::frame::render() const {
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();
   // }
-  for (const auto &o : MAIN_SCENE.objs2) {
-    drawBoxFromTo(o.min, o.max);
-  }
+
   for (const auto &n : MAIN_SCENE.tree.nodes) {
+    drawBoxFromTo(n.box.min, n.box.max, MAIN_SCENE.tree.maxDepth - n.depth,
+                  n.color);
   }
 }
 
