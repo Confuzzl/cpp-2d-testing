@@ -27,8 +27,6 @@ struct tree_t {
 
     unsigned int depth = 0;
 
-    color_t color = colors::random();
-
     bool isLeaf() const { return begin != end; }
   };
   auto getBegin(node_t &node) { return objs.begin() + node.begin; }

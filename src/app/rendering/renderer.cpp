@@ -22,7 +22,6 @@ import app;
 import shader;
 import texture;
 
-
 const glm::mat4 Renderer::UI_MATRIX{
     glm::ortho(0.0f, static_cast<float>(App::WIDTH), 0.0f,
                static_cast<float>(App::HEIGHT))};
@@ -39,7 +38,7 @@ void Renderer::init() {
 }
 
 void Renderer::renderFrame(const double t) const {
-  glClearColor(0, 1, 1, 1);
+  glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
 
   worldFrame.render();
