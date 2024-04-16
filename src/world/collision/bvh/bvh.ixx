@@ -38,7 +38,7 @@ struct tree_t {
   std::vector<node_t> nodes{};
   unsigned int maxDepth = 0;
 
-  bool debugging = false;
+  bool debugging = true;
 
   template <typename... Args>
   void debug(std::format_string<Args...> str, Args &&...args) {
@@ -101,8 +101,8 @@ struct tree_t {
 
     const std::size_t count = end - begin;
     debug("\tcount: {}", count);
-    if (count == 0)
-      return;
+    // if (count == 0)
+    //   return;
 
     node_t &working_node = nodes[nodeIndex];
 
@@ -123,10 +123,18 @@ struct tree_t {
       working_node.left = static_cast<int>(nodeCount++);
       working_node.right = static_cast<int>(nodeCount++);
       const obj_list::iterator part = partitionNode(working_node);
+
+      const std::size_t l = part - begin, r = end - part;
+      debug("\tleft: {} right: {}", l, r);
+      // empty side dont part
+      if (l == 0 || r == 0) {
+        debug("\tearly abort");
+        return;
+      }
+
       working_node.begin = 0;
       working_node.end = 0;
-      debug("\tleft: {} right: {}", std::distance(begin, part),
-            std::distance(part, end));
+
       topDownRecurse(working_node.left, begin, part, nodeCount, depth + 1);
       topDownRecurse(working_node.right, part, end, nodeCount, depth + 1);
     }

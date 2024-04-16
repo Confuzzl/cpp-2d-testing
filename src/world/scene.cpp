@@ -17,7 +17,7 @@ static std::vector<aabb_t> objects() {
   out.reserve(count);
   for (int i = 0; i < count; i++) {
     const glm::vec2 start{random_float(-2.f, +2.f), random_float(-2.f, +2.f)};
-    const glm::vec2 size{random_float(0.5f, 1.f), random_float(0.5f, 1.f)};
+    const glm::vec2 size{random_float(0.25f, 0.5f), random_float(0.25f, 0.5f)};
     out.emplace_back(start, start + size);
     println(out[i]);
   }
