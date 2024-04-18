@@ -29,4 +29,9 @@ public:
   };
   static Polygon New(const opts_t &opts, const glm::vec2 pos = {0, 0},
                      const float r = 0);
+
+  static Polygon quadFromTo(const opts_t &opts, const glm::vec2 from,
+                            const glm::vec2 to);
+  static Polygon quadSize(const opts_t &opts, const glm::vec2 pos,
+                          const glm::vec2 size);
 };
