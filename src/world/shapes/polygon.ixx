@@ -20,7 +20,8 @@ private:
   std::vector<vertex_t> vertices;
 
 public:
-  Polygon(const glm::vec2 &pos, const float r, std::vector<glm::vec2> &&points);
+  Polygon(const glm::vec2 &pos, const float rot,
+          std::vector<glm::vec2> &&points);
 
   struct opts_t {
     unsigned char n;
@@ -28,7 +29,7 @@ public:
     float offset = 0;
   };
   static Polygon New(const opts_t &opts, const glm::vec2 pos = {0, 0},
-                     const float r = 0);
+                     const float rot = 0);
 
   static Polygon quadFromTo(const opts_t &opts, const glm::vec2 from,
                             const glm::vec2 to);

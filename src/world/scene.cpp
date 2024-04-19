@@ -12,7 +12,7 @@ import aabb;
 import math;
 
 static std::vector<aabb_t> objects() {
-  static constexpr unsigned count = 10;
+  static constexpr unsigned count = 5;
   std::vector<aabb_t> out{};
   out.reserve(count);
   for (int i = 0; i < count; i++) {
