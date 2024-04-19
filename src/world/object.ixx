@@ -37,7 +37,6 @@ export template <> struct Object<Polygon> : base_obj_t, Polygon {
   Mesh mesh;
 
   Object(const glm::vec2 &pos, const float r, std::vector<glm::vec2> &&points,
-
          Mesh &&mesh, const color_t &color)
       : base_obj_t(color), Polygon(pos, r, std::move(points)),
         mesh{std::move(mesh)} {}

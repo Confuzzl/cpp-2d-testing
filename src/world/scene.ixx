@@ -17,6 +17,8 @@ export struct Scene {
 
   std::set<std::unique_ptr<base_obj_t>> objs;
 
+  std::vector<std::unique_ptr<base_obj_t>> objects;
+
   std::vector<aabb_t> objs2;
   bvh::tree_t tree;
 
