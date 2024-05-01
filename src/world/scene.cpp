@@ -24,13 +24,7 @@ static std::vector<aabb_t> objects() {
   return out;
 }
 
-// std::unique_ptr<base_obj_t> Scene::randomObj() {
-//   static const glm::vec2 boundsMinX{-2.f, +2.f}, boundsMinY{-2.f, +2.f};
-//   static const glm::vec2 sizeRangeX{0.25f, 0.5f}, sizeRangeY{0.25f, 0.5f};
-//   // return
-}
-
-Scene::Scene() : objs{}, objs2{objects()}, tree{objs2} {}
+Scene::Scene() : objs{}, objs2{::objects()}, tree{objs2} {}
 Scene::~Scene() = default;
 
 void Scene::init() {

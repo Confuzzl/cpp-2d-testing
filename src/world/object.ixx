@@ -12,7 +12,7 @@ import poly;
 import circle;
 import polygon;
 import app;
-import scene;
+// import scene;
 import color;
 import func;
 import rendering;
@@ -36,25 +36,17 @@ export template <typename colltype> struct Object;
 export template <> struct Object<Polygon> : base_obj_t, Polygon {
   Mesh mesh;
 
-  Object(const glm::vec2 &pos, const float r, std::vector<glm::vec2> &&points,
-         Mesh &&mesh, const color_t &color)
-      : base_obj_t(color), Polygon(pos, r, std::move(points)),
-        mesh{std::move(mesh)} {}
+  Object(Polygon &&poly, Mesh &&mesh, const color_t &color)
+      : base_obj_t(color), Polygon(poly), mesh{std::move(mesh)} {}
 
-  static Object<Polygon> &New(const Polygon::opts_t &poly_opts,
-                              const glm::vec2 pos = {0, 0}, const float r = 0,
-                              const color_t color = colors::random()) {
-    std::vector<glm::vec2> vertices =
-        ngonVertices(poly_opts.n, poly_opts.r, poly_opts.offset);
-    Mesh mesh{
-        func::map<glm::vec2, vertex::simple>(vertices, [](const glm::vec2 &v) {
+  static std::unique_ptr<Object<Polygon>>
+  from(Polygon &&poly, const color_t color = colors::random()) {
+    Mesh mesh{func::map<glm::vec2, vertex::simple>(
+        poly.getVertices(), [](const glm::vec2 &v) {
           return vertex::simple{v.x, v.y};
         })};
-    auto it = MAIN_SCENE.objs
-                  .emplace(std::make_unique<Object<Polygon>>(
-                      pos, r, std::move(vertices), std::move(mesh), color))
-                  .first;
-    return static_cast<Object<Polygon> &>(**it);
+    return std::make_unique<Object<Polygon>>(std::move(poly), std::move(mesh),
+                                             color);
   }
 
   void draw(const render_opts_t &opts = {}) const override {
@@ -63,18 +55,12 @@ export template <> struct Object<Polygon> : base_obj_t, Polygon {
   }
 };
 export template <> struct Object<Circle> : base_obj_t, Circle {
-  Object(const glm::vec2 &pos, const float r, const float radius,
-         const color_t &color)
-      : base_obj_t(color), Circle(pos, r, radius) {}
+  Object(Circle &&circ, const color_t &color)
+      : base_obj_t(color), Circle(circ) {}
 
-  static Object<Circle> &New(const float radius = 1,
-                             const glm::vec2 &pos = {0, 0}, const float r = 0,
-                             const color_t color = colors::random()) {
-    auto it =
-        MAIN_SCENE.objs
-            .emplace(std::make_unique<Object<Circle>>(pos, r, radius, color))
-            .first;
-    return static_cast<Object<Circle> &>(**it);
+  static std::unique_ptr<Object<Circle>>
+  from(Circle &&circ, const color_t color = colors::random()) {
+    return std::make_unique<Object<Circle>>(std::move(circ), color);
   }
 
   void draw(const render_opts_t &opts = {}) const override {

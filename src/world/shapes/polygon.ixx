@@ -20,6 +20,8 @@ private:
   std::vector<vertex_t> vertices;
 
 public:
+  const std::vector<vertex_t> &getVertices() const { return vertices; }
+
   Polygon(const glm::vec2 &pos, const float rot,
           std::vector<glm::vec2> &&points);
 
@@ -30,7 +32,6 @@ public:
   };
   static Polygon New(const opts_t &opts, const glm::vec2 pos = {0, 0},
                      const float rot = 0);
-
   static Polygon quadFromTo(const opts_t &opts, const glm::vec2 from,
                             const glm::vec2 to);
   static Polygon quadSize(const opts_t &opts, const glm::vec2 pos,
