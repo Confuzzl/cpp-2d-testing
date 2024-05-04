@@ -50,6 +50,7 @@
     <ClCompile Include="src\util\poly.ixx" />
     <ClCompile Include="src\util\screen.ixx" />
     <ClCompile Include="src\util\vector.ixx" />
+    <ClCompile Include="src\world\collision\bvh\bvh.cpp" />
     <ClCompile Include="src\world\collision\bvh\bvh.ixx" />
     <ClCompile Include="src\world\camera.cpp" />
     <ClCompile Include="src\world\camera.ixx" />

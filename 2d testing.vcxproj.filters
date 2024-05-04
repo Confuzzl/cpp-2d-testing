@@ -150,6 +150,9 @@
     <ClCompile Include="src\world\collision\aabb.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\world\collision\bvh\bvh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\gl.h">
