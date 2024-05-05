@@ -19,6 +19,7 @@ export struct aabb_t {
   bool contains(const glm::vec2 &point) const {
     return in_range(point.x, min.x, max.x) && in_range(point.y, min.y, max.y);
   }
+
   void expand(const glm::vec2 &p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
@@ -29,6 +30,8 @@ export struct aabb_t {
     expand(other.min);
     expand(other.max);
   }
+  void inverseExpand(const aabb_t &other) {}
+
   void translate(const glm::vec2 &v) {
     min += v;
     max += v;
