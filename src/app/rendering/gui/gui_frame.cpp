@@ -87,7 +87,7 @@ void gui::frame::text(const std::string &str, const unsigned short x,
                          glm::value_ptr(vertex.tex));
     offset += sizeof(vertex.tex);
   }
-  shader::font.setView(Renderer::UI_MATRIX).setFontColor(colors::WHITE);
+  shader::font.setView(Renderer::UI_MATRIX).setFragColor(colors::WHITE);
   glBindTextureUnit(0, tex::font.ID);
 
   glDrawArrays(GL_TRIANGLES, 0, vertexCount);

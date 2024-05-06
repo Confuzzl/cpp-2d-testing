@@ -2,12 +2,15 @@ module;
 
 #include "util/gl.h"
 
+#define CREATE_UNIFORM(name) name.create(ID, #name)
+
 export module shader;
 
 import <stdexcept>;
 
 import vector;
 
+import color;
 import debug;
 import glm;
 
@@ -26,39 +29,122 @@ template <typename T> struct uniform {
 };
 
 export namespace shader {
+template <typename T>
+concept has_uniform = requires(T t, const GLuint ID) {
+  { T::name } -> std::convertible_to<const char *>;
+  { T::createUniforms(ID) } -> std::same_as<void>;
+};
+
 namespace vert {
+template <typename T>
+concept format = has_uniform<T> && requires(T t, GLuint &vao) {
+  { t.createVAO(vao) } -> std::same_as<void>;
+};
+
 struct basic {
   static constexpr char name[] = "basic.vert";
-  static void createVAO(GLuint &vao);
+
+  static uniform<glm::mat4> view;
+
+  static void createVAO(GLuint &vao) {
+    glCreateVertexArrays(1, &vao);
+    glEnableVertexArrayAttrib(vao, 0);
+    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vao, 0, 0);
+  }
+
+  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
 };
-struct shape {
-  static constexpr char name[] = "shape.vert";
-  static void createVAO(GLuint &vao);
+
+struct trans {
+  static constexpr char name[] = "trans.vert";
+
+  static uniform<glm::vec2> parent_pos;
+  static uniform<float> rotation;
+  static uniform<glm::mat4> view;
+
+  static void createVAO(GLuint &vao) {
+    glCreateVertexArrays(1, &vao);
+    glEnableVertexArrayAttrib(vao, 0);
+    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vao, 0, 0);
+  }
+
+  static void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(parent_pos);
+    CREATE_UNIFORM(rotation);
+    CREATE_UNIFORM(view);
+  }
 };
 struct tex {
   static constexpr char name[] = "tex.vert";
-  static void createVAO(GLuint &vao);
+
+  static uniform<glm::mat4> view;
+
+  static void createVAO(GLuint &vao) {
+    glCreateVertexArrays(1, &vao);
+    glEnableVertexArrayAttrib(vao, 0);
+    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vao, 0, 0);
+    glEnableVertexArrayAttrib(vao, 1);
+    glVertexArrayAttribFormat(vao, 1, 2, GL_UNSIGNED_SHORT, false,
+                              2 * sizeof(GLfloat));
+    glVertexArrayAttribBinding(vao, 1, 0);
+  }
+
+  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
 };
 } // namespace vert
+
 namespace frag {
 struct basic {
   static constexpr char name[] = "basic.frag";
+
+  static uniform<glm::uvec3> frag_color;
+
+  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
 };
 struct circle {
   static constexpr char name[] = "circle.frag";
+
+  static uniform<glm::vec2> center;
+  static uniform<float> radius;
+
+  static uniform<glm::uvec2> screen_dimensions;
+  static uniform<glm::mat4> view;
+
+  static uniform<glm::uvec3> frag_color;
+
+  static void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(center);
+    CREATE_UNIFORM(radius);
+    CREATE_UNIFORM(screen_dimensions);
+    CREATE_UNIFORM(view);
+    CREATE_UNIFORM(frag_color);
+  }
 };
 struct striped {
   static constexpr char name[] = "striped.frag";
+
+  static uniform<glm::uvec2> screen_dimensions;
+  static uniform<unsigned int> spacing;
+
+  static uniform<glm::uvec3> frag_color;
+
+  static void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(screen_dimensions);
+    CREATE_UNIFORM(spacing);
+    CREATE_UNIFORM(frag_color);
+  }
 };
 struct texcol {
   static constexpr char name[] = "texcol.frag";
+
+  static uniform<glm::uvec3> frag_color;
+
+  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
 };
 } // namespace frag
-
-template <typename V, typename F> struct foo_t {
-  using vertex = V;
-  using fragment = F;
-};
 
 struct base_t {
   GLuint ID;
@@ -68,7 +154,7 @@ protected:
   base_t(const std::string &vert, const std::string &frag);
 
 private:
-  std::string vert, frag;
+  std::string vertSource, fragSource;
 
   void createShaders();
   void compileShader(const GLenum type, GLuint &ID, const std::string &source);
@@ -115,116 +201,197 @@ public:
     glUniform2fv(uniform.location, 1, glm::value_ptr(vector));
   }
   template <>
+  void setUniform<glm::uvec2>(const uniform<glm::uvec2> &uniform,
+                              const glm::uvec2 &vector) const {
+    glUniform2uiv(uniform.location, 1, glm::value_ptr(vector));
+  }
+  template <>
   void setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
                               const glm::uvec3 &vector) const {
     glUniform3uiv(uniform.location, 1, glm::value_ptr(vector));
   }
 };
 
-export struct font_t : public base_t {
-  uniform<glm::mat4> view;
-  uniform<glm::uvec3> color;
+template <vert::format V, has_uniform F> struct specialized_t : base_t {
+  using vertex = V;
+  using fragment = F;
 
-  font_t();
+  specialized_t() : base_t(V::name, F::name) {}
 
-private:
-  void createVAO() override;
-  void createUniforms() override;
-
-public:
-  const font_t &setView(const glm::mat4 &matrix) const;
-  const font_t &setFontColor(const glm::uvec3 &col) const;
+  void createVAO() override { V::createVAO(vao); }
+  void createUniforms() override {
+    V::createUniforms(ID);
+    F::createUniforms(ID);
+  }
 };
 
-export struct basic_t : public base_t {
-  uniform<glm::mat4> view;
-  uniform<glm::uvec3> frag_color;
-
-  basic_t();
-
-private:
-  void createVAO() override;
-  void createUniforms() override;
-
-public:
-  const basic_t &setView(const glm::mat4 &matrix) const;
-  const basic_t &setFragColor(const glm::uvec3 &color) const;
+struct font_t : specialized_t<vert::tex, frag::texcol> {
+  font_t &setView(const glm::mat4 &mat) {
+    setUniform(vertex::view, mat);
+    return *this;
+  }
+  font_t &setFragColor(const color_t &frag_color) {
+    setUniform(fragment::frag_color, frag_color);
+    return *this;
+  }
 };
-using ui_t = basic_t;
-
-export struct shape_t : public base_t {
-  uniform<glm::vec2> parent_pos;
-  uniform<float> rotation;
-  uniform<glm::mat4> view;
-  uniform<glm::uvec3> frag_color;
-
-  shape_t();
-
-private:
-  void createVAO() override;
-  void createUniforms() override;
-
-public:
-  const shape_t &setParentPos(const glm::vec2 &pos) const;
-  const shape_t &setRotation(const float value) const;
-  const shape_t &setView(const glm::mat4 &matrix) const;
-  const shape_t &setFragColor(const glm::uvec3 &color) const;
+struct basic_t : specialized_t<vert::basic, frag::basic> {
+  basic_t &setView(const glm::mat4 &view) {
+    setUniform(vertex::view, view);
+    return *this;
+  }
+  basic_t &setFragColor(const color_t &frag_color) {
+    setUniform(fragment::frag_color, frag_color);
+    return *this;
+  }
 };
-
-export struct circle_t : public base_t {
-  uniform<glm::vec2> center;
-  uniform<float> radius;
-
-  uniform<glm::vec2> screen_dimensions;
-  uniform<glm::mat4> view;
-
-  uniform<glm::uvec3> frag_color;
-
-  circle_t();
-
-private:
-  void createVAO() override;
-  void createUniforms() override;
-
-public:
-  const circle_t &setCenter(const glm::vec2 &pos) const;
-  const circle_t &setRadius(const float r) const;
-  const circle_t &setScreenDimensions(const glm::vec2 &dimensions) const;
-  const circle_t &setView(const glm::mat4 &matrix) const;
-  const circle_t &setFragColor(const glm::uvec3 &color) const;
+struct trans_t : specialized_t<vert::trans, frag::basic> {
+  trans_t &setParentPos(const glm::vec2 &pos) {
+    setUniform(vertex::parent_pos, pos);
+    return *this;
+  }
+  trans_t &setRotation(const float rotation) {
+    setUniform(vertex::rotation, rotation);
+    return *this;
+  }
+  trans_t &setView(const glm::mat4 &view) {
+    setUniform(vertex::view, view);
+    return *this;
+  }
+  trans_t &setFragColor(const color_t &frag_color) {
+    setUniform(fragment::frag_color, frag_color);
+    return *this;
+  }
 };
-
-export struct striped_t : public base_t {
-  uniform<glm::vec2> screen_dimensions;
-  uniform<unsigned int> spacing;
-
-  uniform<glm::uvec3> frag_color;
-
-  striped_t();
-
-private:
-  void createVAO() override;
-  void createUniforms() override;
-
-public:
-  const striped_t &setScreenDimensions(const glm::vec2 &dimensions) const;
-  const striped_t &setSpacing(const unsigned int space) const;
-  const striped_t &setFragColor(const glm::uvec3 &color) const;
+struct circle_t : specialized_t<vert::basic, frag::circle> {
+  circle_t &setCenter(const glm::vec2 &center) {
+    setUniform(fragment::center, center);
+    return *this;
+  }
+  circle_t &setRadius(const float radius) {
+    setUniform(fragment::radius, radius);
+    return *this;
+  }
+  circle_t &setScreenDimensions(const glm::uvec2 &screen_dimensions) {
+    setUniform(fragment::screen_dimensions, screen_dimensions);
+    return *this;
+  }
+  circle_t &setView(const glm::mat4 &view) {
+    setUniform(vertex::view, view);
+    return *this;
+  }
 };
+struct striped_t : specialized_t<vert::basic, frag::striped> {};
+
+// export struct font_t : public base_t {
+//   uniform<glm::mat4> view;
+//   uniform<glm::uvec3> frag_color;
+//
+//   font_t();
+//
+// private:
+//   void createVAO() override;
+//   void createUniforms() override;
+//
+// public:
+//   const font_t &setView(const glm::mat4 &matrix) const;
+//   const font_t &setFontColor(const glm::uvec3 &col) const;
+// };
+//
+// export struct basic_t : public base_t {
+//   uniform<glm::mat4> view;
+//   uniform<glm::uvec3> frag_color;
+//
+//   basic_t();
+//
+// private:
+//   void createVAO() override;
+//   void createUniforms() override;
+//
+// public:
+//   const basic_t &setView(const glm::mat4 &matrix) const;
+//   const basic_t &setFragColor(const glm::uvec3 &color) const;
+// };
+// using ui_t = basic_t;
+//
+// export struct shape_t : public base_t {
+//   uniform<glm::vec2> parent_pos;
+//   uniform<float> rotation;
+//   uniform<glm::mat4> view;
+//   uniform<glm::uvec3> frag_color;
+//
+//   shape_t();
+//
+// private:
+//   void createVAO() override;
+//   void createUniforms() override;
+//
+// public:
+//   const shape_t &setParentPos(const glm::vec2 &pos) const;
+//   const shape_t &setRotation(const float value) const;
+//   const shape_t &setView(const glm::mat4 &matrix) const;
+//   const shape_t &setFragColor(const glm::uvec3 &color) const;
+// };
+//
+// export struct circle_t : public base_t {
+//   uniform<glm::vec2> center;
+//   uniform<float> radius;
+//
+//   uniform<glm::vec2> screen_dimensions;
+//   uniform<glm::mat4> view;
+//
+//   uniform<glm::uvec3> frag_color;
+//
+//   circle_t();
+//
+// private:
+//   void createVAO() override;
+//   void createUniforms() override;
+//
+// public:
+//   const circle_t &setCenter(const glm::vec2 &pos) const;
+//   const circle_t &setRadius(const float r) const;
+//   const circle_t &setScreenDimensions(const glm::vec2 &dimensions) const;
+//   const circle_t &setView(const glm::mat4 &matrix) const;
+//   const circle_t &setFragColor(const glm::uvec3 &color) const;
+// };
+//
+// export struct striped_t : public base_t {
+//   uniform<glm::vec2> screen_dimensions;
+//   uniform<unsigned int> spacing;
+//
+//   uniform<glm::uvec3> frag_color;
+//
+//   striped_t();
+//
+// private:
+//   void createVAO() override;
+//   void createUniforms() override;
+//
+// public:
+//   const striped_t &setScreenDimensions(const glm::vec2 &dimensions) const;
+//   const striped_t &setSpacing(const unsigned int space) const;
+//   const striped_t &setFragColor(const glm::uvec3 &color) const;
+// };
 
 inline namespace holder {
 shader::font_t font{};
 shader::basic_t basic{};
-shader::shape_t shape{};
+shader::trans_t shape{};
 shader::circle_t circle{};
 shader::striped_t striped{};
 
-std::vector<base_t *> shaders{&font, &basic, &shape, &circle, &striped};
+// std::vector<base_t *> shaders{&font, &basic, &shape, &circle, &striped};
 
 void init() {
-  for (base_t *ref : shaders) {
-    ref->init();
-  }
+  font.init();
+  basic.init();
+  shape.init();
+  circle.init();
+  striped.init();
+  // for (base_t *ref : shaders) {
+  //   ref->init();
+  // }
 }
 } // namespace holder
 } // namespace shader
