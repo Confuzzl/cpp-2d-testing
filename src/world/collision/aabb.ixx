@@ -30,7 +30,6 @@ export struct aabb_t {
     expand(other.min);
     expand(other.max);
   }
-  void inverseExpand(const aabb_t &other) {}
 
   void translate(const glm::vec2 &v) {
     min += v;

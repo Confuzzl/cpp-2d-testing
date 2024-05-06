@@ -364,6 +364,7 @@
     <None Include="assets\shaders\basic.vert" />
     <None Include="assets\shaders\circle.frag" />
     <None Include="assets\shaders\shape.vert" />
+    <None Include="assets\shaders\striped.frag" />
     <None Include="assets\shaders\tex.vert" />
     <None Include="assets\shaders\texcol.frag" />
     <None Include="Libraries\include\glm\detail\func_common.inl" />

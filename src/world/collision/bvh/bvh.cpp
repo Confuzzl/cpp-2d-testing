@@ -15,14 +15,21 @@ tree_t::obj_list::iterator tree_t::getBegin(const node_t &node) {
 tree_t::obj_list::iterator tree_t::getEnd(const node_t &node) {
   return objs.begin() + node.end;
 }
+// tree_t::obj_list::const_iterator tree_t::getBegin(const node_t &node) const {
+//   return objs.begin() + node.begin;
+// }
+// tree_t::obj_list::const_iterator tree_t::getEnd(const node_t &node) const {
+//   return objs.begin() + node.end;
+// }
 
 tree_t::tree_t(const std::vector<aabb_t> &o) : objs{o} {
-  const std::size_t nodeCount = o.size() / MAX_OBJECTS_PER_LEAF;
-  const std::size_t upperLeafSize = std::bit_ceil(nodeCount);
-  const std::size_t upperNodeCount = 2 * upperLeafSize - 1;
-  debug(upperNodeCount);
-  // upper bound of tree size = size of perfect tree
-  nodes.resize(upperNodeCount);
+  // const std::size_t nodeCount = o.size() / MAX_OBJECTS_PER_LEAF;
+  // const std::size_t upperLeafSize = std::bit_ceil(nodeCount);
+  // const std::size_t upperNodeCount = 2 * upperLeafSize - 1;
+  // debug(upperNodeCount);
+  //// upper bound of tree size = size of perfect tree
+  // nodes.resize(upperNodeCount);
+  nodes.resize(2 * o.size() - 1);
 }
 
 aabb_t tree_t::computeBounds(const obj_list::iterator begin,
@@ -105,6 +112,47 @@ void tree_t::topDownRecurse(const std::size_t nodeIndex,
     topDownRecurse(working_node.left, begin, part, nodeCount, depth + 1);
     topDownRecurse(working_node.right, part, end, nodeCount, depth + 1);
   }
+}
+
+tree_t::obj_t *tree_t::queryFirst(const aabb_t &query,
+                                  const std::size_t nodeIndex) {
+  const node_t &node = nodes[nodeIndex];
+  if (!query.intersects(node.box))
+    return nullptr;
+
+  if (node.isLeaf()) {
+    for (obj_t &obj : getObjects(node))
+      if (obj.intersects(query))
+        return &obj;
+    return nullptr;
+  }
+
+  obj_t *left = queryFirst(query, node.left);
+  if (left)
+    return left;
+  obj_t *right = queryFirst(query, node.right);
+  if (right)
+    return right;
+  return nullptr;
+}
+std::vector<tree_t::obj_t *> tree_t::queryAll(const aabb_t &query) {
+  std::vector<tree_t::obj_t *> list{};
+  queryAllRecurse(list, query, 0);
+  return list;
+}
+void tree_t::queryAllRecurse(std::vector<tree_t::obj_t *> &list,
+                             const aabb_t &query, const std::size_t nodeIndex) {
+  const node_t &node = nodes[nodeIndex];
+
+  if (node.isLeaf()) {
+    for (obj_t &obj : getObjects(node))
+      if (obj.intersects(query))
+        list.emplace_back(&obj);
+    return;
+  }
+
+  queryAllRecurse(list, query, node.left);
+  queryAllRecurse(list, query, node.right);
 }
 
 void tree_t::print() const {

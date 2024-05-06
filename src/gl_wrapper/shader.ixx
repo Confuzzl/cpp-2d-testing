@@ -26,7 +26,41 @@ template <typename T> struct uniform {
 };
 
 export namespace shader {
-export struct base_t {
+namespace vert {
+struct basic {
+  static constexpr char name[] = "basic.vert";
+  static void createVAO(GLuint &vao);
+};
+struct shape {
+  static constexpr char name[] = "shape.vert";
+  static void createVAO(GLuint &vao);
+};
+struct tex {
+  static constexpr char name[] = "tex.vert";
+  static void createVAO(GLuint &vao);
+};
+} // namespace vert
+namespace frag {
+struct basic {
+  static constexpr char name[] = "basic.frag";
+};
+struct circle {
+  static constexpr char name[] = "circle.frag";
+};
+struct striped {
+  static constexpr char name[] = "striped.frag";
+};
+struct texcol {
+  static constexpr char name[] = "texcol.frag";
+};
+} // namespace frag
+
+template <typename V, typename F> struct foo_t {
+  using vertex = V;
+  using fragment = F;
+};
+
+struct base_t {
   GLuint ID;
   GLuint vao;
 
@@ -60,6 +94,11 @@ public:
 
   template <typename T>
   void setUniform(const uniform<T> &uniform, const T &value) const;
+  template <>
+  void setUniform<unsigned int>(const uniform<unsigned int> &uniform,
+                                const unsigned int &value) const {
+    glUniform1ui(uniform.location, value);
+  }
   template <>
   void setUniform<float>(const uniform<float> &uniform,
                          const float &value) const {
@@ -155,13 +194,32 @@ public:
   const circle_t &setFragColor(const glm::uvec3 &color) const;
 };
 
+export struct striped_t : public base_t {
+  uniform<glm::vec2> screen_dimensions;
+  uniform<unsigned int> spacing;
+
+  uniform<glm::uvec3> frag_color;
+
+  striped_t();
+
+private:
+  void createVAO() override;
+  void createUniforms() override;
+
+public:
+  const striped_t &setScreenDimensions(const glm::vec2 &dimensions) const;
+  const striped_t &setSpacing(const unsigned int space) const;
+  const striped_t &setFragColor(const glm::uvec3 &color) const;
+};
+
 inline namespace holder {
 shader::font_t font{};
 shader::basic_t basic{};
 shader::shape_t shape{};
 shader::circle_t circle{};
+shader::striped_t striped{};
 
-std::vector<base_t *> shaders{&font, &basic, &shape, &circle};
+std::vector<base_t *> shaders{&font, &basic, &shape, &circle, &striped};
 
 void init() {
   for (base_t *ref : shaders) {

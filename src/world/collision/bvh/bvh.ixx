@@ -13,11 +13,12 @@ import color;
 
 export namespace bvh {
 struct tree_t {
-  using obj_list = std::vector<aabb_t>;
+  using obj_t = aabb_t;
+  using obj_list = std::vector<obj_t>;
 
   obj_list objs;
 
-  static constexpr unsigned int MAX_OBJECTS_PER_LEAF = 1;
+  static constexpr unsigned int MAX_OBJECTS_PER_LEAF = 2;
   struct node_t {
     aabb_t box{};
     int left = -1, right = -1;
@@ -29,9 +30,15 @@ struct tree_t {
   };
   obj_list::iterator getBegin(const node_t &node);
   obj_list::iterator getEnd(const node_t &node);
+  // obj_list::const_iterator getBegin(const node_t &node) const;
+  // obj_list::const_iterator getEnd(const node_t &node) const;
+
   auto getObjects(const node_t &node) {
     return std::ranges::subrange{getBegin(node), getEnd(node)};
   }
+  // const auto getObjects(const node_t &node) const {
+  //   return std::ranges::subrange{getBegin(node), getEnd(node)};
+  // }
 
   std::vector<node_t> nodes{};
   unsigned int maxDepth = 0;
@@ -45,6 +52,7 @@ struct tree_t {
   }
   template <typename T> void debug(const T &s) { debug("{}", s); }
 
+  tree_t() = default;
   tree_t(const std::vector<aabb_t> &o);
 
   aabb_t computeBounds(const obj_list::iterator begin,
@@ -58,7 +66,10 @@ struct tree_t {
                       const obj_list::iterator end, std::size_t &nodeCount,
                       const unsigned int depth);
 
-  bool intersects(const aabb_t &query) const;
+  obj_t *queryFirst(const aabb_t &query, const std::size_t nodeIndex = 0);
+  std::vector<obj_t *> queryAll(const aabb_t &query);
+  void queryAllRecurse(std::vector<obj_t *> &list, const aabb_t &query,
+                       const std::size_t nodeIndex);
 
   void removeNode();
   void removeObject();

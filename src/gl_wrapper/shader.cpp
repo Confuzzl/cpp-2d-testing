@@ -13,10 +13,12 @@ static std::string sourceToString(const std::string &name) {
   return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
 }
 
-shader::base_t::base_t(const std::string &vert, const std::string &frag)
+using namespace shader;
+
+base_t::base_t(const std::string &vert, const std::string &frag)
     : vert{vert}, frag{frag} {}
 
-void shader::base_t::createShaders() {
+void base_t::createShaders() {
   GLuint vertID = 0, fragID = 0;
   compileShader(GL_VERTEX_SHADER, vertID,
                 std::format("assets/shaders/{}.vert", vert));
@@ -30,15 +32,15 @@ void shader::base_t::createShaders() {
   glDeleteShader(fragID);
 }
 
-void shader::base_t::init() {
+void base_t::init() {
   ID = glCreateProgram();
   createShaders();
   createVAO();
   createUniforms();
 }
 
-void shader::base_t::compileShader(const GLenum type, GLuint &ID,
-                                   const std::string &source) {
+void base_t::compileShader(const GLenum type, GLuint &ID,
+                           const std::string &source) {
   GLint success = 0;
   ID = glCreateShader(type);
 
@@ -56,8 +58,8 @@ void shader::base_t::compileShader(const GLenum type, GLuint &ID,
   println("{} {}", source, ID);
 }
 
-shader::font_t::font_t() : base_t("tex", "texcol") {}
-void shader::font_t::createVAO() {
+font_t::font_t() : base_t("tex", "texcol") {}
+void font_t::createVAO() {
   glCreateVertexArrays(1, &vao);
   glEnableVertexArrayAttrib(vao, 0);
   glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
@@ -67,108 +69,127 @@ void shader::font_t::createVAO() {
                             2 * sizeof(GLfloat));
   glVertexArrayAttribBinding(vao, 1, 0);
 }
-void shader::font_t::createUniforms() {
+void font_t::createUniforms() {
   view.create(ID, "view");
   color.create(ID, "color");
 }
-const shader::font_t &shader::font_t::setView(const glm::mat4 &matrix) const {
+const font_t &font_t::setView(const glm::mat4 &matrix) const {
   setUniform(view, matrix);
   return *this;
 }
-const shader::font_t &
-shader::font_t::setFontColor(const glm::uvec3 &col) const {
+const font_t &font_t::setFontColor(const glm::uvec3 &col) const {
   setUniform(color, col);
   return *this;
 }
 
-shader::basic_t::basic_t() : base_t("basic", "basic") {}
-void shader::basic_t::createVAO() {
+basic_t::basic_t() : base_t("basic", "basic") {}
+void basic_t::createVAO() {
   glCreateVertexArrays(1, &vao);
   glEnableVertexArrayAttrib(vao, 0);
   glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
   glVertexArrayAttribBinding(vao, 0, 0);
 }
-void shader::basic_t::createUniforms() {
+void basic_t::createUniforms() {
   view.create(ID, "view");
   frag_color.create(ID, "frag_color");
 }
-const shader::basic_t &shader::basic_t::setView(const glm::mat4 &matrix) const {
+const basic_t &basic_t::setView(const glm::mat4 &matrix) const {
   setUniform(view, matrix);
   return *this;
 }
-const shader::basic_t &
-shader::basic_t::setFragColor(const glm::uvec3 &color) const {
+const basic_t &basic_t::setFragColor(const glm::uvec3 &color) const {
   setUniform(frag_color, color);
   return *this;
 }
 
-shader::shape_t::shape_t() : base_t("shape", "basic") {}
-void shader::shape_t::createVAO() {
+shape_t::shape_t() : base_t("shape", "basic") {}
+void shape_t::createVAO() {
   glCreateVertexArrays(1, &vao);
   glEnableVertexArrayAttrib(vao, 0);
   glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
   glVertexArrayAttribBinding(vao, 0, 0);
 }
-void shader::shape_t::createUniforms() {
+void shape_t::createUniforms() {
   parent_pos.create(ID, "parent_pos");
   rotation.create(ID, "rotation");
   view.create(ID, "view");
   frag_color.create(ID, "frag_color");
 }
-const shader::shape_t &
-shader::shape_t::setParentPos(const glm::vec2 &pos) const {
+const shape_t &shape_t::setParentPos(const glm::vec2 &pos) const {
   setUniform(parent_pos, pos);
   return *this;
 }
-const shader::shape_t &shader::shape_t::setRotation(const float value) const {
+const shape_t &shape_t::setRotation(const float value) const {
   setUniform(rotation, value);
   return *this;
 }
-const shader::shape_t &shader::shape_t::setView(const glm::mat4 &matrix) const {
+const shape_t &shape_t::setView(const glm::mat4 &matrix) const {
   setUniform(view, matrix);
   return *this;
 }
-const shader::shape_t &
-shader::shape_t::setFragColor(const glm::uvec3 &color) const {
+const shape_t &shape_t::setFragColor(const glm::uvec3 &color) const {
   setUniform(frag_color, color);
   return *this;
 }
 
-shader::circle_t::circle_t() : base_t("basic", "circle") {}
-void shader::circle_t::createVAO() {
+circle_t::circle_t() : base_t("basic", "circle") {}
+void circle_t::createVAO() {
   glCreateVertexArrays(1, &vao);
   glEnableVertexArrayAttrib(vao, 0);
   glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
   glVertexArrayAttribBinding(vao, 0, 0);
 }
-void shader::circle_t::createUniforms() {
+void circle_t::createUniforms() {
   center.create(ID, "center");
   radius.create(ID, "radius");
   screen_dimensions.create(ID, "screen_dimensions");
   view.create(ID, "view");
   frag_color.create(ID, "frag_color");
 }
-const shader::circle_t &
-shader::circle_t::setCenter(const glm::vec2 &pos) const {
+const circle_t &circle_t::setCenter(const glm::vec2 &pos) const {
   setUniform(center, pos);
   return *this;
 }
-const shader::circle_t &shader::circle_t::setRadius(const float r) const {
+const circle_t &circle_t::setRadius(const float r) const {
   setUniform(radius, r);
   return *this;
 }
-const shader::circle_t &
-shader::circle_t::setScreenDimensions(const glm::vec2 &dimensions) const {
+const circle_t &
+circle_t::setScreenDimensions(const glm::vec2 &dimensions) const {
   setUniform(screen_dimensions, dimensions);
   return *this;
 }
-const shader::circle_t &
-shader::circle_t::setView(const glm::mat4 &matrix) const {
+const circle_t &circle_t::setView(const glm::mat4 &matrix) const {
   setUniform(view, matrix);
   return *this;
 }
-const shader::circle_t &
-shader::circle_t::setFragColor(const glm::uvec3 &color) const {
+const circle_t &circle_t::setFragColor(const glm::uvec3 &color) const {
+  setUniform(frag_color, color);
+  return *this;
+}
+
+striped_t::striped_t() : base_t("basic", "striped") {}
+void striped_t::createVAO() {
+  glCreateVertexArrays(1, &vao);
+  glEnableVertexArrayAttrib(vao, 0);
+  glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
+  glVertexArrayAttribBinding(vao, 0, 0);
+}
+void striped_t::createUniforms() {
+  screen_dimensions.create(ID, "screen_dimensions");
+  spacing.create(ID, "spacing");
+  frag_color.create(ID, "frag_color");
+}
+const striped_t &
+striped_t::setScreenDimensions(const glm::vec2 &dimensions) const {
+  setUniform(screen_dimensions, dimensions);
+  return *this;
+}
+const striped_t &striped_t::setSpacing(const unsigned int space) const {
+  setUniform(spacing, space);
+  return *this;
+}
+const striped_t &striped_t::setFragColor(const glm::uvec3 &color) const {
   setUniform(frag_color, color);
   return *this;
 }
