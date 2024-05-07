@@ -32,7 +32,7 @@ export namespace shader {
 template <typename T>
 concept has_uniform = requires(T t, const GLuint ID) {
   { T::name } -> std::convertible_to<const char *>;
-  { T::createUniforms(ID) } -> std::same_as<void>;
+  { t.createUniforms(ID) } -> std::same_as<void>;
 };
 
 namespace vert {
@@ -44,33 +44,33 @@ concept format = has_uniform<T> && requires(T t, GLuint &vao) {
 struct basic {
   static constexpr char name[] = "basic.vert";
 
-  static uniform<glm::mat4> view;
+  uniform<glm::mat4> view;
 
-  static void createVAO(GLuint &vao) {
+  void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
     glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
     glVertexArrayAttribBinding(vao, 0, 0);
   }
 
-  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
+  void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
 };
 
 struct trans {
   static constexpr char name[] = "trans.vert";
 
-  static uniform<glm::vec2> parent_pos;
-  static uniform<float> rotation;
-  static uniform<glm::mat4> view;
+  uniform<glm::vec2> parent_pos;
+  uniform<float> rotation;
+  uniform<glm::mat4> view;
 
-  static void createVAO(GLuint &vao) {
+  void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
     glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
     glVertexArrayAttribBinding(vao, 0, 0);
   }
 
-  static void createUniforms(const GLuint ID) {
+  void createUniforms(const GLuint ID) {
     CREATE_UNIFORM(parent_pos);
     CREATE_UNIFORM(rotation);
     CREATE_UNIFORM(view);
@@ -79,9 +79,9 @@ struct trans {
 struct tex {
   static constexpr char name[] = "tex.vert";
 
-  static uniform<glm::mat4> view;
+  uniform<glm::mat4> view;
 
-  static void createVAO(GLuint &vao) {
+  void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
     glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
@@ -92,7 +92,7 @@ struct tex {
     glVertexArrayAttribBinding(vao, 1, 0);
   }
 
-  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
+  void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
 };
 } // namespace vert
 
@@ -100,22 +100,22 @@ namespace frag {
 struct basic {
   static constexpr char name[] = "basic.frag";
 
-  static uniform<glm::uvec3> frag_color;
+  uniform<glm::uvec3> frag_color;
 
-  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
+  void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
 };
 struct circle {
   static constexpr char name[] = "circle.frag";
 
-  static uniform<glm::vec2> center;
-  static uniform<float> radius;
+  uniform<glm::vec2> center;
+  uniform<float> radius;
 
-  static uniform<glm::uvec2> screen_dimensions;
-  static uniform<glm::mat4> view;
+  uniform<glm::uvec2> screen_dimensions;
+  uniform<glm::mat4> view;
 
-  static uniform<glm::uvec3> frag_color;
+  uniform<glm::uvec3> frag_color;
 
-  static void createUniforms(const GLuint ID) {
+  void createUniforms(const GLuint ID) {
     CREATE_UNIFORM(center);
     CREATE_UNIFORM(radius);
     CREATE_UNIFORM(screen_dimensions);
@@ -126,12 +126,12 @@ struct circle {
 struct striped {
   static constexpr char name[] = "striped.frag";
 
-  static uniform<glm::uvec2> screen_dimensions;
-  static uniform<unsigned int> spacing;
+  uniform<glm::uvec2> screen_dimensions;
+  uniform<unsigned int> spacing;
 
-  static uniform<glm::uvec3> frag_color;
+  uniform<glm::uvec3> frag_color;
 
-  static void createUniforms(const GLuint ID) {
+  void createUniforms(const GLuint ID) {
     CREATE_UNIFORM(screen_dimensions);
     CREATE_UNIFORM(spacing);
     CREATE_UNIFORM(frag_color);
@@ -140,9 +140,9 @@ struct striped {
 struct texcol {
   static constexpr char name[] = "texcol.frag";
 
-  static uniform<glm::uvec3> frag_color;
+  uniform<glm::uvec3> frag_color;
 
-  static void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
+  void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
 };
 } // namespace frag
 
@@ -213,75 +213,98 @@ public:
 };
 
 template <vert::format V, has_uniform F> struct specialized_t : base_t {
-  using vertex = V;
-  using fragment = F;
+  // using vertex = V;
+  // using fragment = F;
+  V vertex;
+  F fragment;
 
   specialized_t() : base_t(V::name, F::name) {}
 
-  void createVAO() override { V::createVAO(vao); }
+  void createVAO() override { vertex.createVAO(vao); }
   void createUniforms() override {
-    V::createUniforms(ID);
-    F::createUniforms(ID);
+    vertex.createUniforms(ID);
+    fragment.createUniforms(ID);
   }
 };
 
 struct font_t : specialized_t<vert::tex, frag::texcol> {
   font_t &setView(const glm::mat4 &mat) {
-    setUniform(vertex::view, mat);
+    setUniform(vertex.view, mat);
     return *this;
   }
   font_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment::frag_color, frag_color);
+    setUniform(fragment.frag_color, frag_color);
     return *this;
   }
 };
 struct basic_t : specialized_t<vert::basic, frag::basic> {
   basic_t &setView(const glm::mat4 &view) {
-    setUniform(vertex::view, view);
+    setUniform(vertex.view, view);
     return *this;
   }
   basic_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment::frag_color, frag_color);
+    setUniform(fragment.frag_color, frag_color);
     return *this;
   }
 };
 struct trans_t : specialized_t<vert::trans, frag::basic> {
   trans_t &setParentPos(const glm::vec2 &pos) {
-    setUniform(vertex::parent_pos, pos);
+    setUniform(vertex.parent_pos, pos);
     return *this;
   }
   trans_t &setRotation(const float rotation) {
-    setUniform(vertex::rotation, rotation);
+    setUniform(vertex.rotation, rotation);
     return *this;
   }
   trans_t &setView(const glm::mat4 &view) {
-    setUniform(vertex::view, view);
+    setUniform(vertex.view, view);
     return *this;
   }
   trans_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment::frag_color, frag_color);
+    setUniform(fragment.frag_color, frag_color);
     return *this;
   }
 };
 struct circle_t : specialized_t<vert::basic, frag::circle> {
+  circle_t &setView(const glm::mat4 &view) {
+    setUniform(vertex.view, view);
+    return *this;
+  }
   circle_t &setCenter(const glm::vec2 &center) {
-    setUniform(fragment::center, center);
+    setUniform(fragment.center, center);
     return *this;
   }
   circle_t &setRadius(const float radius) {
-    setUniform(fragment::radius, radius);
+    setUniform(fragment.radius, radius);
     return *this;
   }
   circle_t &setScreenDimensions(const glm::uvec2 &screen_dimensions) {
-    setUniform(fragment::screen_dimensions, screen_dimensions);
+    setUniform(fragment.screen_dimensions, screen_dimensions);
     return *this;
   }
-  circle_t &setView(const glm::mat4 &view) {
-    setUniform(vertex::view, view);
+  circle_t &setFragColor(const color_t &frag_color) {
+    setUniform(fragment.frag_color, frag_color);
     return *this;
   }
 };
-struct striped_t : specialized_t<vert::basic, frag::striped> {};
+struct striped_t : specialized_t<vert::basic, frag::striped> {
+  striped_t &setView(const glm::mat4 &view) {
+    setUniform(vertex.view, view);
+    return *this;
+  }
+  striped_t &setSpacing(const unsigned int spacing) {
+    setUniform(fragment.spacing, spacing);
+    return *this;
+  }
+  striped_t &setScreenDimensions(const glm::uvec2 &screen_dimensions) {
+    setUniform(fragment.screen_dimensions, screen_dimensions);
+    return *this;
+  }
+  striped_t &setFragColor(const color_t &frag_color) {
+    setUniform(fragment.frag_color, frag_color);
+    return *this;
+  }
+};
 
 // export struct font_t : public base_t {
 //   uniform<glm::mat4> view;
@@ -389,9 +412,6 @@ void init() {
   shape.init();
   circle.init();
   striped.init();
-  // for (base_t *ref : shaders) {
-  //   ref->init();
-  // }
 }
 } // namespace holder
 } // namespace shader
