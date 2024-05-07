@@ -19,16 +19,37 @@ void world::frame::render() const {
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();
   // }
-  for (const auto &o : MAIN_SCENE.objs2) {
-    drawQuadFromTo(o.min, o.max, colors::CYAN);
+
+  // for (const auto &o : MAIN_SCENE.objs2) {
+  //   drawQuad({o.min, o.max}, colors::CYAN);
+  // }
+
+  // for (const auto &n : MAIN_SCENE.tree.nodes) {
+  //   drawBox({n.box.min, n.box.max},
+  //           static_cast<float>((MAIN_SCENE.tree.maxDepth - n.depth + 1) * 2),
+  //           colors::random_i(n.depth));
+  // }
+
+  const glm::vec2 to{-1.0, -1.0}, from{1.0, 1.0};
+
+  static vbo<vertex::simple> VBO{4};
+  static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
+  const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+
+  shader::striped.use(VBO, EBO);
+
+  GLintptr offset = 0;
+  for (const glm::vec2 &corner : corners) {
+    glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
+                         glm::value_ptr(corner));
+    offset += sizeof(corner);
   }
 
-  for (const auto &n : MAIN_SCENE.tree.nodes) {
-    drawBoxFromTo(
-        n.box.min, n.box.max,
-        static_cast<float>((MAIN_SCENE.tree.maxDepth - n.depth + 1) * 2),
-        colors::random_i(n.depth));
-  }
+  shader::striped.setView(MAIN_SCENE.camera.getView())
+      .setSpacing(20)
+      .setFragColor(colors::RED);
+
+  glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
 
 void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
@@ -221,27 +242,21 @@ void world::frame::drawCircle(const glm::vec2 &center, const float radius,
   glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
 
-void world::frame::drawBox(const glm::vec2 &start, const glm::vec2 &size,
-                           const float lineSize, const color_t &color) const {
-  drawBoxFromTo(start, start + size, lineSize, color);
-}
-void world::frame::drawBoxFromTo(const glm::vec2 &from, const glm::vec2 &to,
-                                 const float lineSize,
-                                 const color_t &color) const {
+void world::frame::drawBox(const Box &dimensions, const float lineSize,
+                           const color_t &color) const {
+  const auto &[from, to] = dimensions;
+
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
   drawLine(corners[0], corners[1], lineSize, color);
   drawLine(corners[1], corners[2], lineSize, color);
   drawLine(corners[2], corners[3], lineSize, color);
   drawLine(corners[3], corners[0], lineSize, color);
 }
-void world::frame::drawBoxFixed(const glm::vec2 &start, const glm::vec2 &size,
-                                const float lineSize,
+
+void world::frame::drawBoxFixed(const Box &dimensions, const float lineSize,
                                 const color_t &color) const {
-  drawBoxFromToFixed(start, start + size, lineSize, color);
-}
-void world::frame::drawBoxFromToFixed(const glm::vec2 &from,
-                                      const glm::vec2 &to, const float lineSize,
-                                      const color_t &color) const {
+  const auto &[from, to] = dimensions;
+
   static vbo<vertex::simple> VBO{4};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
@@ -256,17 +271,11 @@ void world::frame::drawBoxFromToFixed(const glm::vec2 &from,
 
   shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
-  // glLineWidth(lineSize);
-
   glDrawArrays(GL_LINE_LOOP, 0, 4);
 }
+void world::frame::drawQuad(const Box &dimensions, const color_t &color) const {
+  const auto &[to, from] = dimensions;
 
-void world::frame::drawQuad(const glm::vec2 &start, const glm::vec2 &size,
-                            const color_t &color) const {
-  drawQuadFromTo(start, start + size, color);
-}
-void world::frame::drawQuadFromTo(const glm::vec2 &from, const glm::vec2 &to,
-                                  const color_t &color) const {
   static vbo<vertex::simple> VBO{4};
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};

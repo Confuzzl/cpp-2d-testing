@@ -43,7 +43,7 @@ struct tree_t {
   std::vector<node_t> nodes{};
   unsigned int maxDepth = 0;
 
-  bool debugging = true;
+  bool debugging = 0;
 
   template <typename... Args>
   void debug(std::format_string<Args...> str, Args &&...args) {

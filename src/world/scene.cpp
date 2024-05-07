@@ -29,5 +29,5 @@ Scene::~Scene() = default;
 
 void Scene::init() {
   tree.topDown();
-  tree.print();
+  // tree.print();
 }

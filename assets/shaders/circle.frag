@@ -3,7 +3,7 @@
 uniform vec2 center;
 uniform float radius;
 
-uniform vec2 screen_dimensions;
+uniform uvec2 screen_dimensions;
 uniform mat4 view;
 
 uniform uvec3 frag_color = uvec3(255, 255, 255);

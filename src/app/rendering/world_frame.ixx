@@ -39,25 +39,26 @@ struct frame {
   void drawArrowFromTo(const glm::vec2 &from, const glm::vec2 &to,
                        const color_t &color = colors::WHITE) const;
 
+  enum struct RenderMode { SOLID, STRIPED, OUTLINE };
+
   void drawCircle(const glm::vec2 &center, const float radius,
                   const color_t &color = colors::WHITE) const;
 
-  void drawBox(const glm::vec2 &start, const glm::vec2 &size,
-               const float lineSize = 5,
-               const color_t &color = colors::WHITE) const;
-  void drawBoxFromTo(const glm::vec2 &from, const glm::vec2 &to,
-                     const float lineSize = 5,
-                     const color_t &color = colors::WHITE) const;
-  void drawBoxFixed(const glm::vec2 &start, const glm::vec2 &size,
-                    const float lineSize = 5,
-                    const color_t &color = colors::WHITE) const;
-  void drawBoxFromToFixed(const glm::vec2 &from, const glm::vec2 &to,
-                          const float lineSize = 5,
-                          const color_t &color = colors::WHITE) const;
+  struct Box {
+    glm::vec2 min, max;
 
-  void drawQuad(const glm::vec2 &start, const glm::vec2 &size,
+    static Box sized(const glm::vec2 &start, const glm::vec2 &size) {
+      return {start, start + size};
+    }
+    static Box fromTo(const glm::vec2 &from, const glm::vec2 &to) {
+      return {from, to};
+    }
+  };
+  void drawBox(const Box &dimensions, const float lineSize = 5,
+               const color_t &color = colors::WHITE) const;
+  void drawBoxFixed(const Box &dimensions, const float lineSize = 5,
+                    const color_t &color = colors::WHITE) const;
+  void drawQuad(const Box &dimensions,
                 const color_t &color = colors::WHITE) const;
-  void drawQuadFromTo(const glm::vec2 &from, const glm::vec2 &to,
-                      const color_t &color = colors::WHITE) const;
 };
 } // namespace world

@@ -126,13 +126,11 @@ struct circle {
 struct striped {
   static constexpr char name[] = "striped.frag";
 
-  uniform<glm::uvec2> screen_dimensions;
   uniform<unsigned int> spacing;
 
   uniform<glm::uvec3> frag_color;
 
   void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(screen_dimensions);
     CREATE_UNIFORM(spacing);
     CREATE_UNIFORM(frag_color);
   }
@@ -213,8 +211,6 @@ public:
 };
 
 template <vert::format V, has_uniform F> struct specialized_t : base_t {
-  // using vertex = V;
-  // using fragment = F;
   V vertex;
   F fragment;
 
@@ -294,10 +290,6 @@ struct striped_t : specialized_t<vert::basic, frag::striped> {
   }
   striped_t &setSpacing(const unsigned int spacing) {
     setUniform(fragment.spacing, spacing);
-    return *this;
-  }
-  striped_t &setScreenDimensions(const glm::uvec2 &screen_dimensions) {
-    setUniform(fragment.screen_dimensions, screen_dimensions);
     return *this;
   }
   striped_t &setFragColor(const color_t &frag_color) {
@@ -403,8 +395,6 @@ shader::basic_t basic{};
 shader::trans_t shape{};
 shader::circle_t circle{};
 shader::striped_t striped{};
-
-// std::vector<base_t *> shaders{&font, &basic, &shape, &circle, &striped};
 
 void init() {
   font.init();

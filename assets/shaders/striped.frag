@@ -1,16 +1,40 @@
 #version 460 core
 
-uniform vec2 screen_dimensions;
+uniform uint width = 10;
 uniform uint spacing = 0;
+
+#define FORWARD 1
+#define BACKWARD 2
+#define CROSS 3
+uniform uint pattern = CROSS;
 
 uniform uvec3 frag_color = uvec3(255, 255, 255);
 
 out vec4 color;
 
+
+
+
+float pos_mod(const int n, const uint m) {
+	return mod(mod(n, m) + m, m);
+}
+
+bool check(const float n) {
+	return pos_mod(int(n), 2 + spacing) < width;
+}
+
+bool forward() {
+	return check(gl_FragCoord.x + gl_FragCoord.y);
+}
+bool backward() {
+	return check(gl_FragCoord.x - gl_FragCoord.y);
+}
+
 void main() {
-	const uint m = 2 + spacing;
-	const vec2 screen_coord = gl_FragCoord.xy * screen_dimensions;
-	if (mod(screen_coord.x, m) != 0 || mod(screen_coord.y, m) != 0)
+	if (bool(pattern & FORWARD) && forward())
 		discard;
+	if (bool(pattern & BACKWARD) && backward())
+		discard;
+	
 	color = vec4(frag_color.xyz / 255.0, 1.0);
 }

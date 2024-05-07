@@ -19,11 +19,12 @@ base_t::base_t(const std::string &vert, const std::string &frag)
     : vertSource{vert}, fragSource{frag} {}
 
 void base_t::createShaders() {
+  println("PROGRAM: {}", ID);
   GLuint vertID = 0, fragID = 0;
   compileShader(GL_VERTEX_SHADER, vertID,
-                std::format("assets/shaders/{}.vert", vertSource));
+                std::format("assets/shaders/{}", vertSource));
   compileShader(GL_FRAGMENT_SHADER, fragID,
-                std::format("assets/shaders/{}.frag", fragSource));
+                std::format("assets/shaders/{}", fragSource));
 
   glAttachShader(ID, vertID);
   glAttachShader(ID, fragID);
