@@ -15,33 +15,11 @@ static std::string sourceToString(const std::string &name) {
 
 using namespace shader;
 
-base_t::base_t(const std::string &vert, const std::string &frag)
-    : vertSource{vert}, fragSource{frag} {}
+shader_t::shader_t(const GLenum type, const std::string &name)
+    : type{type}, name{name} {}
 
-void base_t::createShaders() {
-  println("PROGRAM: {}", ID);
-  GLuint vertID = 0, fragID = 0;
-  compileShader(GL_VERTEX_SHADER, vertID,
-                std::format("assets/shaders/{}", vertSource));
-  compileShader(GL_FRAGMENT_SHADER, fragID,
-                std::format("assets/shaders/{}", fragSource));
-
-  glAttachShader(ID, vertID);
-  glAttachShader(ID, fragID);
-  glLinkProgram(ID);
-  glDeleteShader(vertID);
-  glDeleteShader(fragID);
-}
-
-void base_t::init() {
-  ID = glCreateProgram();
-  createShaders();
-  createVAO();
-  createUniforms();
-}
-
-void base_t::compileShader(const GLenum type, GLuint &ID,
-                           const std::string &source) {
+void shader_t::compile() {
+  const std::string source = std::format("assets/shaders/{}", name);
   GLint success = 0;
   ID = glCreateShader(type);
 
@@ -58,6 +36,56 @@ void base_t::compileShader(const GLenum type, GLuint &ID,
   }
   println("{} {}", source, ID);
 }
+
+void shader_t::cleanUp() { glDeleteShader(ID); }
+
+base_t::base_t(const std::string &vert, const std::string &frag,
+               std::vector<shader_t> &&otherShaders)
+    : shaders{vec::New<shader_t>(shader_t{GL_VERTEX_SHADER, vert},
+                                 shader_t{GL_FRAGMENT_SHADER, frag})},
+      vertex{shaders[0]}, fragment{shaders[1]} {
+  shaders.reserve(2 + otherShaders.size());
+  shaders.insert(shaders.end(), std::make_move_iterator(otherShaders.begin()),
+                 std::make_move_iterator(otherShaders.end()));
+}
+
+void base_t::createShaders() {
+  println("PROGRAM: {}", ID);
+  for (shader_t &shader : shaders) {
+    shader.compile();
+    glAttachShader(ID, shader.ID);
+  }
+  glLinkProgram(ID);
+  for (shader_t &shader : shaders) {
+    shader.cleanUp();
+  }
+}
+
+void base_t::init() {
+  ID = glCreateProgram();
+  createShaders();
+  createVAO();
+  createUniforms();
+}
+
+// void base_t::compileShader(const GLenum type, GLuint &ID,
+//                            const std::string &source) {
+//   GLint success = 0;
+//   ID = glCreateShader(type);
+//
+//   std::string temp = sourceToString(source);
+//   const char *chars = temp.c_str();
+//   glShaderSource(ID, 1, &chars, NULL);
+//
+//   glCompileShader(ID);
+//   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
+//
+//   if (!success) {
+//     println("COMPILATION ERROR {}", source);
+//     return;
+//   }
+//   println("{} {}", source, ID);
+// }
 
 // font_t::font_t() : base_t("tex", "texcol") {}
 // void font_t::createVAO() {

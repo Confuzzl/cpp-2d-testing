@@ -126,12 +126,16 @@ struct circle {
 struct striped {
   static constexpr char name[] = "striped.frag";
 
+  uniform<unsigned int> width;
   uniform<unsigned int> spacing;
+  uniform<unsigned int> pattern;
 
   uniform<glm::uvec3> frag_color;
 
   void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(width);
     CREATE_UNIFORM(spacing);
+    CREATE_UNIFORM(pattern);
     CREATE_UNIFORM(frag_color);
   }
 };
@@ -144,18 +148,40 @@ struct texcol {
 };
 } // namespace frag
 
+namespace geom {
+struct line {
+  uniform<float> thickness;
+
+  void createUniforms(const GLuint ID) { CREATE_UNIFORM(thickness); }
+};
+} // namespace geom
+
+struct shader_t {
+  GLenum type;
+  std::string name;
+  GLuint ID;
+
+  shader_t(const GLenum type, const std::string &name);
+
+  void compile();
+  void cleanUp();
+};
+
 struct base_t {
   GLuint ID;
   GLuint vao;
 
 protected:
-  base_t(const std::string &vert, const std::string &frag);
+  base_t(const std::string &vert, const std::string &frag,
+         std::vector<shader_t> &&otherShaders = {});
 
 private:
-  std::string vertSource, fragSource;
+  std::vector<shader_t> shaders;
+  shader_t &vertex, &fragment;
 
   void createShaders();
-  void compileShader(const GLenum type, GLuint &ID, const std::string &source);
+  // void compileShader(const GLenum type, GLuint &ID, const std::string
+  // &source);
   virtual void createVAO() = 0;
   virtual void createUniforms() = 0;
 
@@ -210,11 +236,11 @@ public:
   }
 };
 
-template <vert::format V, has_uniform F> struct specialized_t : base_t {
+template <vert::format V, has_uniform F> struct program_t : base_t {
   V vertex;
   F fragment;
 
-  specialized_t() : base_t(V::name, F::name) {}
+  program_t() : base_t(V::name, F::name) {}
 
   void createVAO() override { vertex.createVAO(vao); }
   void createUniforms() override {
@@ -223,7 +249,7 @@ template <vert::format V, has_uniform F> struct specialized_t : base_t {
   }
 };
 
-struct font_t : specialized_t<vert::tex, frag::texcol> {
+struct font_t : program_t<vert::tex, frag::texcol> {
   font_t &setView(const glm::mat4 &mat) {
     setUniform(vertex.view, mat);
     return *this;
@@ -233,7 +259,7 @@ struct font_t : specialized_t<vert::tex, frag::texcol> {
     return *this;
   }
 };
-struct basic_t : specialized_t<vert::basic, frag::basic> {
+struct basic_t : program_t<vert::basic, frag::basic> {
   basic_t &setView(const glm::mat4 &view) {
     setUniform(vertex.view, view);
     return *this;
@@ -243,7 +269,7 @@ struct basic_t : specialized_t<vert::basic, frag::basic> {
     return *this;
   }
 };
-struct trans_t : specialized_t<vert::trans, frag::basic> {
+struct trans_t : program_t<vert::trans, frag::basic> {
   trans_t &setParentPos(const glm::vec2 &pos) {
     setUniform(vertex.parent_pos, pos);
     return *this;
@@ -261,7 +287,7 @@ struct trans_t : specialized_t<vert::trans, frag::basic> {
     return *this;
   }
 };
-struct circle_t : specialized_t<vert::basic, frag::circle> {
+struct circle_t : program_t<vert::basic, frag::circle> {
   circle_t &setView(const glm::mat4 &view) {
     setUniform(vertex.view, view);
     return *this;
@@ -283,13 +309,22 @@ struct circle_t : specialized_t<vert::basic, frag::circle> {
     return *this;
   }
 };
-struct striped_t : specialized_t<vert::basic, frag::striped> {
+struct striped_t : program_t<vert::basic, frag::striped> {
   striped_t &setView(const glm::mat4 &view) {
     setUniform(vertex.view, view);
     return *this;
   }
+  striped_t &setWidth(const unsigned int spacing) {
+    setUniform(fragment.spacing, spacing);
+    return *this;
+  }
   striped_t &setSpacing(const unsigned int spacing) {
     setUniform(fragment.spacing, spacing);
+    return *this;
+  }
+  enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
+  striped_t &setSpacing(const Pattern pattern) {
+    setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
     return *this;
   }
   striped_t &setFragColor(const color_t &frag_color) {

@@ -509,6 +509,9 @@
   <ItemGroup>
     <Library Include="Libraries\lib\glfw3.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\shaders\line.geom" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
