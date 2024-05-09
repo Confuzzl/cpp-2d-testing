@@ -18,7 +18,7 @@ import func;
 import rendering;
 import world_frame;
 import camera;
-import shader;
+import shaders;
 
 export struct base_obj_t {
   color_t color;

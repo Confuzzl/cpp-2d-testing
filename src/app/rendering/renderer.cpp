@@ -4,13 +4,13 @@ module;
 
 #include <algorithm>
 #include <fstream>
+#include <stdexcept>
 
 module rendering;
 
 import <iostream>;
 import <format>;
 import vector;
-import <stdexcept>;
 
 import glm;
 import debug;
@@ -19,7 +19,7 @@ import buffer_objects;
 import mesh;
 import app;
 
-import shader;
+import shaders;
 import texture;
 
 const glm::mat4 Renderer::UI_MATRIX{
@@ -29,7 +29,7 @@ const glm::mat4 Renderer::UI_MATRIX{
 Renderer::Renderer() {}
 void Renderer::init() {
   try {
-    shader::init();
+    shaders::init();
     tex::init();
   } catch (const std::runtime_error &e) {
     println("{}", e.what());

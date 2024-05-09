@@ -35,8 +35,14 @@
     <ClCompile Include="src\app\update_cycle.ixx" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\gl_wrapper\buffer_objects.ixx" />
-    <ClCompile Include="src\gl_wrapper\shader.cpp" />
-    <ClCompile Include="src\gl_wrapper\shader.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\program.cpp" />
+    <ClCompile Include="src\gl_wrapper\shaders\program.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\shader.cpp" />
+    <ClCompile Include="src\gl_wrapper\shaders\shader.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\fragment.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\geometry.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
     <ClCompile Include="src\gl_wrapper\texture.ixx" />
     <ClCompile Include="src\gl_wrapper\vertices.ixx" />
@@ -354,6 +360,7 @@
     <ClInclude Include="Libraries\include\glm\vector_relational.hpp" />
     <ClInclude Include="Libraries\include\KHR\khrplatform.h" />
     <ClInclude Include="Libraries\include\stb_image.h" />
+    <ClInclude Include="src\gl_wrapper\shaders\uniform.h" />
     <ClInclude Include="src\util\gl.h" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ import glm;
 import vertices;
 import buffer_objects;
 import rendering;
-import shader;
+import shaders;
 import texture;
 import input_handler;
 
@@ -76,7 +76,7 @@ void gui::frame::text(const std::string &str, const unsigned short x,
 
   vbo<vertex::font> vbo{vertexCount};
 
-  shader::font.use(vbo);
+  shaders::font.use(vbo);
 
   GLintptr offset = 0;
   for (const auto &vertex : vertices) {
@@ -87,7 +87,7 @@ void gui::frame::text(const std::string &str, const unsigned short x,
                          glm::value_ptr(vertex.tex));
     offset += sizeof(vertex.tex);
   }
-  shader::font.setView(Renderer::UI_MATRIX).setFragColor(colors::WHITE);
+  shaders::font.setView(Renderer::UI_MATRIX).setFragColor(colors::WHITE);
   glBindTextureUnit(0, tex::font.ID);
 
   glDrawArrays(GL_TRIANGLES, 0, vertexCount);
@@ -108,7 +108,7 @@ void gui::frame::drawQuadFromTo(const unsigned short x1,
   static vbo<vertex::simple> VBO{4};
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   const glm::vec2 corners[4] = {{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}};
-  shader::basic.use(VBO, EBO);
+  shaders::basic.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : corners) {
@@ -117,7 +117,7 @@ void gui::frame::drawQuadFromTo(const unsigned short x1,
     offset += sizeof(corner);
   }
 
-  shader::basic.setView(Renderer::UI_MATRIX).setFragColor(color);
+  shaders::basic.setView(Renderer::UI_MATRIX).setFragColor(color);
 
   glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }

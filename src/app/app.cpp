@@ -1,13 +1,14 @@
 module;
 
 #include "util/gl.h"
+#include <stdexcept>
 
 module app;
 
 import input_handler;
 import debug;
 import gl_debug;
-import <stdexcept>;
+// import <stdexcept>;
 
 App::App() : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glfwInit();

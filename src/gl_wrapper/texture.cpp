@@ -4,11 +4,11 @@ module;
 #include <stb_image.h>
 
 #include "util/gl.h"
+#include <stdexcept>
 
 module texture;
 
 import <format>;
-import <stdexcept>;
 
 void tex::texture::init() {
   std::string apath = "assets/" + path;

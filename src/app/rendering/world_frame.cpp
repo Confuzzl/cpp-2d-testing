@@ -7,7 +7,7 @@ module world_frame;
 import app;
 import <memory>;
 import object;
-import shader;
+import shaders;
 import buffer_objects;
 import vertices;
 import mesh;
@@ -36,7 +36,7 @@ void world::frame::render() const {
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  shader::striped.use(VBO, EBO);
+  shaders::striped.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : corners) {
@@ -45,7 +45,7 @@ void world::frame::render() const {
     offset += sizeof(corner);
   }
 
-  shader::striped.setView(MAIN_SCENE.camera.getView())
+  shaders::striped.setView(MAIN_SCENE.camera.getView())
       .setSpacing(20)
       .setFragColor(colors::RED);
 
@@ -55,7 +55,7 @@ void world::frame::render() const {
 void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
                             const float rot, const color_t &color,
                             const GLenum primitive) const {
-  shader::shape.use(mesh.vbo, mesh.ebo);
+  shaders::shape.use(mesh.vbo, mesh.ebo);
 
   GLintptr offset = 0;
   for (const vertex::simple &vertex : mesh.localVertexData) {
@@ -64,7 +64,7 @@ void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
     offset += sizeof(vertex);
   }
 
-  shader::shape.setParentPos(pos)
+  shaders::shape.setParentPos(pos)
       .setRotation(rot)
       .setView(MAIN_SCENE.camera.getView())
       .setFragColor(color);
@@ -80,7 +80,7 @@ void world::frame::drawGrid() const {
   static vbo<vertex::simple> VBO{VERTEX_COUNT};
   static const glm::vec2 AXES[]{{1.0f, 0.0f}, {0.0f, 1.0f}};
 
-  shader::basic.use(VBO);
+  shaders::basic.use(VBO);
 
   GLintptr offset = 0;
   for (int a = 0; a < 2; a++) {
@@ -101,7 +101,8 @@ void world::frame::drawGrid() const {
       offset += sizeof(glm::vec2);
     }
   }
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(colors::GRAY);
+  shaders::basic.setView(MAIN_SCENE.camera.getView())
+      .setFragColor(colors::GRAY);
 
   // glLineWidth(5);
 
@@ -117,11 +118,11 @@ void world::frame::drawPointFixed(const glm::vec2 &point, const float size,
                                   const color_t &color) const {
   static vbo<vertex::simple> VBO{1};
 
-  shader::basic.use(VBO);
+  shaders::basic.use(VBO);
 
   glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(point));
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glPointSize(size);
 
@@ -143,7 +144,7 @@ void world::frame::drawLine(const glm::vec2 &a, const glm::vec2 &b,
   // v
   const glm::vec2 vertices[4] = {a + perp, b + perp, b - perp, a - perp};
 
-  shader::basic.use(VBO, EBO);
+  shaders::basic.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &vertex : vertices) {
@@ -152,7 +153,7 @@ void world::frame::drawLine(const glm::vec2 &a, const glm::vec2 &b,
     offset += sizeof(vertex);
   }
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
@@ -160,13 +161,13 @@ void world::frame::drawLineFixed(const glm::vec2 &a, const glm::vec2 &b,
                                  const float size, const color_t &color) const {
   static vbo<vertex::simple> VBO{2};
 
-  shader::basic.use(VBO);
+  shaders::basic.use(VBO);
 
   glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(a));
   glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
                        glm::value_ptr(b));
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   // glLineWidth(size);
 
@@ -204,7 +205,7 @@ void world::frame::drawArrowFromTo(const glm::vec2 &from, const glm::vec2 &to,
       to + glm::vec2{head.x * COS - head.y * SIN, head.x * SIN + head.y * COS},
       to + glm::vec2{head.x * COS + head.y * SIN, head.y * COS - head.x * SIN}};
 
-  shader::basic.use(VBO, EBO);
+  shaders::basic.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &vertex : vertices) {
@@ -213,7 +214,7 @@ void world::frame::drawArrowFromTo(const glm::vec2 &from, const glm::vec2 &to,
     offset += sizeof(vertex);
   }
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glDrawElements(GL_LINES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
@@ -224,7 +225,7 @@ void world::frame::drawCircle(const glm::vec2 &center, const float radius,
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   static const glm::vec2 CORNERS[4]{{-1, -1}, {+1, -1}, {+1, +1}, {-1, +1}};
 
-  shader::circle.use(VBO, EBO);
+  shaders::circle.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : CORNERS) {
@@ -233,7 +234,7 @@ void world::frame::drawCircle(const glm::vec2 &center, const float radius,
     offset += sizeof(corner);
   }
 
-  shader::circle.setCenter(center)
+  shaders::circle.setCenter(center)
       .setRadius(radius)
       .setScreenDimensions({App::WIDTH, App::HEIGHT})
       .setView(MAIN_CAMERA.getView())
@@ -260,7 +261,7 @@ void world::frame::drawBoxFixed(const Box &dimensions, const float lineSize,
   static vbo<vertex::simple> VBO{4};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  shader::basic.use(VBO);
+  shaders::basic.use(VBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : corners) {
@@ -269,7 +270,7 @@ void world::frame::drawBoxFixed(const Box &dimensions, const float lineSize,
     offset += sizeof(corner);
   }
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glDrawArrays(GL_LINE_LOOP, 0, 4);
 }
@@ -280,7 +281,7 @@ void world::frame::drawQuad(const Box &dimensions, const color_t &color) const {
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  shader::basic.use(VBO, EBO);
+  shaders::basic.use(VBO, EBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : corners) {
@@ -289,7 +290,7 @@ void world::frame::drawQuad(const Box &dimensions, const color_t &color) const {
     offset += sizeof(corner);
   }
 
-  shader::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
+  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
