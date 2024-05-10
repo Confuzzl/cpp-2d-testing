@@ -19,14 +19,20 @@ void main() {
 //	coordinates[1] = left - perp;
 //	coordinates[2] = right + perp;
 //	coordinates[3] = right - perp;
-	vec2 coordinates[4] = vec2[](
-		vec2(-1.0, -1.0), vec2(-1.0, 1.0),
-		vec2(1.0, -1.0), vec2(1.0, 1.0)
-	);
 
-	for (int i = 0; i < 4; i++) {
-		gl_Position = vec4(coordinates[i], 0, 0);
-		EmitVertex();
-	}
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+
+//	vec2 coordinates[4] = vec2[](
+//		vec2(-1.0, -1.0), vec2(-1.0, 1.0),
+//		vec2(1.0, -1.0), vec2(1.0, 1.0)
+//	);
+//
+//	for (int i = 0; i < 4; i++) {
+//		gl_Position = vec4(coordinates[i], 0, 0);
+//		EmitVertex();
+//	}
 	EndPrimitive();
 }

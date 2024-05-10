@@ -35,9 +35,13 @@ void Renderer::init() {
     println("{}", e.what());
     MAIN_APP.close();
   }
+  queryObject.init();
 }
 
 void Renderer::renderFrame(const double t) const {
+  GLint elapsed;
+
+  glBeginQuery(GL_TIME_ELAPSED, 0);
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -45,4 +49,6 @@ void Renderer::renderFrame(const double t) const {
   guiFrame.render();
 
   glfwSwapBuffers(MAIN_APP.window);
+  glEndQuery(GL_TIME_ELAPSED);
+  glGetQueryObjectiv(0, GL_QUERY_RESULT, &elapsed);
 }
