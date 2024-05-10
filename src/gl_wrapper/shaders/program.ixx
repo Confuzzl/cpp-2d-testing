@@ -7,6 +7,7 @@ export module shaders:program;
 import vector;
 import buffer_objects;
 import glm;
+import color;
 
 import :shader;
 import :vertex;

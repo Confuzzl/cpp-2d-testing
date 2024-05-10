@@ -23,7 +23,7 @@ void shader_t::compile() {
   GLint success = 0;
   ID = glCreateShader(type);
 
-  std::string temp = sourceToString(source);
+  const std::string temp = sourceToString(source);
   const char *chars = temp.c_str();
   glShaderSource(ID, 1, &chars, NULL);
 
@@ -37,4 +37,4 @@ void shader_t::compile() {
   println("{} {}", source, ID);
 }
 
-void shader_t::cleanUp() { glDeleteShader(ID); }
+void shader_t::cleanUp() const { glDeleteShader(ID); }

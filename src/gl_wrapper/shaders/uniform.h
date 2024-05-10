@@ -14,7 +14,7 @@ template <typename T> struct uniform {
     const GLint loc = glGetUniformLocation(shaderID, name.c_str());
     if (loc == -1)
       throw std::runtime_error{
-          std::format("{} was not a valid uniform name", name)};
+          std::format("{}: {} was not a valid uniform name", shaderID, name)};
     location = loc;
   }
 };
