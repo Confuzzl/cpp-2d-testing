@@ -9,23 +9,22 @@ import debug;
 using namespace shaders;
 
 base_program_t::base_program_t(const std::string &vert, const std::string &frag,
-                               std::vector<shader_t> &&otherShaders)
-    : shaders{vec::New<shader_t>(shader_t{GL_VERTEX_SHADER, vert},
-                                 shader_t{GL_FRAGMENT_SHADER, frag})},
-      vertex{shaders[0]}, fragment{shaders[1]} {
-  shaders.reserve(2 + otherShaders.size());
-  shaders.insert(shaders.end(), std::make_move_iterator(otherShaders.begin()),
-                 std::make_move_iterator(otherShaders.end()));
+                               std::vector<shader_t> &&otherShaders) {
+  compileList.reserve(2 + otherShaders.size());
+  otherShaders.emplace_back(GL_VERTEX_SHADER, vert);
+  otherShaders.emplace_back(GL_FRAGMENT_SHADER, frag);
+  for (shader_t &shader : otherShaders)
+    compileList.emplace_back(std::move(shader));
 }
 
 void base_program_t::createShaders() {
   println("PROGRAM: {}", ID);
-  for (shader_t &shader : shaders) {
+  for (shader_t &shader : compileList) {
     shader.compile();
     glAttachShader(ID, shader.ID);
   }
   glLinkProgram(ID);
-  for (shader_t &shader : shaders) {
+  for (shader_t &shader : compileList) {
     shader.cleanUp();
   }
 }
@@ -71,4 +70,94 @@ template <>
 void base_program_t::setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
                                             const glm::uvec3 &vector) const {
   glUniform3uiv(uniform.location, 1, glm::value_ptr(vector));
+}
+
+font_t &font_t::setView(const glm::mat4 &mat) {
+  setUniform(vertex.view, mat);
+  return *this;
+}
+font_t &font_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+
+basic_t &basic_t::setView(const glm::mat4 &view) {
+  setUniform(vertex.view, view);
+  return *this;
+}
+basic_t &basic_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+
+trans_t &trans_t::setParentPos(const glm::vec2 &pos) {
+  setUniform(vertex.parent_pos, pos);
+  return *this;
+}
+trans_t &trans_t::setRotation(const float rotation) {
+  setUniform(vertex.rotation, rotation);
+  return *this;
+}
+trans_t &trans_t::setView(const glm::mat4 &view) {
+  setUniform(vertex.view, view);
+  return *this;
+}
+trans_t &trans_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+
+circle_t &circle_t::setView(const glm::mat4 &view) {
+  setUniform(vertex.view, view);
+  return *this;
+}
+circle_t &circle_t::setCenter(const glm::vec2 &center) {
+  setUniform(fragment.center, center);
+  return *this;
+}
+circle_t &circle_t::setRadius(const float radius) {
+  setUniform(fragment.radius, radius);
+  return *this;
+}
+circle_t &circle_t::setScreenDimensions(const glm::uvec2 &screen_dimensions) {
+  setUniform(fragment.screen_dimensions, screen_dimensions);
+  return *this;
+}
+circle_t &circle_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+
+striped_t &striped_t::setView(const glm::mat4 &view) {
+  setUniform(vertex.view, view);
+  return *this;
+}
+striped_t &striped_t::setWidth(const unsigned int width) {
+  setUniform(fragment.width, width);
+  return *this;
+}
+striped_t &striped_t::setSpacing(const unsigned int spacing) {
+  setUniform(fragment.spacing, spacing);
+  return *this;
+}
+striped_t &striped_t::setPattern(const Pattern pattern) {
+  setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
+  return *this;
+}
+striped_t &striped_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+
+line_t &line_t::setView(const glm::mat4 &view) {
+  setUniform(vertex.view, view);
+  return *this;
+}
+line_t &line_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
+line_t &line_t::setThickness(const float thickness) {
+  setUniform(geometry.thickness, thickness);
+  return *this;
 }

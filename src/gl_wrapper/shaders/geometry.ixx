@@ -9,6 +9,8 @@ import glm;
 export namespace shaders {
 namespace geom {
 struct line {
+  static constexpr char name[] = "line.geom";
+
   uniform<float> thickness;
 
   void createUniforms(const GLuint ID) { CREATE_UNIFORM(thickness); }

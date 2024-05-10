@@ -30,26 +30,46 @@ void world::frame::render() const {
   //           colors::random_i(n.depth));
   // }
 
-  const glm::vec2 to{-1.0, -1.0}, from{1.0, 1.0};
+  drawQuad({{0, 0}, {1, 0.5}}, colors::CYAN);
 
-  static vbo<vertex::simple> VBO{4};
-  static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
-  const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+  const glm::vec2 to{-1.0, -0.5f}, from{1.0, 0.5f};
+  static vbo<vertex::simple> VBO{2};
 
-  shaders::striped.use(VBO, EBO);
+  // shaders::line.use(VBO);
+  shaders::basic.use(VBO);
 
-  GLintptr offset = 0;
-  for (const glm::vec2 &corner : corners) {
-    glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
-                         glm::value_ptr(corner));
-    offset += sizeof(corner);
-  }
+  glNamedBufferSubData(VBO.ID, 0, sizeof(to), glm::value_ptr(to));
+  glNamedBufferSubData(VBO.ID, sizeof(to), sizeof(from), glm::value_ptr(from));
 
-  shaders::striped.setView(MAIN_SCENE.camera.getView())
-      .setSpacing(20)
-      .setFragColor(colors::RED);
+  // shaders::line /*.setView(MAIN_SCENE.camera.getView())*/
+  //     .setFragColor(colors::BLUE)
+  //     .setThickness(1);
 
-  glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
+  shaders::basic.setFragColor(colors::BLUE);
+
+  glDrawArrays(GL_LINES, 0, 2);
+
+  // const glm::vec2 to{-1.0, -1.0}, from{1.0, 1.0};
+
+  // static vbo<vertex::simple> VBO{4};
+  // static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
+  // const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+
+  // shaders::striped.use(VBO, EBO);
+
+  // GLintptr offset = 0;
+  // for (const glm::vec2 &corner : corners) {
+  //   glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
+  //                        glm::value_ptr(corner));
+  //   offset += sizeof(corner);
+  // }
+
+  // shaders::striped.setView(MAIN_SCENE.camera.getView())
+  //     .setWidth(10)
+  //     .setSpacing(100)
+  //     .setFragColor(colors::RED);
+
+  // glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }
 
 void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
@@ -125,7 +145,6 @@ void world::frame::drawPointFixed(const glm::vec2 &point, const float size,
   shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glPointSize(size);
-
   glDrawArrays(GL_POINTS, 0, 1);
 }
 
@@ -275,13 +294,14 @@ void world::frame::drawBoxFixed(const Box &dimensions, const float lineSize,
   glDrawArrays(GL_LINE_LOOP, 0, 4);
 }
 void world::frame::drawQuad(const Box &dimensions, const color_t &color) const {
-  const auto &[to, from] = dimensions;
+  const auto &[from, to] = dimensions;
 
   static vbo<vertex::simple> VBO{4};
   static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-
+  // const glm::vec2 corners[4] = {from, {from.x, to.y}, {to.x, from.y}, to};
   shaders::basic.use(VBO, EBO);
+  // shaders::basic.use(VBO);
 
   GLintptr offset = 0;
   for (const glm::vec2 &corner : corners) {
@@ -293,4 +313,6 @@ void world::frame::drawQuad(const Box &dimensions, const color_t &color) const {
   shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
 
   glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
+
+  // glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

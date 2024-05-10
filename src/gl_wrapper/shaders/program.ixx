@@ -23,8 +23,7 @@ protected:
                  std::vector<shader_t> &&otherShaders = {});
 
 private:
-  std::vector<shader_t> shaders;
-  shader_t &vertex, &fragment;
+  std::vector<shader_t> compileList;
 
   void createShaders();
   virtual void createVAO() = 0;
@@ -73,7 +72,8 @@ struct simple_program_t : base_program_t {
   V vertex;
   F fragment;
 
-  simple_program_t() : base_program_t(V::name, F::name) {}
+  simple_program_t(std::vector<shader_t> &&otherShaders = {})
+      : base_program_t(V::name, F::name, std::move(otherShaders)) {}
 
   void createVAO() override { vertex.createVAO(vao); }
   void createUniforms() override {
@@ -83,86 +83,51 @@ struct simple_program_t : base_program_t {
 };
 
 struct font_t : simple_program_t<vert::tex, frag::texcol> {
-  font_t &setView(const glm::mat4 &mat) {
-    setUniform(vertex.view, mat);
-    return *this;
-  }
-  font_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment.frag_color, frag_color);
-    return *this;
-  }
+  font_t &setView(const glm::mat4 &mat);
+  font_t &setFragColor(const color_t &frag_color);
 };
 struct basic_t : simple_program_t<vert::basic, frag::basic> {
-  basic_t &setView(const glm::mat4 &view) {
-    setUniform(vertex.view, view);
-    return *this;
-  }
-  basic_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment.frag_color, frag_color);
-    return *this;
-  }
+  basic_t &setView(const glm::mat4 &view);
+  basic_t &setFragColor(const color_t &frag_color);
 };
 struct trans_t : simple_program_t<vert::trans, frag::basic> {
-  trans_t &setParentPos(const glm::vec2 &pos) {
-    setUniform(vertex.parent_pos, pos);
-    return *this;
-  }
-  trans_t &setRotation(const float rotation) {
-    setUniform(vertex.rotation, rotation);
-    return *this;
-  }
-  trans_t &setView(const glm::mat4 &view) {
-    setUniform(vertex.view, view);
-    return *this;
-  }
-  trans_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment.frag_color, frag_color);
-    return *this;
-  }
+  trans_t &setParentPos(const glm::vec2 &pos);
+  trans_t &setRotation(const float rotation);
+  trans_t &setView(const glm::mat4 &view);
+  trans_t &setFragColor(const color_t &frag_color);
 };
 struct circle_t : simple_program_t<vert::basic, frag::circle> {
-  circle_t &setView(const glm::mat4 &view) {
-    setUniform(vertex.view, view);
-    return *this;
-  }
-  circle_t &setCenter(const glm::vec2 &center) {
-    setUniform(fragment.center, center);
-    return *this;
-  }
-  circle_t &setRadius(const float radius) {
-    setUniform(fragment.radius, radius);
-    return *this;
-  }
-  circle_t &setScreenDimensions(const glm::uvec2 &screen_dimensions) {
-    setUniform(fragment.screen_dimensions, screen_dimensions);
-    return *this;
-  }
-  circle_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment.frag_color, frag_color);
-    return *this;
-  }
+  circle_t &setView(const glm::mat4 &view);
+  circle_t &setCenter(const glm::vec2 &center);
+  circle_t &setRadius(const float radius);
+  circle_t &setScreenDimensions(const glm::uvec2 &screen_dimensions);
+  circle_t &setFragColor(const color_t &frag_color);
 };
 struct striped_t : simple_program_t<vert::basic, frag::striped> {
-  striped_t &setView(const glm::mat4 &view) {
-    setUniform(vertex.view, view);
-    return *this;
-  }
-  striped_t &setWidth(const unsigned int spacing) {
-    setUniform(fragment.spacing, spacing);
-    return *this;
-  }
-  striped_t &setSpacing(const unsigned int spacing) {
-    setUniform(fragment.spacing, spacing);
-    return *this;
-  }
+  striped_t &setView(const glm::mat4 &view);
+  striped_t &setWidth(const unsigned int width);
+  striped_t &setSpacing(const unsigned int spacing);
   enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
-  striped_t &setSpacing(const Pattern pattern) {
-    setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
-    return *this;
+  striped_t &setPattern(const Pattern pattern);
+  striped_t &setFragColor(const color_t &frag_color);
+};
+
+template <vert::format V, has_uniform F, has_uniform G>
+struct geometry_program_t : simple_program_t<V, F> {
+  G geometry;
+
+  geometry_program_t()
+      : simple_program_t<V, F>({{GL_GEOMETRY_SHADER, G::name}}) {}
+
+  void createUniforms() override {
+    simple_program_t<V, F>::createUniforms();
+    geometry.createUniforms(base_program_t::ID);
   }
-  striped_t &setFragColor(const color_t &frag_color) {
-    setUniform(fragment.frag_color, frag_color);
-    return *this;
-  }
+};
+
+struct line_t : geometry_program_t<vert::basic, frag::basic, geom::line> {
+  line_t &setView(const glm::mat4 &view);
+  line_t &setFragColor(const color_t &frag_color);
+  line_t &setThickness(const float thickness);
 };
 } // namespace shaders
