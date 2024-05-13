@@ -28,6 +28,5 @@ struct shader_t {
   shader_t(const GLenum type, const std::string &name);
 
   void compile();
-  void cleanUp() const;
 };
 } // namespace shaders

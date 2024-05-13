@@ -15,6 +15,18 @@ concept format = has_uniform<T> && requires(T t, GLuint &vao) {
   { t.createVAO(vao) } -> std::same_as<void>;
 };
 
+struct identity {
+  static constexpr char name[] = "identity.vert";
+
+  void createVAO(GLuint &vao) {
+    glCreateVertexArrays(1, &vao);
+    glEnableVertexArrayAttrib(vao, 0);
+    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vao, 0, 0);
+  }
+  void createUniforms(const GLuint ID) {}
+};
+
 struct basic {
   static constexpr char name[] = "basic.vert";
 

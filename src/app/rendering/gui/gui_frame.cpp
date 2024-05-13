@@ -18,7 +18,9 @@ import <format>;
 gui::frame::frame() {}
 gui::frame::~frame() = default;
 
-void gui::frame::render() const {}
+void gui::frame::render() const {
+  text(std::format("{}", MAIN_RENDERER.elapsed));
+}
 
 static unsigned short charWidthConvert(const unsigned char w) {
   return static_cast<unsigned short>(

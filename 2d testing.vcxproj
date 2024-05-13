@@ -26,6 +26,7 @@
     <ClCompile Include="src\app\input\input_handler.ixx" />
     <ClCompile Include="src\app\input\key.cpp" />
     <ClCompile Include="src\app\input\key.ixx" />
+    <ClCompile Include="src\app\rendering\dimensions.ixx" />
     <ClCompile Include="src\app\rendering\gui\gui_frame.cpp" />
     <ClCompile Include="src\app\rendering\gui\gui_frame.ixx" />
     <ClCompile Include="src\app\rendering\renderer.cpp" />
@@ -519,6 +520,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\shaders\line.geom" />
+    <Text Include="assets\shaders\identity.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

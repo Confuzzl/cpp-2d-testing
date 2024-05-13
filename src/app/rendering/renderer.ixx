@@ -1,3 +1,7 @@
+module;
+
+#include "util/gl.h"
+
 export module rendering;
 
 import glm;
@@ -11,6 +15,7 @@ export struct Renderer {
   static const glm::mat4 UI_MATRIX;
 
   query_object_t queryObject;
+  GLint elapsed = 0;
 
   gui::frame guiFrame{};
   world::frame worldFrame{};
@@ -19,5 +24,5 @@ export struct Renderer {
   /*call after glfwinit*/
   void init();
 
-  void renderFrame(const double t) const;
+  void renderFrame(const double t);
 } MAIN_RENDERER;

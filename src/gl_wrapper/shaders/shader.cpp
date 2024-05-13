@@ -34,7 +34,5 @@ void shader_t::compile() {
     println("COMPILATION ERROR {}", source);
     return;
   }
-  println("{} {}", source, ID);
+  println("Compiled {}: {}", source, ID);
 }
-
-void shader_t::cleanUp() const { glDeleteShader(ID); }

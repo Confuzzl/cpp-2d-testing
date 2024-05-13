@@ -11,11 +11,12 @@ using namespace shaders;
 base_program_t::base_program_t(const std::string &vert, const std::string &frag,
                                std::vector<shader_t> &&otherShaders) {
   compileList.reserve(2 + otherShaders.size());
-  otherShaders.emplace_back(GL_VERTEX_SHADER, vert);
-  otherShaders.emplace_back(GL_FRAGMENT_SHADER, frag);
+  compileList.emplace_back(GL_VERTEX_SHADER, vert);
+  compileList.emplace_back(GL_FRAGMENT_SHADER, frag);
   for (shader_t &shader : otherShaders)
     compileList.emplace_back(std::move(shader));
 }
+base_program_t::~base_program_t() { glDeleteShader(ID); }
 
 void base_program_t::createShaders() {
   println("PROGRAM: {}", ID);
@@ -25,7 +26,8 @@ void base_program_t::createShaders() {
   }
   glLinkProgram(ID);
   for (shader_t &shader : compileList) {
-    shader.cleanUp();
+    glDetachShader(ID, shader.ID);
+    glDeleteShader(shader.ID);
   }
 }
 
@@ -150,7 +152,7 @@ striped_t &striped_t::setFragColor(const color_t &frag_color) {
 }
 
 line_t &line_t::setView(const glm::mat4 &view) {
-  setUniform(vertex.view, view);
+  setUniform(geometry.view, view);
   return *this;
 }
 line_t &line_t::setFragColor(const color_t &frag_color) {

@@ -19,6 +19,8 @@ struct base_program_t {
   GLuint ID;
   GLuint vao;
 
+  ~base_program_t();
+
 protected:
   base_program_t(const std::string &vert, const std::string &frag,
                  std::vector<shader_t> &&otherShaders = {});
@@ -126,7 +128,7 @@ struct geometry_program_t : simple_program_t<V, F> {
   }
 };
 
-struct line_t : geometry_program_t<vert::basic, frag::basic, geom::line> {
+struct line_t : geometry_program_t<vert::identity, frag::basic, geom::line> {
   line_t &setView(const glm::mat4 &view);
   line_t &setFragColor(const color_t &frag_color);
   line_t &setThickness(const float thickness);
