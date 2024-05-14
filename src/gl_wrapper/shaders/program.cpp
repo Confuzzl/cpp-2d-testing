@@ -44,6 +44,11 @@ void base_program_t::use() const {
 }
 
 template <>
+void base_program_t::setUniform<bool>(const uniform<bool> &uniform,
+                                      const bool &value) const {
+  glUniform1i(uniform.location, value);
+}
+template <>
 void base_program_t::setUniform<unsigned int>(
     const uniform<unsigned int> &uniform, const unsigned int &value) const {
   glUniform1ui(uniform.location, value);
@@ -155,11 +160,19 @@ line_t &line_t::setView(const glm::mat4 &view) {
   setUniform(geometry.view, view);
   return *this;
 }
-line_t &line_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
 line_t &line_t::setThickness(const float thickness) {
   setUniform(geometry.thickness, thickness);
+  return *this;
+}
+line_t &line_t::setOrtho(const glm::mat4 &ortho) {
+  setUniform(geometry.ortho, ortho);
+  return *this;
+}
+line_t &line_t::setPerspective(const bool perspective) {
+  setUniform(geometry.perspective, perspective);
+  return *this;
+}
+line_t &line_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
   return *this;
 }

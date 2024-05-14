@@ -33,41 +33,6 @@ void world::frame::render() const {
   //           colors::random_i(n.depth));
   // }
 
-  // drawLine({-1, -0.5}, {1, 0.5}, 1);
-
-  {
-    const glm::vec2 from{-1, 0}, to{1, 0};
-    static vbo<vertex::simple> VBO{2};
-
-    glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
-    glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-                         glm::value_ptr(to));
-
-    shaders::line.use(VBO);
-    shaders::line.setView(MAIN_CAMERA.getView())
-        .setFragColor(colors::BLUE)
-        .setThickness(0.1f);
-
-    glDrawArrays(GL_LINES, 0, 2);
-  }
-  {
-    const glm::vec2 from{100, 100}, to{1200, 700};
-    static vbo<vertex::simple> VBO{2};
-
-    glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
-    glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-                         glm::value_ptr(to));
-
-    shaders::line.use(VBO);
-    shaders::line.setView(MAIN_RENDERER.UI_MATRIX)
-        .setFragColor(colors::RED)
-        .setThickness(1);
-
-    glDrawArrays(GL_LINES, 0, 2);
-  }
-
-  // drawLine({-1.0, 0.5}, {1.0, 1.5}, 20, colors::GREEN);
-
   // const glm::vec2 to{-1.0, -1.0}, from{1.0, 1.0};
 
   // static vbo<vertex::simple> VBO{4};
@@ -163,42 +128,28 @@ void world::frame::drawPointFixed(const glm::vec2 &point, const float size,
   glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void world::frame::drawLine(const glm::vec2 &a, const glm::vec2 &b,
+void world::frame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
                             const float size, const color_t &color) const {
-  static constexpr float SCALE = 0.0015f;
-  static vbo<vertex::simple> VBO{4};
-  // static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
-
-  const glm::vec2 dir = b - a;
-  const glm::vec2 perp = glm::normalize(cw_perp(dir)) * size * SCALE;
-  // a----->b
-  // |
-  // p
-  // |
-  // v
-  // const glm::vec2 vertices[4] = {a + perp, b + perp, b - perp, a - perp};
-  const glm::vec2 vertices[4]{a - perp, a + perp, b - perp, b + perp};
-
-  GLintptr offset = 0;
-  for (const glm::vec2 &vertex : vertices) {
-    glNamedBufferSubData(VBO.ID, offset, sizeof(vertex),
-                         glm::value_ptr(vertex));
-    offset += sizeof(vertex);
-  }
-
-  shaders::basic.use(VBO /*, EBO*/);
-  shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);
-
-  // glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-void world::frame::drawLineFixed(const glm::vec2 &a, const glm::vec2 &b,
-                                 const float size, const color_t &color) const {
   static vbo<vertex::simple> VBO{2};
 
-  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(a));
+  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
   glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-                       glm::value_ptr(b));
+                       glm::value_ptr(to));
+
+  shaders::line.use(VBO);
+  shaders::line.setView(MAIN_CAMERA.getView())
+      .setFragColor(colors::BLUE)
+      .setThickness(size);
+
+  glDrawArrays(GL_LINES, 0, 2);
+}
+void world::frame::drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
+                                 const color_t &color) const {
+  static vbo<vertex::simple> VBO{2};
+
+  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
+  glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
+                       glm::value_ptr(to));
 
   shaders::basic.use(VBO);
   shaders::basic.setView(MAIN_SCENE.camera.getView()).setFragColor(color);

@@ -14,9 +14,14 @@ struct line {
   uniform<glm::mat4> view;
   uniform<float> thickness;
 
+  uniform<glm::mat4> ortho;
+  uniform<bool> perspective;
+
   void createUniforms(const GLuint ID) {
     CREATE_UNIFORM(view);
     CREATE_UNIFORM(thickness);
+    CREATE_UNIFORM(ortho);
+    CREATE_UNIFORM(perspective);
   }
 };
 } // namespace geom

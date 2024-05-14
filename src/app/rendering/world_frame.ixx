@@ -30,10 +30,10 @@ struct frame {
   void drawPointFixed(const glm::vec2 &point, const float size = 10,
                       const color_t &color = colors::WHITE) const;
 
-  void drawLine(const glm::vec2 &a, const glm::vec2 &b, const float size = 5,
+  void drawLine(const glm::vec2 &from, const glm::vec2 &to,
+                const float size = 0.1,
                 const color_t &color = colors::WHITE) const;
-  void drawLineFixed(const glm::vec2 &a, const glm::vec2 &b,
-                     const float size = 5,
+  void drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
                      const color_t &color = colors::WHITE) const;
 
   void drawArrow(const Dimensions &dimensions,

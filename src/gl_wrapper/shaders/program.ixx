@@ -48,11 +48,12 @@ public:
 
   template <typename T>
   void setUniform(const uniform<T> &uniform, const T &value) const;
+
+  template <>
+  void setUniform<bool>(const uniform<bool> &uniform, const bool &value) const;
   template <>
   void setUniform<unsigned int>(const uniform<unsigned int> &uniform,
-                                const unsigned int &value) const {
-    glUniform1ui(uniform.location, value);
-  }
+                                const unsigned int &value) const;
   template <>
   void setUniform<float>(const uniform<float> &uniform,
                          const float &value) const;
@@ -130,7 +131,9 @@ struct geometry_program_t : simple_program_t<V, F> {
 
 struct line_t : geometry_program_t<vert::identity, frag::basic, geom::line> {
   line_t &setView(const glm::mat4 &view);
-  line_t &setFragColor(const color_t &frag_color);
   line_t &setThickness(const float thickness);
+  line_t &setOrtho(const glm::mat4 &ortho);
+  line_t &setPerspective(const bool perspective);
+  line_t &setFragColor(const color_t &frag_color);
 };
 } // namespace shaders
