@@ -17,6 +17,7 @@ import scene;
 
 void world::frame::render() const {
   drawGrid();
+
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();
   // }
@@ -31,21 +32,21 @@ void world::frame::render() const {
   //           colors::random_i(n.depth));
   // }
 
-  drawLine({-1, -0.5}, {1, 0.5}, 1);
+  // drawLine({-1, -0.5}, {1, 0.5}, 1);
 
-  // const glm::vec2 from{-1.0, -0.5}, to{+1.0, +0.5};
-  // static vbo<vertex::simple> VBO{2};
+  const glm::vec2 from{-1.0, -0.5}, to{+1.0, +0.5};
+  static vbo<vertex::simple> VBO{2};
 
-  // glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
-  // glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-  //                      glm::value_ptr(to));
+  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
+  glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
+                       glm::value_ptr(to));
 
-  // shaders::line.use(VBO);
-  // shaders::line.setView(MAIN_CAMERA.getView())
-  //     .setFragColor(colors::BLUE)
-  //     .setThickness(0.1f);
+  shaders::line.use(VBO);
+  shaders::line.setView(MAIN_CAMERA.getView())
+      .setFragColor(colors::BLUE)
+      .setThickness(0.1f);
 
-  // glDrawArrays(GL_LINES, 0, 2);
+  glDrawArrays(GL_LINES, 0, 2);
 
   // drawLine({-1.0, 0.5}, {1.0, 1.5}, 20, colors::GREEN);
 

@@ -10,14 +10,11 @@ void main() {
 	int ab = int(gl_in[0].gl_Position.x < gl_in[1].gl_Position.x);
 	const vec2 left = gl_in[1 - ab].gl_Position.xy, right = gl_in[ab].gl_Position.xy;
 
-
-	const vec2 perp = normalize(vec2(left.y - right.y, right.x - left.x)) * thickness;
-
 	// 0---2
 	// | / |
 	// 1---3
 
-	const vec2 offset = vec2(0.0, thickness);
+	const vec2 offset = normalize(vec2(left.y - right.y, right.x - left.x)) * thickness;
 	const vec2 coordinates[4] = {
 		left + offset, left - offset,
 		right + offset, right - offset
