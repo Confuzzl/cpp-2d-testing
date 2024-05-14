@@ -14,6 +14,7 @@ import vertices;
 import mesh;
 import aabb;
 import scene;
+import rendering;
 
 void world::frame::render() const {
   drawGrid();
@@ -34,19 +35,36 @@ void world::frame::render() const {
 
   // drawLine({-1, -0.5}, {1, 0.5}, 1);
 
-  const glm::vec2 from{-1.0, -0.5}, to{+1.0, +0.5};
-  static vbo<vertex::simple> VBO{2};
+  {
+    const glm::vec2 from{-1, 0}, to{1, 0};
+    static vbo<vertex::simple> VBO{2};
 
-  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
-  glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-                       glm::value_ptr(to));
+    glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
+    glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
+                         glm::value_ptr(to));
 
-  shaders::line.use(VBO);
-  shaders::line.setView(MAIN_CAMERA.getView())
-      .setFragColor(colors::BLUE)
-      .setThickness(0.1f);
+    shaders::line.use(VBO);
+    shaders::line.setView(MAIN_CAMERA.getView())
+        .setFragColor(colors::BLUE)
+        .setThickness(0.1f);
 
-  glDrawArrays(GL_LINES, 0, 2);
+    glDrawArrays(GL_LINES, 0, 2);
+  }
+  {
+    const glm::vec2 from{100, 100}, to{1200, 700};
+    static vbo<vertex::simple> VBO{2};
+
+    glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
+    glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
+                         glm::value_ptr(to));
+
+    shaders::line.use(VBO);
+    shaders::line.setView(MAIN_RENDERER.UI_MATRIX)
+        .setFragColor(colors::RED)
+        .setThickness(1);
+
+    glDrawArrays(GL_LINES, 0, 2);
+  }
 
   // drawLine({-1.0, 0.5}, {1.0, 1.5}, 20, colors::GREEN);
 
@@ -210,7 +228,7 @@ void world::frame::drawArrow(const Dimensions &dimensions,
   // (x * cos - y * sin, x * sin + y * cos)
   // a < 0
   // (x * cos + y * sin, y * cos - x * sin)
-  const glm::vec2 vertices[4] = {
+  const glm::vec2 vertices[4]{
       from, to,
       to + glm::vec2{head.x * COS - head.y * SIN, head.x * SIN + head.y * COS},
       to + glm::vec2{head.x * COS + head.y * SIN, head.y * COS - head.x * SIN}};
