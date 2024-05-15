@@ -33,27 +33,24 @@ void world::frame::render() const {
   //           colors::random_i(n.depth));
   // }
 
-  // const glm::vec2 to{-1.0, -1.0}, from{1.0, 1.0};
+  drawLine({-1, -1}, {-2, 1}, 0.1f, colors::MAGENTA);
+  drawLineFixed({-1, 1}, {-2, -1}, colors::BLUE);
 
-  // static vbo<vertex::simple> VBO{4};
-  // static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
-  // const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+  const glm::vec2 from{1, -1}, to{2, 1};
+  static vbo<vertex::simple> VBO{2};
 
-  // shaders::striped.use(VBO, EBO);
+  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
+  glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
+                       glm::value_ptr(to));
 
-  // GLintptr offset = 0;
-  // for (const glm::vec2 &corner : corners) {
-  //   glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
-  //                        glm::value_ptr(corner));
-  //   offset += sizeof(corner);
-  // }
+  shaders::line.use(VBO);
+  shaders::line.setView(MAIN_CAMERA.getView())
+      .setFragColor(colors::RED)
+      .setThickness(3)
+      .setPerspective(false)
+      .setOrtho(MAIN_RENDERER.UI_MATRIX);
 
-  // shaders::striped.setView(MAIN_SCENE.camera.getView())
-  //     .setWidth(10)
-  //     .setSpacing(100)
-  //     .setFragColor(colors::RED);
-
-  // glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
+  glDrawArrays(GL_LINES, 0, 2);
 }
 
 void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
@@ -138,7 +135,7 @@ void world::frame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
 
   shaders::line.use(VBO);
   shaders::line.setView(MAIN_CAMERA.getView())
-      .setFragColor(colors::BLUE)
+      .setFragColor(color)
       .setThickness(size);
 
   glDrawArrays(GL_LINES, 0, 2);
