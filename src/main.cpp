@@ -19,5 +19,9 @@ int main() {
   const glm::mat4 view = glm::ortho<float>(-ratio, +ratio, -1, +1);
   const glm::mat4 ortho = glm::ortho<float>(0, width, 0, height);
 
-  const glm::vec2 test = {-1, 1};
+  const glm::vec2 test = {0, 0};
+  const glm::vec2 offset = {1, 1};
+
+  println(glm::to_string(view * glm::vec4{test + offset, 0, 1}));
+  println(glm::to_string(ortho * glm::vec4{test + offset, 0, 1}));
 }
