@@ -15,27 +15,15 @@ void main() {
 
 	const vec2 offset = normalize(vec2(left.y - right.y, right.x - left.x)) * thickness;
 
-	if (perspective) {
-		// 0---2
-		// | / |
-		// 1---3
-		const vec2 coordinates[4] = {
-			left + offset, left - offset,
-			right + offset, right - offset
-		};
-		for (uint i = 0; i < 4; i++) {
-			gl_Position = view * vec4(coordinates[i], 0, 1);
-			EmitVertex();
-		}
-	} else {
-		const vec4 fixed_offset = ortho * vec4(offset, 0, 1);
-		gl_Position = view * vec4(left, 0, 1) + fixed_offset;
-		EmitVertex();
-		gl_Position = view * vec4(left, 0, 1) - fixed_offset;
-		EmitVertex();
-		gl_Position = view * vec4(right, 0, 1) + fixed_offset;
-		EmitVertex();
-		gl_Position = view * vec4(right, 0, 1) - fixed_offset;
+	// 0---2
+	// | / |
+	// 1---3
+	const vec2 coordinates[4] = {
+		left + offset, left - offset,
+		right + offset, right - offset
+	};
+	for (uint i = 0; i < 4; i++) {
+		gl_Position = view * vec4(coordinates[i], 0, 1);
 		EmitVertex();
 	}
 	
