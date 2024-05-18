@@ -164,14 +164,6 @@ line_t &line_t::setThickness(const float thickness) {
   setUniform(geometry.thickness, thickness);
   return *this;
 }
-line_t &line_t::setOrtho(const glm::mat4 &ortho) {
-  setUniform(geometry.ortho, ortho);
-  return *this;
-}
-line_t &line_t::setPerspective(const bool perspective) {
-  setUniform(geometry.perspective, perspective);
-  return *this;
-}
 line_t &line_t::setFragColor(const color_t &frag_color) {
   setUniform(fragment.frag_color, frag_color);
   return *this;

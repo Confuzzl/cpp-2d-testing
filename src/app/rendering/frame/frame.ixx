@@ -1,29 +1,12 @@
-module;
-
-#include "util/gl.h"
-
-export module world_frame;
+export module frame;
 
 import glm;
 import color;
-
 import dimensions;
 
-export struct Mesh;
-
-export namespace world {
-struct frame {
+export namespace frame {
+struct base_t {
   void render() const;
-
-  struct render_opts {
-    bool showAABB = false;
-    GLenum primitive = GL_TRIANGLES;
-  };
-
-  void drawMesh(const Mesh &mesh, const glm::vec2 &pos, const float rot,
-                const color_t &color, const GLenum primitive) const;
-
-  void drawGrid() const;
 
   void drawPoint(const glm::vec2 &point, const float size = 10,
                  const color_t &color = colors::WHITE) const;
@@ -36,17 +19,17 @@ struct frame {
   void drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
                      const color_t &color = colors::WHITE) const;
 
-  void drawArrow(const Dimensions &dimensions,
+  void drawArrow(const dimension_t &dimensions,
                  const color_t &color = colors::WHITE) const;
 
-  void drawCircle(const glm::vec2 &center, const float radius,
+  void drawCircle(const dimension_t &dimensions,
                   const color_t &color = colors::WHITE) const;
 
-  void drawBox(const Dimensions &dimensions, const float lineSize = 5,
+  void drawBox(const dimension_t &dimensions, const float lineSize = 5,
                const color_t &color = colors::WHITE) const;
-  void drawBoxFixed(const Dimensions &dimensions, const float lineSize = 5,
+  void drawBoxFixed(const dimension_t &dimensions, const float lineSize = 5,
                     const color_t &color = colors::WHITE) const;
-  void drawQuad(const Dimensions &dimensions,
+  void drawQuad(const dimension_t &dimensions,
                 const color_t &color = colors::WHITE) const;
 };
-} // namespace world
+} // namespace frame

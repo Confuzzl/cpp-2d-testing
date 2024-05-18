@@ -11,4 +11,7 @@ export struct Dimensions {
   static Dimensions fromTo(const glm::vec2 &from, const glm::vec2 &to) {
     return {from, to};
   }
+  static Dimensions centerRadius(const glm::vec2 &center, const float radius) {
+    return {center - glm::vec2{radius}, center + glm::vec2{radius}};
+  }
 };

@@ -32,28 +32,6 @@ void world::frame::render() const {
   //           static_cast<float>((MAIN_SCENE.tree.maxDepth - n.depth + 1) * 2),
   //           colors::random_i(n.depth));
   // }
-
-  // drawLine({-1, -1}, {-2, 1}, 0.1f, colors::MAGENTA);
-  // drawLineFixed({-1, 1}, {-2, -1}, colors::BLUE);
-
-  const glm::vec2 from{1, -1}, to{2, 1};
-
-  static vbo<vertex::simple> VBO{2};
-
-  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(from));
-  glNamedBufferSubData(VBO.ID, sizeof(glm::vec2), sizeof(glm::vec2),
-                       glm::value_ptr(to));
-
-  shaders::line.use(VBO);
-  shaders::line.setView(MAIN_CAMERA.getView())
-      .setFragColor(colors::RED)
-      .setThickness(1)
-      .setPerspective(false)
-      .setOrtho(MAIN_RENDERER.UI_MATRIX);
-
-  glDrawArrays(GL_LINES, 0, 2);
-
-  // drawLine(from, to, 0.05f, colors::GREEN);
 }
 
 void world::frame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
