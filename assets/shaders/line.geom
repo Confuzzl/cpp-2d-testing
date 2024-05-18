@@ -16,18 +16,7 @@ void main() {
 	const vec2 offset = normalize(vec2(left.y - right.y, right.x - left.x)) * thickness;
 
 
-	if (perspective) {
-		const float width = 2 / ortho[0][0], height = 2 / ortho[1][1];
-		const vec4 fixed_offset = ortho * vec4(offset + vec2(width, height), 0, 1);
-		gl_Position = view * left + fixed_offset;
-		EmitVertex();
-		gl_Position = view * left - fixed_offset;
-		EmitVertex();
-		gl_Position = view * right + fixed_offset;
-		EmitVertex();
-		gl_Position = view * right - fixed_offset;
-		EmitVertex();
-	} else {
+	if (perspective) {		
 		// 0---2
 		// | / |
 		// 1---3
@@ -39,6 +28,18 @@ void main() {
 			gl_Position = view * vec4(coordinates[i], 0, 1);
 			EmitVertex();
 		}
+	} else {
+		const vec4 fixed_offset = ortho * vec4(1 / ortho[0][0], 1 / ortho[1][1] + 1, 0, 0);
+//		const float width = 1 / ortho[0][0], height = 1 / ortho[1][1];
+//		const vec4 fixed_offset = ortho * vec4(offset + vec2(width, height), 0, 1);
+		gl_Position = view * vec4(left, 0, 1) + fixed_offset;
+		EmitVertex();
+		gl_Position = view * vec4(left, 0, 1) - fixed_offset;
+		EmitVertex();
+		gl_Position = view * vec4(right, 0, 1) + fixed_offset;
+		EmitVertex();
+		gl_Position = view * vec4(right, 0, 1) - fixed_offset;
+		EmitVertex();
 	}
 	
 	EndPrimitive();
