@@ -12,28 +12,24 @@ import rendering;
 import shaders;
 import texture;
 import input_handler;
-
+import <vector>;
 import <format>;
 
-gui::frame::frame() {}
-gui::frame::~frame() = default;
+GUIFrame::GUIFrame() : BaseFrame(Renderer::UI_MATRIX) {}
 
-void gui::frame::render() const {
-  text(std::format("{}", MAIN_RENDERER.elapsed));
-}
+void GUIFrame::render() { /*text(std::format("{}", MAIN_RENDERER.elapsed));*/ }
 
 static unsigned short charWidthConvert(const unsigned char w) {
-  return static_cast<unsigned short>(
-      static_cast<float>(w) * gui::font::CHAR_WIDTH / gui::font::IMG_WIDTH *
-      gui::font::TEXEL_RANGE);
+  return static_cast<unsigned short>(static_cast<float>(w) * font::CHAR_WIDTH /
+                                     font::IMG_WIDTH * font::TEXEL_RANGE);
 }
 static unsigned short charHeightConvert(const unsigned char h) {
-  return static_cast<unsigned short>(
-      static_cast<float>(h) * gui::font::CHAR_HEIGHT / gui::font::IMG_HEIGHT *
-      gui::font::TEXEL_RANGE);
+  return static_cast<unsigned short>(static_cast<float>(h) * font::CHAR_HEIGHT /
+                                     font::IMG_HEIGHT * font::TEXEL_RANGE);
 }
-void gui::frame::text(const std::string &str, const unsigned short x,
-                      const unsigned short y, const double scale) const {
+void GUIFrame::text(const std::string &str, const color_t &color,
+                    const unsigned short x, const unsigned short y,
+                    const double scale) const {
   static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                 {{0, 0}, {1, 1}, {0, 1}}};
 
@@ -78,8 +74,6 @@ void gui::frame::text(const std::string &str, const unsigned short x,
 
   vbo<vertex::font> vbo{vertexCount};
 
-  shaders::font.use(vbo);
-
   GLintptr offset = 0;
   for (const auto &vertex : vertices) {
     glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.pos),
@@ -89,37 +83,10 @@ void gui::frame::text(const std::string &str, const unsigned short x,
                          glm::value_ptr(vertex.tex));
     offset += sizeof(vertex.tex);
   }
-  shaders::font.setView(Renderer::UI_MATRIX).setFragColor(colors::WHITE);
+
+  shaders::font.use(vbo);
+  shaders::font.setView(matrix).setFragColor(color);
   glBindTextureUnit(0, tex::font.ID);
 
   glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-}
-
-void gui::frame::drawQuad(const unsigned short x, const unsigned short y,
-                          const unsigned short width,
-                          const unsigned short height,
-                          const color_t &color) const {
-  drawQuadFromTo(x, y, x + width, y + height, color);
-}
-
-void gui::frame::drawQuadFromTo(const unsigned short x1,
-                                const unsigned short y1,
-                                const unsigned short x2,
-                                const unsigned short y2,
-                                const color_t &color) const {
-  static vbo<vertex::simple> VBO{4};
-  static simple_ebo EBO{{0, 1, 2, 0, 2, 3}};
-  const glm::vec2 corners[4] = {{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}};
-  shaders::basic.use(VBO, EBO);
-
-  GLintptr offset = 0;
-  for (const glm::vec2 &corner : corners) {
-    glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
-                         glm::value_ptr(corner));
-    offset += sizeof(corner);
-  }
-
-  shaders::basic.setView(Renderer::UI_MATRIX).setFragColor(color);
-
-  glDrawElements(GL_TRIANGLES, EBO.count, GL_UNSIGNED_BYTE, 0);
 }

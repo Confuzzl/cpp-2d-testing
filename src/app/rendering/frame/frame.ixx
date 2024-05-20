@@ -4,9 +4,11 @@ import glm;
 import color;
 import dimensions;
 
-export namespace frame {
-struct base_t {
-  void render() const;
+export struct BaseFrame {
+  glm::mat4 matrix;
+  BaseFrame(const glm::mat4 &matrix);
+
+  virtual void render() = 0;
 
   void drawPoint(const glm::vec2 &point, const float size = 10,
                  const color_t &color = colors::WHITE) const;
@@ -22,7 +24,7 @@ struct base_t {
   void drawArrow(const dimension_t &dimensions,
                  const color_t &color = colors::WHITE) const;
 
-  void drawCircle(const dimension_t &dimensions,
+  void drawCircle(const glm::vec2 &center, const float radius,
                   const color_t &color = colors::WHITE) const;
 
   void drawBox(const dimension_t &dimensions, const float lineSize = 5,
@@ -32,4 +34,3 @@ struct base_t {
   void drawQuad(const dimension_t &dimensions,
                 const color_t &color = colors::WHITE) const;
 };
-} // namespace frame

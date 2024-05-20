@@ -16,7 +16,7 @@ base_program_t::base_program_t(const std::string &vert, const std::string &frag,
   for (shader_t &shader : otherShaders)
     compileList.emplace_back(std::move(shader));
 }
-base_program_t::~base_program_t() { glDeleteShader(ID); }
+base_program_t::~base_program_t() { glDeleteProgram(ID); }
 
 void base_program_t::createShaders() {
   println("PROGRAM: {}", ID);

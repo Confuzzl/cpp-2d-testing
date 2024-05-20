@@ -27,10 +27,10 @@
     <ClCompile Include="src\app\input\key.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\app\rendering\gui\gui_frame.cpp">
+    <ClCompile Include="src\app\rendering\frame\gui_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\app\rendering\gui\gui_frame.ixx">
+    <ClCompile Include="src\app\rendering\frame\gui_frame.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\rendering\renderer.cpp">
@@ -39,10 +39,10 @@
     <ClCompile Include="src\app\rendering\renderer.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\app\rendering\world_frame.cpp">
+    <ClCompile Include="src\app\rendering\frame\world_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\app\rendering\world_frame.ixx">
+    <ClCompile Include="src\app\rendering\frame\world_frame.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\app.cpp">
@@ -175,6 +175,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\rendering\dimensions.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\app\rendering\frame\frame.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\app\rendering\frame\frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

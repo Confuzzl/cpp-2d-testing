@@ -17,8 +17,8 @@ export struct Renderer {
   query_object_t queryObject;
   GLint elapsed = 0;
 
-  gui::frame guiFrame{};
-  world::frame worldFrame{};
+  GUIFrame guiFrame{};
+  WorldFrame worldFrame{};
 
   Renderer();
   /*call after glfwinit*/

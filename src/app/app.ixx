@@ -8,7 +8,8 @@ import <memory>;
 
 import update_cycle;
 import scene;
-import rendering;
+import camera;
+// import rendering;
 
 export struct App {
   static constexpr GLsizei WIDTH = 1280, HEIGHT = 720;
