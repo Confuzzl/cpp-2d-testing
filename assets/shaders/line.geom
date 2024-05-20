@@ -6,9 +6,6 @@ layout (triangle_strip, max_vertices = 4) out;
 uniform mat4 view;
 uniform float thickness = 1;
 
-//uniform bool perspective = true;
-//uniform mat4 ortho;
-
 void main() {
 	int ab = int(gl_in[0].gl_Position.x < gl_in[1].gl_Position.x);
 	const vec2 left = gl_in[1 - ab].gl_Position.xy, right = gl_in[ab].gl_Position.xy;

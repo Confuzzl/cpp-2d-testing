@@ -17,7 +17,9 @@ import <format>;
 
 GUIFrame::GUIFrame() : BaseFrame(Renderer::UI_MATRIX) {}
 
-void GUIFrame::render() { /*text(std::format("{}", MAIN_RENDERER.elapsed));*/ }
+void GUIFrame::render() {
+  text(std::format("{}ms", MAIN_RENDERER.elapsed / 1'000'000.0), colors::BLACK);
+}
 
 static unsigned short charWidthConvert(const unsigned char w) {
   return static_cast<unsigned short>(static_cast<float>(w) * font::CHAR_WIDTH /

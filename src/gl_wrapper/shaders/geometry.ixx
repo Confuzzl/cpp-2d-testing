@@ -19,5 +19,8 @@ struct line {
     CREATE_UNIFORM(thickness);
   }
 };
+struct circle {
+  static constexpr char name[] = "circle.geom";
+};
 } // namespace geom
 } // namespace shaders
