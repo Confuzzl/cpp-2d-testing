@@ -523,6 +523,7 @@
   <ItemGroup>
     <Text Include="assets\shaders\line.geom" />
     <Text Include="assets\shaders\identity.vert" />
+    <Text Include="assets\shaders\circle.geom" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

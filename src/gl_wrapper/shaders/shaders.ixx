@@ -13,6 +13,7 @@ trans_t shape{};
 circle_t circle{};
 striped_t striped{};
 line_t line{};
+circ_t circ{};
 
 void init() {
   font.init();
@@ -21,5 +22,6 @@ void init() {
   circle.init();
   striped.init();
   line.init();
+  circ.init();
 }
 } // namespace shaders

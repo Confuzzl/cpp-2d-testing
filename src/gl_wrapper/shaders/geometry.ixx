@@ -21,6 +21,14 @@ struct line {
 };
 struct circle {
   static constexpr char name[] = "circle.geom";
+
+  uniform<glm::mat4> view;
+  uniform<float> radius;
+
+  void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(view);
+    CREATE_UNIFORM(radius);
+  }
 };
 } // namespace geom
 } // namespace shaders

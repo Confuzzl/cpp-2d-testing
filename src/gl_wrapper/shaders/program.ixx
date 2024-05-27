@@ -134,4 +134,12 @@ struct line_t : geometry_program_t<vert::identity, frag::basic, geom::line> {
   line_t &setThickness(const float thickness);
   line_t &setFragColor(const color_t &frag_color);
 };
+
+struct circ_t : geometry_program_t<vert::identity, frag::circle, geom::circle> {
+  circ_t &setView(const glm::mat4 &view);
+  circ_t &setRadius(const float radius);
+  circ_t &setCenter(const glm::vec2 &center);
+  circ_t &setScreenDimensions(const glm::uvec2 &screen_dimensions);
+  circ_t &setFragColor(const color_t &frag_color);
+};
 } // namespace shaders

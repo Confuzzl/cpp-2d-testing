@@ -99,28 +99,18 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
 
 void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
                            const color_t &color) const {
-  static vbo<vertex::simple> VBO{4};
-  static const glm::vec2 CORNERS[4]{{-1, +1}, {-1, -1}, {+1, +1}, {+1, -1}};
-  const glm::vec2 corners[4]{{center + glm::vec2{-radius, +radius}},
-                             {center + glm::vec2{-radius, -radius}},
-                             {center + glm::vec2{+radius, +radius}},
-                             {center + glm::vec2{+radius, -radius}}};
+  static vbo<vertex::simple> VBO{1};
 
-  GLintptr offset = 0;
-  for (const glm::vec2 &corner : corners) {
-    glNamedBufferSubData(VBO.ID, offset, sizeof(corner),
-                         glm::value_ptr(corner));
-    offset += sizeof(corner);
-  }
+  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(center));
 
-  shaders::circle.use(VBO);
-  shaders::circle.setCenter(center)
+  shaders::circ.use();
+  shaders::circ.setView(matrix)
       .setRadius(radius)
+      .setCenter(center)
       .setScreenDimensions({App::WIDTH, App::HEIGHT})
-      .setView(matrix)
       .setFragColor(color);
 
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDrawArrays(GL_POINTS, 0, 1);
 }
 
 void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,

@@ -168,3 +168,24 @@ line_t &line_t::setFragColor(const color_t &frag_color) {
   setUniform(fragment.frag_color, frag_color);
   return *this;
 }
+
+circ_t &circ_t::setView(const glm::mat4 &view) {
+  setUniform(geometry.view, view);
+  return *this;
+}
+circ_t &circ_t::setRadius(const float radius) {
+  setUniform(geometry.radius, radius);
+  return *this;
+}
+circ_t &circ_t::setCenter(const glm::vec2 &center) {
+  setUniform(fragment.center, center);
+  return *this;
+}
+circ_t &circ_t::setScreenDimensions(const glm::uvec2 &screen_dimensions) {
+  setUniform(fragment.screen_dimensions, screen_dimensions);
+  return *this;
+}
+circ_t &circ_t::setFragColor(const color_t &frag_color) {
+  setUniform(fragment.frag_color, frag_color);
+  return *this;
+}
