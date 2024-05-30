@@ -49,6 +49,7 @@
     <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
     <ClCompile Include="src\gl_wrapper\texture.ixx" />
+    <ClCompile Include="src\gl_wrapper\vbo_heap.ixx" />
     <ClCompile Include="src\gl_wrapper\vertices.ixx" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\util\color.ixx" />
