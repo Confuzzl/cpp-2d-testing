@@ -28,66 +28,30 @@ export struct VBOHeap {
         GLsizeiptr size;
       };
 
-      free_block *begin = nullptr;
-      free_block *end = nullptr;
+      free_block *begin = nullptr, *end = nullptr;
 
-      free_list() {
-        free_block *block = new free_block{end, nullptr, 0, BLOCK_SIZE};
-        begin = block;
-        end = block;
-      }
-      ~free_list() {
-        free_block *current = begin;
-        while (current) {
-          free_block *next = current->next;
-          delete current;
-          current = next;
-        }
-      }
+      free_list();
+      ~free_list();
 
-      free_block *prepend(const GLintptr offset, const GLsizeiptr size) {
-        free_block *block = new free_block{end, nullptr, offset, size};
-        begin->prev = block;
-        begin = block;
-        return block;
-      }
-      free_block *append(const GLintptr offset, const GLsizeiptr size) {
-        free_block *block = new free_block{end, nullptr, offset, size};
-        end->next = block;
-        end = block;
-        return block;
-      }
+      free_block *prepend(const GLintptr offset, const GLsizeiptr size);
+      free_block *append(const GLintptr offset, const GLsizeiptr size);
       free_block *insertAfter(free_block *before, const GLintptr offset,
-                              const GLsizeiptr size) {
-        free_block *block = new free_block{end, nullptr, offset, size};
-        before->next->prev = block;
-        before->next = block;
-        return block;
-      }
-      void remove(free_block *block) {
-        free_block *prev = block->prev, *next = block->next;
-        if (block == begin) {
-          next->prev = nullptr;
-          begin = next;
-        } else if (block == end) {
-          prev->next = nullptr;
-          end = prev;
-        } else {
-          prev->next = next;
-          next->prev = prev;
-        }
-        delete block;
-      }
-    };
+                              const GLsizeiptr size);
+      void popFront();
+      void popBack();
+      void remove(free_block *block);
+    } freeList;
 
     std::vector<VBOBlock> blockList;
 
     VBOChunk();
 
-    const VBOBlock &get() const;
+    const VBOBlock *get(const GLsizeiptr size);
   };
 
-  std::vector<VBOChunk> blocks{};
+  std::vector<VBOChunk> chunks;
 
-  VBOHeap() : blocks{1} {}
+  VBOHeap();
+
+  const VBOBlock &get(const GLsizeiptr size);
 };
