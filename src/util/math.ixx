@@ -5,7 +5,6 @@ module;
 export module math;
 
 import <random>;
-import glm;
 
 export template <typename T = float> T random_float(const T a, const T b) {
   static std::random_device rd;

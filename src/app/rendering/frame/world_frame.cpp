@@ -10,6 +10,7 @@ import glm;
 import vertices;
 import buffer_objects;
 import shaders;
+import math;
 
 // const glm::mat4 &world_frame::matrix() const { return MAIN_CAMERA.getView();
 // }
@@ -20,6 +21,11 @@ void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
   drawGrid();
+
+  for (int i = 0; i < 10; i++) {
+    drawPoint(random_vec({-2, -2}, {+2, +2}), random_float(0.0f, 1.0f),
+              colors::random());
+  }
 
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();

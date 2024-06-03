@@ -5,6 +5,7 @@ import color;
 import dimensions;
 
 export struct BaseFrame {
+
   glm::mat4 matrix;
   BaseFrame(const glm::mat4 &matrix);
 
