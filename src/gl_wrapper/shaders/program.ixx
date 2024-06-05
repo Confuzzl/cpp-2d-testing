@@ -100,13 +100,6 @@ struct trans_t : simple_program_t<vert::trans, frag::basic> {
   trans_t &setView(const glm::mat4 &view);
   trans_t &setFragColor(const color_t &frag_color);
 };
-struct circle_t : simple_program_t<vert::basic, frag::circle> {
-  circle_t &setView(const glm::mat4 &view);
-  circle_t &setCenter(const glm::vec2 &center);
-  circle_t &setRadius(const float radius);
-  circle_t &setScreenDimensions(const glm::uvec2 &screen_dimensions);
-  circle_t &setFragColor(const color_t &frag_color);
-};
 struct striped_t : simple_program_t<vert::basic, frag::striped> {
   striped_t &setView(const glm::mat4 &view);
   striped_t &setWidth(const unsigned int width);

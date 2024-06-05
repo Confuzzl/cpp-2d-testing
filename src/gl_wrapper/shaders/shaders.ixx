@@ -10,7 +10,6 @@ export namespace shaders {
 font_t font{};
 basic_t basic{};
 trans_t shape{};
-circle_t circle{};
 striped_t striped{};
 line_t line{};
 circ_t circ{};
@@ -19,7 +18,6 @@ void init() {
   font.init();
   basic.init();
   shape.init();
-  circle.init();
   striped.init();
   line.init();
   circ.init();

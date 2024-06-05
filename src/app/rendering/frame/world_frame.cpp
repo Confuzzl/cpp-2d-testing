@@ -22,10 +22,12 @@ void WorldFrame::render() {
 
   drawGrid();
 
-  for (int i = 0; i < 10; i++) {
-    drawPoint(random_vec({-2, -2}, {+2, +2}), random_float(0.0f, 1.0f),
-              colors::random());
-  }
+  drawPoint({0, 0});
+
+  // for (int i = 0; i < 10; i++) {
+  //   drawPoint(random_vec({-2, -2}, {+2, +2}), random_float(0.0f, 1.0f),
+  //             colors::random());
+  // }
 
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();

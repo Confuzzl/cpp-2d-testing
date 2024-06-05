@@ -114,27 +114,6 @@ trans_t &trans_t::setFragColor(const color_t &frag_color) {
   return *this;
 }
 
-circle_t &circle_t::setView(const glm::mat4 &view) {
-  setUniform(vertex.view, view);
-  return *this;
-}
-circle_t &circle_t::setCenter(const glm::vec2 &center) {
-  setUniform(fragment.center, center);
-  return *this;
-}
-circle_t &circle_t::setRadius(const float radius) {
-  setUniform(fragment.radius, radius);
-  return *this;
-}
-circle_t &circle_t::setScreenDimensions(const glm::uvec2 &screen_dimensions) {
-  setUniform(fragment.screen_dimensions, screen_dimensions);
-  return *this;
-}
-circle_t &circle_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
-
 striped_t &striped_t::setView(const glm::mat4 &view) {
   setUniform(vertex.view, view);
   return *this;
