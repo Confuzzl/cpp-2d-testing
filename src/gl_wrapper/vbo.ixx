@@ -17,9 +17,9 @@ export struct VBO : gl_buffer_obj {
   VBO() { glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT); }
 };
 export struct VBOHandle {
-  const GLint vboID;
-  const GLsizeiptr dataSize;
-  const GLintptr offset;
+  GLuint vboID;
+  GLsizeiptr dataSize;
+  GLintptr offset;
   GLintptr localOffset = 0;
 
   void write(const void *data) {
@@ -31,14 +31,26 @@ export struct VBOHandle {
 export struct VBOHolder {
   std::vector<VBO> vbos{1};
 
-  template <typename T> VBOHandle get(const GLsizeiptr size) {
+  VBOHandle get(const GLsizeiptr dataSize, const unsigned int count) {
+    const GLsizeiptr size = count * dataSize;
     for (VBO &vbo : vbos) {
       if (vbo.offset + size > VBO::SIZE) {
         const VBO &v = vbos.emplace_back();
-        return {.vboID = v.ID, .dataSize = sizeof(T), .offset = 0};
+        return {.vboID = v.ID, .dataSize = dataSize, .offset = 0};
       }
+      VBOHandle out = {
+          .vboID = vbo.ID, .dataSize = dataSize, .offset = vbo.offset};
       vbo.offset += size;
-      return {.vboID = vbo.ID, .dataSize = sizeof(T), .offset = vbo.offset};
+      return out;
     }
+    // unreachable
+    return {};
+  }
+} VBO_HOLDER;
+
+export struct EBO : gl_buffer_obj {
+  EBO(const std::vector<GLuint> &indices) {
+    glNamedBufferData(ID, indices.size() * sizeof(GLuint), indices.data(),
+                      GL_STATIC_DRAW);
   }
 };

@@ -43,6 +43,13 @@ void base_program_t::use() const {
   glBindVertexArray(vao);
 }
 
+void base_program_t::use(VBOHandle &handle) const {
+  glUseProgram(ID);
+  glBindVertexArray(vao);
+  handle.reset();
+  glVertexArrayVertexBuffer(vao, 0, handle.vboID, 0, handle.dataSize);
+}
+
 template <>
 void base_program_t::setUniform<bool>(const uniform<bool> &uniform,
                                       const bool &value) const {

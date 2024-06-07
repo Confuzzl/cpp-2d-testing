@@ -10,6 +10,12 @@ import shaders;
 import buffer_objects;
 import vertices;
 
+VBOHandle BaseFrame::POINT = VBO_HOLDER.get(sizeof(vertex::simple), 1);
+VBOHandle BaseFrame::LINE = VBO_HOLDER.get(sizeof(vertex::simple), 2);
+VBOHandle BaseFrame::TRI = VBO_HOLDER.get(sizeof(vertex::simple), 3);
+VBOHandle BaseFrame::QUAD = VBO_HOLDER.get(sizeof(vertex::simple), 4);
+VBOHandle BaseFrame::DOUBLE_TRI = VBO_HOLDER.get(sizeof(vertex::simple), 6);
+
 BaseFrame::BaseFrame(const glm::mat4 &matrix) : matrix{matrix} {}
 
 void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
@@ -19,11 +25,12 @@ void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
 }
 void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
                                const color_t &color) const {
-  static vbo<vertex::simple> VBO{1};
+  // static vbo<vertex::simple> VBO{1};
 
-  glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(point));
+  // glNamedBufferSubData(VBO.ID, 0, sizeof(glm::vec2), glm::value_ptr(point));
+  POINT.write(glm::value_ptr(point));
 
-  shaders::basic.use(VBO);
+  shaders::basic.use(POINT);
   shaders::basic.setView(matrix).setFragColor(color);
 
   glPointSize(size);

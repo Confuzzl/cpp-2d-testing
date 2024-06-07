@@ -14,6 +14,8 @@ import :vertex;
 import :fragment;
 import :geometry;
 
+import vbo;
+
 export namespace shaders {
 struct base_program_t {
   GLuint ID;
@@ -45,6 +47,8 @@ public:
     use(vbo);
     glVertexArrayElementBuffer(vao, ebo.ID);
   }
+
+  void use(VBOHandle &handle) const;
 
   template <typename T>
   void setUniform(const uniform<T> &uniform, const T &value) const;
