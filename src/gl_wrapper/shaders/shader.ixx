@@ -11,7 +11,7 @@ import color;
 import debug;
 import glm;
 
-import buffer_objects;
+// import buffer_objects;
 
 namespace shaders {
 template <typename T>

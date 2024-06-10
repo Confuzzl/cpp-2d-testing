@@ -5,7 +5,7 @@ module;
 export module shaders:program;
 
 import vector;
-import buffer_objects;
+// import buffer_objects;
 import glm;
 import color;
 
@@ -34,21 +34,27 @@ private:
   virtual void createVAO() = 0;
   virtual void createUniforms() = 0;
 
+  bool eboUsed = false;
+
 public:
   void init();
 
-  void use() const;
-  template <typename T> void use(const vbo<T> &vbo) const {
-    use();
-    glVertexArrayVertexBuffer(vao, 0, vbo.ID, 0, sizeof(T));
-  }
-  template <typename T, typename E>
-  void use(const vbo<T> &vbo, const E &ebo) const {
-    use(vbo);
-    glVertexArrayElementBuffer(vao, ebo.ID);
-  }
+  // void use() const;
+  // template <typename T> void use(const vbo<T> &vbo) const {
+  //   use();
+  //   glVertexArrayVertexBuffer(vao, 0, vbo.ID, 0, sizeof(T));
+  // }
+  // template <typename T, typename E>
+  // void use(const vbo<T> &vbo, const E &ebo) const {
+  //   use(vbo);
+  //   glVertexArrayElementBuffer(vao, ebo.ID);
+  // }
 
-  void use(VBOHandle &handle) const;
+  // void use(VBOHandle &handle) const;
+  // void use(VBOHandle &vbo, EBOHandle &ebo) const;
+  void draw(const GLenum primitive, VBOHandle &vbo) const;
+  void draw(const GLenum primitive, VBOHandle &vbo, EBOHandle &ebo) const;
+  // void use()
 
   template <typename T>
   void setUniform(const uniform<T> &uniform, const T &value) const;

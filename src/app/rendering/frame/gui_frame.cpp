@@ -34,10 +34,15 @@ static unsigned short charHeightConvert(const unsigned char h) {
 void GUIFrame::text(const std::string &str, const color_t &color,
                     const unsigned short x, const unsigned short y,
                     const double scale) const {
-  static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
-                                                {{0, 0}, {1, 1}, {0, 1}}};
+  static constexpr unsigned int MAX_LENGTH = 0xff;
+  static constexpr GLushort QUAD_UVS[2][3][2]{{{0, 0}, {1, 0}, {1, 1}},
+                                              {{0, 0}, {1, 1}, {0, 1}}};
+  static VBOHandle VBO = VBO_HOLDER.get(sizeof(vertex::font), MAX_LENGTH);
 
-  const GLuint vertexCount = 6 * static_cast<GLuint>(str.size());
+  // static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
+  //                                               {{0, 0}, {1, 1}, {0, 1}}};
+
+  const unsigned int vertexCount = 6 * static_cast<unsigned int>(str.size());
 
   std::vector<vertex::font> vertices{};
   vertices.reserve(vertexCount);
@@ -64,7 +69,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
       for (auto v = 0; v < 3; v++) {
         const glm::vec2 pos{xOffset + width * QUAD_UVS[tri][v][0],
                             y + height * QUAD_UVS[tri][v][1]};
-        const glm::lowp_u16vec2 uv = QUAD_UVS[tri][v];
+        const GLushort *uv = QUAD_UVS[tri][v];
         vertices.emplace_back(pos[0], pos[1],
                               charWidthConvert(column) +
                                   uv[0] * charWidthConvert(1),
@@ -76,21 +81,25 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  vbo<vertex::font> vbo{vertexCount};
+  // vbo<vertex::font> vbo{vertexCount};
 
-  GLintptr offset = 0;
-  for (const auto &vertex : vertices) {
-    glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.pos),
-                         glm::value_ptr(vertex.pos));
-    offset += sizeof(vertex.pos);
-    glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.tex),
-                         glm::value_ptr(vertex.tex));
-    offset += sizeof(vertex.tex);
+  // GLintptr offset = 0;
+  for (const vertex::font &vertex : vertices) {
+    // glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.pos),
+    //                      glm::value_ptr(vertex.pos));
+    // offset += sizeof(vertex.pos);
+    // glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.tex),
+    //                      glm::value_ptr(vertex.tex));
+    // offset += sizeof(vertex.tex);
+    VBO.writePartial(vertex.pos);
+    VBO.write(vertex.tex);
   }
 
-  shaders::font.use(vbo);
+  // shaders::font.use(vbo);
   shaders::font.setView(matrix).setFragColor(color);
   glBindTextureUnit(0, tex::font.ID);
 
-  glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+  shaders::font.draw(GL_TRIANGLES, VBO);
+
+  // glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }

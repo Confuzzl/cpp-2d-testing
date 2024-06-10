@@ -38,16 +38,26 @@ void base_program_t::init() {
   createUniforms();
 }
 
-void base_program_t::use() const {
+void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
   glUseProgram(ID);
   glBindVertexArray(vao);
-}
+  vbo.reset();
+  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, 0,
+                            static_cast<GLsizei>(vbo.vertexSize));
 
-void base_program_t::use(VBOHandle &handle) const {
+  glDrawArrays(primitive, static_cast<GLint>(vbo.offset), vbo.count);
+}
+void base_program_t::draw(const GLenum primitive, VBOHandle &vbo,
+                          EBOHandle &ebo) const {
   glUseProgram(ID);
   glBindVertexArray(vao);
-  handle.reset();
-  glVertexArrayVertexBuffer(vao, 0, handle.vboID, 0, handle.dataSize);
+  vbo.reset();
+  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, 0,
+                            static_cast<GLsizei>(vbo.vertexSize));
+  glVertexArrayElementBuffer(vao, ebo.eboID);
+
+  glDrawElements(primitive, ebo.count, GL_UNSIGNED_INT,
+                 reinterpret_cast<void *>(ebo.offset));
 }
 
 template <>

@@ -37,7 +37,6 @@
     <ClCompile Include="src\app\rendering\frame\world_frame.ixx" />
     <ClCompile Include="src\app\update_cycle.ixx" />
     <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\gl_wrapper\buffer_objects.ixx" />
     <ClCompile Include="src\gl_wrapper\query_object.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\program.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\program.ixx" />
@@ -49,7 +48,7 @@
     <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
     <ClCompile Include="src\gl_wrapper\texture.ixx" />
-    <ClCompile Include="src\gl_wrapper\vbo.ixx" />
+    <ClCompile Include="src\gl_wrapper\buffer_object.ixx" />
     <ClCompile Include="src\gl_wrapper\vertices.ixx" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\util\color.ixx" />

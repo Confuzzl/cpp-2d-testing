@@ -11,7 +11,6 @@ export struct BaseFrame {
   static VBOHandle LINE;
   static VBOHandle TRI;
   static VBOHandle QUAD;
-  static VBOHandle DOUBLE_TRI;
 
   glm::mat4 matrix;
   BaseFrame(const glm::mat4 &matrix);
