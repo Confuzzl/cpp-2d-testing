@@ -7,7 +7,7 @@ module gui_frame;
 
 import glm;
 import vertices;
-import buffer_objects;
+// import buffer_objects;
 import rendering;
 import shaders;
 import texture;
@@ -37,7 +37,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
   static constexpr unsigned int MAX_LENGTH = 0xff;
   static constexpr GLushort QUAD_UVS[2][3][2]{{{0, 0}, {1, 0}, {1, 1}},
                                               {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle VBO = VBO_HOLDER.get(sizeof(vertex::font), MAX_LENGTH);
+  static VBOHandle CHAR_VBO = VBO_HOLDER.get(sizeof(vertex::font), MAX_LENGTH);
 
   // static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
   //                                               {{0, 0}, {1, 1}, {0, 1}}};
@@ -81,25 +81,12 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  // vbo<vertex::font> vbo{vertexCount};
-
-  // GLintptr offset = 0;
   for (const vertex::font &vertex : vertices) {
-    // glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.pos),
-    //                      glm::value_ptr(vertex.pos));
-    // offset += sizeof(vertex.pos);
-    // glNamedBufferSubData(vbo.ID, offset, sizeof(vertex.tex),
-    //                      glm::value_ptr(vertex.tex));
-    // offset += sizeof(vertex.tex);
-    VBO.writePartial(vertex.pos);
-    VBO.write(vertex.tex);
+    CHAR_VBO.writePartial(vertex.pos);
+    CHAR_VBO.write(vertex.tex);
   }
 
-  // shaders::font.use(vbo);
   shaders::font.setView(matrix).setFragColor(color);
   glBindTextureUnit(0, tex::font.ID);
-
-  shaders::font.draw(GL_TRIANGLES, VBO);
-
-  // glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+  shaders::font.draw(GL_TRIANGLES, CHAR_VBO);
 }

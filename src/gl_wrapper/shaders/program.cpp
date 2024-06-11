@@ -38,62 +38,65 @@ void base_program_t::init() {
   createUniforms();
 }
 
-void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
+void base_program_t::bind(const VBOHandle &vbo) const {
   glUseProgram(ID);
   glBindVertexArray(vao);
-  vbo.reset();
-  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, 0,
+  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, vbo.offset,
                             static_cast<GLsizei>(vbo.vertexSize));
+}
+void base_program_t::bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
+  bind(vbo);
+  glVertexArrayElementBuffer(vao, ebo.eboID);
+}
 
+void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
+  bind(vbo);
   glDrawArrays(primitive, static_cast<GLint>(vbo.offset), vbo.count);
+  vbo.reset();
 }
 void base_program_t::draw(const GLenum primitive, VBOHandle &vbo,
-                          EBOHandle &ebo) const {
-  glUseProgram(ID);
-  glBindVertexArray(vao);
-  vbo.reset();
-  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, 0,
-                            static_cast<GLsizei>(vbo.vertexSize));
-  glVertexArrayElementBuffer(vao, ebo.eboID);
-
+                          const EBOHandle &ebo) const {
+  bind(vbo, ebo);
   glDrawElements(primitive, ebo.count, GL_UNSIGNED_INT,
                  reinterpret_cast<void *>(ebo.offset));
+  vbo.reset();
 }
 
 template <>
 void base_program_t::setUniform<bool>(const uniform<bool> &uniform,
                                       const bool &value) const {
-  glUniform1i(uniform.location, value);
+  glProgramUniform1i(ID, uniform.location, value);
 }
 template <>
 void base_program_t::setUniform<unsigned int>(
     const uniform<unsigned int> &uniform, const unsigned int &value) const {
-  glUniform1ui(uniform.location, value);
+  glProgramUniform1ui(ID, uniform.location, value);
 }
 template <>
 void base_program_t::setUniform<float>(const uniform<float> &uniform,
                                        const float &value) const {
-  glUniform1f(uniform.location, value);
+  glProgramUniform1f(ID, uniform.location, value);
 }
 template <>
 void base_program_t::setUniform<glm::mat4>(const uniform<glm::mat4> &uniform,
                                            const glm::mat4 &matrix) const {
-  glUniformMatrix4fv(uniform.location, 1, GL_FALSE, glm::value_ptr(matrix));
+  glProgramUniformMatrix4fv(ID, uniform.location, 1, GL_FALSE,
+                            glm::value_ptr(matrix));
 }
 template <>
 void base_program_t::setUniform<glm::vec2>(const uniform<glm::vec2> &uniform,
                                            const glm::vec2 &vector) const {
-  glUniform2fv(uniform.location, 1, glm::value_ptr(vector));
+  glProgramUniform2fv(ID, uniform.location, 1, glm::value_ptr(vector));
 }
 template <>
 void base_program_t::setUniform<glm::uvec2>(const uniform<glm::uvec2> &uniform,
                                             const glm::uvec2 &vector) const {
-  glUniform2uiv(uniform.location, 1, glm::value_ptr(vector));
+  glProgramUniform2uiv(ID, uniform.location, 1, glm::value_ptr(vector));
 }
 template <>
 void base_program_t::setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
                                             const glm::uvec3 &vector) const {
-  glUniform3uiv(uniform.location, 1, glm::value_ptr(vector));
+  glProgramUniform3uiv(ID, uniform.location, 1, glm::value_ptr(vector));
 }
 
 font_t &font_t::setView(const glm::mat4 &mat) {

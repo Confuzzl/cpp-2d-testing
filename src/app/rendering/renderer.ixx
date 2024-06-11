@@ -6,8 +6,10 @@ export module rendering;
 
 import glm;
 
+import buffer_object;
 import gui_frame;
 import world_frame;
+import vertices;
 
 import query_object;
 
@@ -17,12 +19,19 @@ export struct Renderer {
   query_object_t queryObject;
   GLint elapsed = 0;
 
+  VBOHolder vboHolder{};
+  EBOHolder eboHolder{};
+  VBOHandle point = vboHolder.get(sizeof(vertex::simple), 1);
+  VBOHandle line = vboHolder.get(sizeof(vertex::simple), 2);
+  VBOHandle tri = vboHolder.get(sizeof(vertex::simple), 3);
+  VBOHandle quad = vboHolder.get(sizeof(vertex::simple), 4);
+
   GUIFrame guiFrame{};
   WorldFrame worldFrame{};
 
   Renderer();
-  /*call after glfwinit*/
+
   void init();
 
   void renderFrame(const double t);
-} MAIN_RENDERER;
+};

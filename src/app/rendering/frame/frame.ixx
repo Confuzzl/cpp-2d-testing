@@ -4,13 +4,13 @@ import glm;
 import color;
 import dimensions;
 
-import vbo;
+import buffer_object;
 
 export struct BaseFrame {
-  static VBOHandle POINT;
-  static VBOHandle LINE;
-  static VBOHandle TRI;
-  static VBOHandle QUAD;
+  // static VBOHandle POINT;
+  // static VBOHandle LINE;
+  // static VBOHandle TRI;
+  // static VBOHandle QUAD;
 
   glm::mat4 matrix;
   BaseFrame(const glm::mat4 &matrix);

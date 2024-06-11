@@ -14,7 +14,7 @@ import :vertex;
 import :fragment;
 import :geometry;
 
-import vbo;
+import buffer_object;
 
 export namespace shaders {
 struct base_program_t {
@@ -34,27 +34,14 @@ private:
   virtual void createVAO() = 0;
   virtual void createUniforms() = 0;
 
-  bool eboUsed = false;
+  void bind(const VBOHandle &vbo) const;
+  void bind(const VBOHandle &vbo, const EBOHandle &ebo) const;
 
 public:
   void init();
 
-  // void use() const;
-  // template <typename T> void use(const vbo<T> &vbo) const {
-  //   use();
-  //   glVertexArrayVertexBuffer(vao, 0, vbo.ID, 0, sizeof(T));
-  // }
-  // template <typename T, typename E>
-  // void use(const vbo<T> &vbo, const E &ebo) const {
-  //   use(vbo);
-  //   glVertexArrayElementBuffer(vao, ebo.ID);
-  // }
-
-  // void use(VBOHandle &handle) const;
-  // void use(VBOHandle &vbo, EBOHandle &ebo) const;
   void draw(const GLenum primitive, VBOHandle &vbo) const;
-  void draw(const GLenum primitive, VBOHandle &vbo, EBOHandle &ebo) const;
-  // void use()
+  void draw(const GLenum primitive, VBOHandle &vbo, const EBOHandle &ebo) const;
 
   template <typename T>
   void setUniform(const uniform<T> &uniform, const T &value) const;
@@ -80,6 +67,8 @@ public:
   void setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
                               const glm::uvec3 &vector) const;
 };
+
+constexpr int a = sizeof(std::vector<int>);
 
 template <vert::format V, has_uniform F>
 struct simple_program_t : base_program_t {

@@ -9,7 +9,7 @@ import <memory>;
 import update_cycle;
 import scene;
 import camera;
-// import rendering;
+import rendering;
 
 export struct App {
   static constexpr GLsizei WIDTH = 1280, HEIGHT = 720;
@@ -21,6 +21,8 @@ export struct App {
   UpdateCycle updateCycle;
   UpdateCycle frameCycle;
   unsigned int seconds = 0;
+
+  Renderer renderer{};
 
   Scene scene{};
 
@@ -37,3 +39,4 @@ export struct App {
 
 export Scene &MAIN_SCENE = MAIN_APP.scene;
 export Camera &MAIN_CAMERA = MAIN_SCENE.camera;
+export Renderer &MAIN_RENDERER = MAIN_APP.renderer;

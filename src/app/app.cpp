@@ -49,7 +49,7 @@ App::~App() {
 
 void App::start() {
   MAIN_RENDERER.init();
-  scene.init();
+  MAIN_SCENE.init();
 
   while (!glfwWindowShouldClose(window)) {
     double currentTime = glfwGetTime();
