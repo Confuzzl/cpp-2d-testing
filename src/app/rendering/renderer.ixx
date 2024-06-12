@@ -21,10 +21,11 @@ export struct Renderer {
 
   VBOHolder vboHolder{};
   EBOHolder eboHolder{};
-  VBOHandle point = vboHolder.get(sizeof(vertex::simple), 1);
-  VBOHandle line = vboHolder.get(sizeof(vertex::simple), 2);
-  VBOHandle tri = vboHolder.get(sizeof(vertex::simple), 3);
-  VBOHandle quad = vboHolder.get(sizeof(vertex::simple), 4);
+
+  VBOHandle point = vboHolder.get<vertex::simple>(1);
+  VBOHandle line = vboHolder.get<vertex::simple>(2);
+  VBOHandle tri = vboHolder.get<vertex::simple>(3);
+  VBOHandle quad = vboHolder.get<vertex::simple>(4);
 
   GUIFrame guiFrame{};
   WorldFrame worldFrame{};

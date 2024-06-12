@@ -47,7 +47,10 @@ export struct VBOHolder {
   void init();
 
   VBOHandle get(const std::size_t vertexSize, const unsigned int count);
-} VBO_HOLDER;
+  template <typename T> VBOHandle get(const unsigned int count) {
+    return get(sizeof(T), count);
+  }
+};
 
 export struct EBO : gl_buffer_obj {
   static constexpr GLsizeiptr SIZE = 0xffffff;
@@ -66,4 +69,4 @@ export struct EBOHolder {
   std::vector<EBO> ebos{1};
 
   EBOHandle get(const std::initializer_list<GLuint> &indices);
-} EBO_HOLDER;
+};

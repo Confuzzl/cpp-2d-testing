@@ -37,7 +37,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
   static constexpr unsigned int MAX_LENGTH = 0xff;
   static constexpr GLushort QUAD_UVS[2][3][2]{{{0, 0}, {1, 0}, {1, 1}},
                                               {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle CHAR_VBO = VBO_HOLDER.get(sizeof(vertex::font), MAX_LENGTH);
+  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex::font>(MAX_LENGTH);
 
   // static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
   //                                               {{0, 0}, {1, 1}, {0, 1}}};
