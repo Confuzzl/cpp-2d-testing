@@ -35,6 +35,14 @@ void Renderer::init() {
     println("{}", e.what());
     MAIN_APP.close();
   }
+
+  vboHolder.init();
+  eboHolder.init();
+  point = vboHolder.get<vertex::simple>(1);
+  line = vboHolder.get<vertex::simple>(2);
+  tri = vboHolder.get<vertex::simple>(3);
+  quad = vboHolder.get<vertex::simple>(4);
+
   queryObject.init();
 }
 
@@ -43,8 +51,8 @@ void Renderer::renderFrame(const double t) {
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  // worldFrame.render();
-  guiFrame.render();
+  worldFrame.render();
+  // guiFrame.render();
 
   glfwSwapBuffers(MAIN_APP.window);
   glEndQuery(GL_TIME_ELAPSED);

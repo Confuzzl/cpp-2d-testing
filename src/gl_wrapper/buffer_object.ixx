@@ -19,12 +19,13 @@ export struct VBO : gl_buffer_obj {
   VBO();
 };
 export struct VBOHandle {
-  GLuint vboID;
+  GLuint vboID = 0;
   unsigned int count = 0;
-  GLintptr offset;
-  std::size_t vertexSize;
+  GLintptr offset = -1;
+  std::size_t vertexSize = 0;
   GLintptr localOffset = 0;
 
+  VBOHandle() = default;
   VBOHandle(const GLuint vboID, const GLintptr offset,
             const std::size_t vertexSize);
 
@@ -42,7 +43,7 @@ export struct VBOHandle {
 };
 
 export struct VBOHolder {
-  std::vector<VBO> vbos{1};
+  std::vector<VBO> vbos;
 
   void init();
 
@@ -58,15 +59,18 @@ export struct EBO : gl_buffer_obj {
   EBO();
 };
 export struct EBOHandle {
-  GLuint eboID;
-  GLsizei count;
-  GLintptr offset;
+  GLuint eboID = 0;
+  GLsizei count = -1;
+  GLintptr offset = 0;
 
+  EBOHandle() = default;
   EBOHandle(const GLuint eboID, const GLintptr offset, const GLsizeiptr size,
             const std::initializer_list<GLuint> &indices);
 };
 export struct EBOHolder {
-  std::vector<EBO> ebos{1};
+  std::vector<EBO> ebos;
+
+  void init();
 
   EBOHandle get(const std::initializer_list<GLuint> &indices);
 };

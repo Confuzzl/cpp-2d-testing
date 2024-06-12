@@ -17,21 +17,24 @@ void VBOHandle::reset() {
   localOffset = 0;
 }
 
+void VBOHolder::init() { vbos.emplace_back(); }
 VBOHandle VBOHolder::get(const std::size_t vertexSize,
                          const unsigned int count) {
   const GLsizeiptr capacity = vertexSize * count;
   for (VBO &vbo : vbos) {
     if (vbo.offset + capacity > VBO::SIZE) {
-      println("new VBO");
+      // println("new VBO");
       VBO &v = vbos.emplace_back();
       VBOHandle out = {v.ID, 0, vertexSize};
-      println("{} {} {}", vbo.ID, vbo.offset, capacity);
+      println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize,
+              count, capacity);
       v.offset += capacity;
       return out;
     }
-    println("existing VBO");
+    // println("existing VBO");
     VBOHandle out = {vbo.ID, vbo.offset, vertexSize};
-    println("{} {} {}", vbo.ID, vbo.offset, capacity);
+    println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize, count,
+            capacity);
     vbo.offset += capacity;
 
     return out;
@@ -50,6 +53,7 @@ EBOHandle::EBOHandle(const GLuint eboID, const GLintptr offset,
   glNamedBufferSubData(eboID, offset, size, indices.begin());
 }
 
+void EBOHolder::init() { ebos.emplace_back(); }
 EBOHandle EBOHolder::get(const std::initializer_list<GLuint> &indices) {
   const GLsizeiptr size = indices.size() * sizeof(GLuint);
   for (EBO &ebo : ebos) {

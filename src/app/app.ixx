@@ -8,7 +8,7 @@ import <memory>;
 
 import update_cycle;
 import scene;
-import camera;
+// import camera;
 import rendering;
 
 export struct App {
@@ -38,5 +38,17 @@ export struct App {
 } MAIN_APP{};
 
 export Scene &MAIN_SCENE = MAIN_APP.scene;
+
+export struct Camera;
 export Camera &MAIN_CAMERA = MAIN_SCENE.camera;
+
 export Renderer &MAIN_RENDERER = MAIN_APP.renderer;
+export struct VBOHolder;
+export VBOHolder &VBO_HOLDER = MAIN_RENDERER.vboHolder;
+export struct EBOHolder;
+export EBOHolder &EBO_HOLDER = MAIN_RENDERER.eboHolder;
+export struct VBOHandle;
+export VBOHandle &POINT = MAIN_RENDERER.point;
+export VBOHandle &LINE = MAIN_RENDERER.line;
+export VBOHandle &TRI = MAIN_RENDERER.tri;
+export VBOHandle &QUAD = MAIN_RENDERER.quad;

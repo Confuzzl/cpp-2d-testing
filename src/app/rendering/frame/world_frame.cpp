@@ -8,7 +8,7 @@ import app;
 import mesh;
 import glm;
 import vertices;
-// import buffer_objects;
+import buffer_object;
 import shaders;
 import math;
 
@@ -66,20 +66,20 @@ void WorldFrame::drawGrid() const {
   static constexpr int HALF_SIZE = 10;
   static constexpr float WIDTH = 1;
   static constexpr unsigned int AXIS_COUNT = 2 * (HALF_SIZE * 2 + 1);
-  static constexpr unsigned int VERTEX_COUNT = AXIS_COUNT * AXIS_COUNT;
-  static VBOHandle VBO = VBO_HOLDER.get(sizeof(vertex::simple), VERTEX_COUNT);
+  static constexpr unsigned int VERTEX_COUNT = 2 * AXIS_COUNT;
+  static VBOHandle VBO = VBO_HOLDER.get<vertex::simple>(VERTEX_COUNT);
   static const glm::vec2 AXES[]{{1.0f, 0.0f}, {0.0f, 1.0f}};
 
-  for (int a = 0; a < 2; a++) {
-    const glm::vec2 &axis = AXES[a];
-    const glm::vec2 &other = AXES[1 - a];
-    for (int i = -HALF_SIZE; i <= +HALF_SIZE; i++) {
-      const glm::vec2 perpOffset = other * static_cast<float>(i);
+  for (auto a = 0; a < 2; a++) {
+    const glm::vec2 axis = AXES[a], perp = AXES[1 - a];
+    for (auto line = -HALF_SIZE; line <= +HALF_SIZE; line++) {
+      const glm::vec2 perpOffset = perp * static_cast<float>(line);
 
       VBO.write(axis * static_cast<float>(-HALF_SIZE) + perpOffset);
       VBO.write(axis * static_cast<float>(+HALF_SIZE) + perpOffset);
     }
   }
+
   shaders::basic.setView(matrix).setFragColor(colors::GRAY);
   shaders::basic.draw(GL_LINES, VBO);
 }
