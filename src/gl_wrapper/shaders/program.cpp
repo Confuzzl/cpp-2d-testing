@@ -51,7 +51,7 @@ void base_program_t::bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
 
 void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
   bind(vbo);
-  glDrawArrays(primitive, static_cast<GLint>(vbo.offset), vbo.count);
+  glDrawArrays(primitive, 0, vbo.count);
   vbo.reset();
 }
 void base_program_t::draw(const GLenum primitive, VBOHandle &vbo,

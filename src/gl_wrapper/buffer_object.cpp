@@ -23,24 +23,18 @@ VBOHandle VBOHolder::get(const std::size_t vertexSize,
   const GLsizeiptr capacity = vertexSize * count;
   for (VBO &vbo : vbos) {
     if (vbo.offset + capacity > VBO::SIZE) {
-      // println("new VBO");
       VBO &v = vbos.emplace_back();
       VBOHandle out = {v.ID, 0, vertexSize};
-      println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize,
-              count, capacity);
       v.offset += capacity;
       return out;
     }
-    // println("existing VBO");
     VBOHandle out = {vbo.ID, vbo.offset, vertexSize};
     println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize, count,
             capacity);
     vbo.offset += capacity;
-
     return out;
   }
-  // unreachable
-  return {0, -1, 0};
+  return {};
 }
 
 EBO::EBO() { glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT); }
@@ -67,5 +61,5 @@ EBOHandle EBOHolder::get(const std::initializer_list<GLuint> &indices) {
     ebo.offset += size;
     return out;
   }
-  return {0, -1, 0, {}};
+  return {};
 }

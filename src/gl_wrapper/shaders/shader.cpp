@@ -10,7 +10,7 @@ import glm;
 
 static std::string sourceToString(const std::string &name) {
   std::ifstream in{name};
-  return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+  return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
 }
 
 using namespace shaders;
@@ -20,7 +20,7 @@ shader_t::shader_t(const GLenum type, const std::string &name)
 
 void shader_t::compile() {
   const std::string source = std::format("assets/shaders/{}", name);
-  GLint success = 0;
+
   ID = glCreateShader(type);
 
   const std::string temp = sourceToString(source);
@@ -28,11 +28,12 @@ void shader_t::compile() {
   glShaderSource(ID, 1, &chars, NULL);
 
   glCompileShader(ID);
-  glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
 
+  GLint success = 0;
+  glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
   if (!success) {
-    println("COMPILATION ERROR {}", source);
+    println("COMPILATION ERROR {}", name);
     return;
   }
-  println("Compiled {}: {}", source, ID);
+  println("Compiled {}: {}", name, ID);
 }
