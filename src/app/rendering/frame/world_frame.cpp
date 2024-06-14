@@ -18,10 +18,9 @@ void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
   drawGrid();
-  //   drawQuad({}, colors::RED);
 
   // drawQuad({{0, 0}, {1, 1}}, colors::RED);
-  //  drawCircle({0, 0}, 0.5, colors::BLUE);
+  drawCircle({0, 0}, 0.5, colors::BLUE);
 
   // for (int i = 0; i < 10; i++) {
   //   drawPoint(random_vec({-2, -2}, {+2, +2}), random_float(0.0f, 1.0f),

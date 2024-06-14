@@ -74,7 +74,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
       to + glm::vec2{head.x * COS - head.y * SIN, head.x * SIN + head.y * COS},
       to + glm::vec2{head.x * COS + head.y * SIN, head.y * COS - head.x * SIN}};
 
-  for (const glm::vec2 &vertex : vertices) {
+  for (const glm::vec2 vertex : vertices) {
     QUAD.write(vertex);
   }
 
@@ -111,7 +111,7 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  for (const glm::vec2 &corner : corners) {
+  for (const glm::vec2 corner : corners) {
     QUAD.write(corner);
   }
 
@@ -124,10 +124,10 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {{from.x, to.y}, from, to, {to.x, from.y}};
 
-  for (const glm::vec2 &corner : corners) {
+  for (const glm::vec2 corner : corners) {
     QUAD.write(corner);
   }
 
   shaders::basic.setView(matrix).setFragColor(color);
-  shaders::basic.draw(GL_TRIANGLE_STRIP, QUAD);
+  shaders::basic.dr aw(GL_TRIANGLE_STRIP, QUAD);
 }

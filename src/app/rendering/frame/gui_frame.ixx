@@ -19,5 +19,5 @@ export struct GUIFrame : BaseFrame {
 
   void text(const std::string &str, const color_t &color = colors::WHITE,
             const unsigned short x = 0, const unsigned short y = 0,
-            const double scale = 0.25) const;
+            const float scale = 0.25) const;
 };
