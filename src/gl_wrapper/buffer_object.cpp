@@ -29,8 +29,9 @@ VBOHandle VBOHolder::get(const std::size_t vertexSize,
       return out;
     }
     VBOHandle out = {vbo.ID, vbo.offset, vertexSize};
-    println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize, count,
-            capacity);
+    // println("vbohandle: {} {} {}*{}={}", vbo.ID, vbo.offset, vertexSize,
+    // count,
+    //         capacity);
     vbo.offset += capacity;
     return out;
   }

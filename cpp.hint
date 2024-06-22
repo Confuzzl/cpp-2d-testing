@@ -1,0 +1,15 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+
+#define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
+  type &type::set##func_name(const param_t param_name) {                       \
+    setUniform(shader.param_name, param_name);                                 \
+    return *this;                                                              \
+  }
+
+#define BIND_TEXTURE(type, sampler_name)                                       \
+  type &type::bindTexture(const tex::texture &texture) {                       \
+    glBindTextureUnit(fragment.sampler_name.binding, texture.ID);              \
+    return *this;                                                              \
+  }

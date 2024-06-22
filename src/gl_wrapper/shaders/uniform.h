@@ -6,16 +6,46 @@
 
 #define CREATE_UNIFORM(name) name.create(ID, #name)
 
+#define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
+  type &type::set##func_name(const param_t param_name) {                       \
+    setUniform(shader.param_name, param_name);                                 \
+    return *this;                                                              \
+  }
+
+//#define BIND_TEXTURE(type, binding)                                            \
+//  type &type::bindTexture(const tex::texture &texture) {                       \
+//    glBindTextureUnit(binding, texture.ID);                                    \
+//    return *this;                                                              \
+//  }
+
+#define BIND_TEXTURE(type, sampler_name)                                       \
+  type &type::bindTexture(const tex::texture &texture) {                       \
+    glBindTextureUnit(fragment.sampler_name.binding, texture.ID);              \
+    return *this;                                                              \
+  }
+
 namespace shaders {
-template <typename T> struct uniform {
+template <typename T = void> struct uniform {
   GLint location;
 
-  void create(GLuint shaderID, const std::string &name) {
+  void create(const GLuint shaderID, const std::string &name) {
     const GLint loc = glGetUniformLocation(shaderID, name.c_str());
     if (loc == -1)
       throw std::runtime_error{
           std::format("{}: {} was not a valid uniform name", shaderID, name)};
     location = loc;
+  }
+};
+
+struct sampler_t {
+  GLuint binding;
+
+  void create(const GLuint shaderID, const std::string &name) {
+    const GLint loc = glGetUniformLocation(shaderID, name.c_str());
+    if (loc == -1)
+      throw std::runtime_error{
+          std::format("{}: {} was not a valid uniform name", shaderID, name)};
+    glGetUniformuiv(shaderID, loc, &binding);
   }
 };
 } // namespace shaders

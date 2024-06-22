@@ -13,8 +13,8 @@ import <format>;
 void tex::texture::init() {
   std::string apath = "assets/" + path;
   glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-  glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   stbi_set_flip_vertically_on_load(true);
   unsigned char *data =

@@ -18,6 +18,11 @@ vec2 worldPosition() {
 void main() {
 	const vec2 diff = worldPosition() - center;
 	const float d2 = diff.x * diff.x + diff.y * diff.y;
+//	const float edge = smoothstep(radius * radius - 0.5, radius * radius + 0.1, d2);
+//	if (edge >= 1)
+//		discard;
+// color = vec4(frag_color.xyz / 255.0, 1 - edge);
+
 	if (d2 > radius * radius)
 		discard;
 	color = vec4(frag_color.xyz / 255.0, 1.0);

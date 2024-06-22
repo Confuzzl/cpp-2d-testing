@@ -7,7 +7,7 @@ module world_frame;
 import app;
 import mesh;
 import glm;
-import vertices;
+import vertex_layout;
 import buffer_object;
 import shaders;
 import math;
@@ -18,14 +18,6 @@ void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
   drawGrid();
-
-  // drawQuad({{0, 0}, {1, 1}}, colors::RED);
-  drawCircle({0, 0}, 0.5, colors::BLUE);
-
-  // for (int i = 0; i < 10; i++) {
-  //   drawPoint(random_vec({-2, -2}, {+2, +2}), random_float(0.0f, 1.0f),
-  //             colors::random());
-  // }
 
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();
@@ -62,11 +54,11 @@ void WorldFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
 }
 
 void WorldFrame::drawGrid() const {
-  static constexpr int HALF_SIZE = 10;
-  static constexpr float WIDTH = 1;
-  static constexpr unsigned int AXIS_COUNT = 2 * (HALF_SIZE * 2 + 1);
-  static constexpr unsigned int VERTEX_COUNT = 2 * AXIS_COUNT;
-  static VBOHandle VBO = VBO_HOLDER.get<vertex::simple>(VERTEX_COUNT);
+  static constexpr auto HALF_SIZE = 10;
+  static constexpr auto WIDTH = 1.f;
+  static constexpr auto AXIS_COUNT = 2 * (HALF_SIZE * 2 + 1);
+  static constexpr auto VERTEX_COUNT = 2 * AXIS_COUNT;
+  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::pos>(VERTEX_COUNT);
   static const glm::vec2 AXES[]{{1.0f, 0.0f}, {0.0f, 1.0f}};
 
   for (auto a = 0; a < 2; a++) {

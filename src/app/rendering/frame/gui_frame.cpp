@@ -1,12 +1,13 @@
 module;
 
 #include "util/gl.h"
+#include <cmath>
 #include <limits.h>
 
 module gui_frame;
 
 import glm;
-import vertices;
+import vertex_layout;
 import app;
 import rendering;
 import shaders;
@@ -19,6 +20,8 @@ import debug;
 GUIFrame::GUIFrame() : BaseFrame(Renderer::UI_MATRIX) {}
 
 void GUIFrame::render() {
+  matrix = Renderer::UI_MATRIX;
+
   text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
        colors::BLACK);
   text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
@@ -35,24 +38,22 @@ static constexpr unsigned short charHeightConvert(const unsigned char h) {
 void GUIFrame::text(const std::string &str, const color_t &color,
                     const unsigned short x, const unsigned short y,
                     const float scale) const {
-  static constexpr unsigned int MAX_LENGTH = 0x100;
-  // static constexpr GLushort QUAD_UVS[2][3][2]{{{0, 0}, {1, 0}, {1, 1}},
-  //                                             {{0, 0}, {1, 1}, {0, 1}}};
+  static constexpr auto MAX_LENGTH = 0x100u;
   static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                 {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex::font>(MAX_LENGTH);
+  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
-  // if (str.size() > MAX_LENGTH)
-  //   return;
+  if (str.size() > MAX_LENGTH)
+    return;
 
   const unsigned int vertexCount = 6 * static_cast<unsigned int>(str.size());
 
-  std::vector<vertex::font> vertices{};
+  std::vector<vertex_layout::postex> vertices{};
   vertices.reserve(vertexCount);
 
   unsigned short xOffset = x;
   for (const char c : str) {
-    const char id = c - 32;
+    const char id = std::min(c - 32, 96);
     const unsigned char row = id / font::COLUMNS, column = id % font::COLUMNS;
 
     const float width = font::CHAR_WIDTH * scale,
@@ -70,9 +71,9 @@ void GUIFrame::text(const std::string &str, const color_t &color,
 
     for (auto tri = 0; tri < 2; tri++) {
       for (auto v = 0; v < 3; v++) {
-        const glm::vec2 pos{xOffset + width * QUAD_UVS[tri][v][0],
-                            y + height * QUAD_UVS[tri][v][1]};
-        const auto &uv = QUAD_UVS[tri][v];
+        const glm::vec2 pos{xOffset + width * QUAD_UVS[tri][v].x,
+                            y + height * QUAD_UVS[tri][v].y};
+        const auto uv = QUAD_UVS[tri][v];
         vertices.emplace_back(
             pos.x, pos.y, charWidthConvert(column) + uv.x * charWidthConvert(1),
             charHeightConvert(font::ROWS - row - 1) +
@@ -83,12 +84,21 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  for (const vertex::font &vertex : vertices) {
+  for (const vertex_layout::postex &vertex : vertices) {
     CHAR_VBO.writePartial(vertex.pos);
     CHAR_VBO.write(vertex.tex);
   }
 
-  shaders::font.setView(matrix).setFragColor(color);
-  glBindTextureUnit(0, tex::font.ID);
-  shaders::font.draw(GL_TRIANGLES, CHAR_VBO);
+  if (scale < 2) {
+    shaders::texcol.setView(matrix).setFragColor(color).bindTexture(tex::font);
+    // glBindTextureUnit(0, tex::font.ID);
+    shaders::texcol.draw(GL_TRIANGLES, CHAR_VBO);
+  } else {
+    shaders::sdf.setView(matrix)
+        .setFragColor(color)
+        .setFontSize(scale)
+        .bindTexture(tex::sdfFont);
+    // glBindTextureUnit(0, tex::sdfFont.ID);
+    shaders::sdf.draw(GL_TRIANGLES, CHAR_VBO);
+  }
 }

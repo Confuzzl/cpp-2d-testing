@@ -5,7 +5,7 @@ module;
 export module shaders:program;
 
 import vector;
-// import buffer_objects;
+import texture;
 import glm;
 import color;
 
@@ -32,6 +32,7 @@ private:
 
   void createShaders();
   virtual void createVAO() = 0;
+  // void createVAO();
   virtual void createUniforms() = 0;
 
   void bind(const VBOHandle &vbo) const;
@@ -68,8 +69,6 @@ public:
                               const glm::uvec3 &vector) const;
 };
 
-constexpr int a = sizeof(std::vector<int>);
-
 template <vert::format V, has_uniform F>
 struct simple_program_t : base_program_t {
   V vertex;
@@ -85,16 +84,25 @@ struct simple_program_t : base_program_t {
   }
 };
 
-struct font_t : simple_program_t<vert::tex, frag::texcol> {
-  font_t &setView(const glm::mat4 &mat);
-  font_t &setFragColor(const color_t &frag_color);
+struct texcol_t : simple_program_t<vert::tex, frag::texcol> {
+  texcol_t &setView(const glm::mat4 &view);
+  texcol_t &setFragColor(const color_t &frag_color);
+  texcol_t &bindTexture(const tex::texture &texture);
+};
+struct sdf_t : simple_program_t<vert::tex, frag::sdf_font> {
+  sdf_t &setView(const glm::mat4 &view);
+  sdf_t &setFragColor(const color_t &frag_color);
+  sdf_t &setThreshold(const float threshold);
+  sdf_t &setFontSize(const float font_size);
+  sdf_t &setAntiAlias(const bool anti_alias);
+  sdf_t &bindTexture(const tex::texture &texture);
 };
 struct basic_t : simple_program_t<vert::basic, frag::basic> {
   basic_t &setView(const glm::mat4 &view);
   basic_t &setFragColor(const color_t &frag_color);
 };
 struct trans_t : simple_program_t<vert::trans, frag::basic> {
-  trans_t &setParentPos(const glm::vec2 &pos);
+  trans_t &setParentPos(const glm::vec2 parent_pos);
   trans_t &setRotation(const float rotation);
   trans_t &setView(const glm::mat4 &view);
   trans_t &setFragColor(const color_t &frag_color);
@@ -130,8 +138,8 @@ struct line_t : geometry_program_t<vert::identity, frag::basic, geom::line> {
 struct circ_t : geometry_program_t<vert::identity, frag::circle, geom::circle> {
   circ_t &setView(const glm::mat4 &view);
   circ_t &setRadius(const float radius);
-  circ_t &setCenter(const glm::vec2 &center);
-  circ_t &setScreenDimensions(const glm::uvec2 &screen_dimensions);
+  circ_t &setCenter(const glm::vec2 center);
+  circ_t &setScreenDimensions(const glm::uvec2 screen_dimensions);
   circ_t &setFragColor(const color_t &frag_color);
 };
 } // namespace shaders

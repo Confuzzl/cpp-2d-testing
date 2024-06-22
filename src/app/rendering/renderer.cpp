@@ -14,7 +14,7 @@ import vector;
 
 import glm;
 import debug;
-import vertices;
+import vertex_layout;
 // import buffer_objects;
 import mesh;
 import app;
@@ -38,10 +38,10 @@ void Renderer::init() {
 
   vboHolder.init();
   eboHolder.init();
-  point = vboHolder.get<vertex::simple>(1);
-  line = vboHolder.get<vertex::simple>(2);
-  tri = vboHolder.get<vertex::simple>(3);
-  quad = vboHolder.get<vertex::simple>(4);
+  point = vboHolder.get<vertex_layout::pos>(1);
+  line = vboHolder.get<vertex_layout::pos>(2);
+  tri = vboHolder.get<vertex_layout::pos>(3);
+  quad = vboHolder.get<vertex_layout::pos>(4);
 
   queryObject.init();
 }

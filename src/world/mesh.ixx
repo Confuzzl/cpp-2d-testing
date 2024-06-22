@@ -12,7 +12,7 @@ import <map>;
 import <memory>;
 
 // import buffer_objects;
-import vertices;
+// import vertices;
 import poly;
 
 // template <typename T> struct BufferHolder {

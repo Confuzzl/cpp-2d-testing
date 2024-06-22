@@ -53,9 +53,30 @@ struct striped {
 struct texcol {
   static constexpr char name[] = "texcol.frag";
 
+  sampler_t sampler;
   uniform<glm::uvec3> frag_color;
 
-  void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
+  void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(sampler);
+    CREATE_UNIFORM(frag_color);
+  }
+};
+struct sdf_font {
+  static constexpr char name[] = "sdf_font.frag";
+
+  sampler_t sampler;
+  uniform<glm::uvec3> frag_color;
+  uniform<float> threshold;
+  uniform<float> font_size;
+  uniform<bool> anti_alias;
+
+  void createUniforms(const GLuint ID) {
+    CREATE_UNIFORM(sampler);
+    CREATE_UNIFORM(frag_color);
+    CREATE_UNIFORM(threshold);
+    CREATE_UNIFORM(font_size);
+    CREATE_UNIFORM(anti_alias);
+  }
 };
 } // namespace frag
 } // namespace shaders

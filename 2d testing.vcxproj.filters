@@ -60,9 +60,6 @@
     <ClCompile Include="src\gl_wrapper\texture.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\vertices.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\color.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,6 +178,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\buffer_object.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\buffer_object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\gl_type_macro.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1477,6 +1483,8 @@
     </None>
     <None Include="assets\shaders\striped.frag" />
     <None Include="assets\shaders\polygon.geom" />
+    <None Include="assets\shaders\sdf_font.frag" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\lib\glfw3.lib" />

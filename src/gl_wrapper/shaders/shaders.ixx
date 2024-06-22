@@ -7,7 +7,8 @@ export import :geometry;
 export import :program;
 
 export namespace shaders {
-font_t font{};
+texcol_t texcol{};
+sdf_t sdf{};
 basic_t basic{};
 trans_t shape{};
 striped_t striped{};
@@ -15,7 +16,8 @@ line_t line{};
 circ_t circ{};
 
 void init() {
-  font.init();
+  texcol.init();
+  sdf.init();
   basic.init();
   shape.init();
   striped.init();

@@ -31,13 +31,6 @@ void base_program_t::createShaders() {
   }
 }
 
-void base_program_t::init() {
-  ID = glCreateProgram();
-  createShaders();
-  createVAO();
-  createUniforms();
-}
-
 void base_program_t::bind(const VBOHandle &vbo) const {
   glUseProgram(ID);
   glBindVertexArray(vao);
@@ -47,6 +40,13 @@ void base_program_t::bind(const VBOHandle &vbo) const {
 void base_program_t::bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
   bind(vbo);
   glVertexArrayElementBuffer(vao, ebo.eboID);
+}
+
+void base_program_t::init() {
+  ID = glCreateProgram();
+  createShaders();
+  createVAO();
+  createUniforms();
 }
 
 void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
@@ -99,92 +99,40 @@ void base_program_t::setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
   glProgramUniform3uiv(ID, uniform.location, 1, glm::value_ptr(vector));
 }
 
-font_t &font_t::setView(const glm::mat4 &mat) {
-  setUniform(vertex.view, mat);
-  return *this;
-}
-font_t &font_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(texcol_t, View, glm::mat4 &, view, vertex)
+SET_UNIFORM(texcol_t, FragColor, color_t &, frag_color, fragment)
+BIND_TEXTURE(texcol_t, sampler);
 
-basic_t &basic_t::setView(const glm::mat4 &view) {
-  setUniform(vertex.view, view);
-  return *this;
-}
-basic_t &basic_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(sdf_t, View, glm::mat4 &, view, vertex)
+SET_UNIFORM(sdf_t, FragColor, color_t &, frag_color, fragment)
+SET_UNIFORM(sdf_t, Threshold, float, threshold, fragment)
+SET_UNIFORM(sdf_t, FontSize, float, font_size, fragment)
+SET_UNIFORM(sdf_t, AntiAlias, bool, anti_alias, fragment)
+BIND_TEXTURE(sdf_t, sampler);
 
-trans_t &trans_t::setParentPos(const glm::vec2 &pos) {
-  setUniform(vertex.parent_pos, pos);
-  return *this;
-}
-trans_t &trans_t::setRotation(const float rotation) {
-  setUniform(vertex.rotation, rotation);
-  return *this;
-}
-trans_t &trans_t::setView(const glm::mat4 &view) {
-  setUniform(vertex.view, view);
-  return *this;
-}
-trans_t &trans_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(basic_t, View, glm::mat4 &, view, vertex)
+SET_UNIFORM(basic_t, FragColor, color_t &, frag_color, fragment)
 
-striped_t &striped_t::setView(const glm::mat4 &view) {
-  setUniform(vertex.view, view);
-  return *this;
-}
-striped_t &striped_t::setWidth(const unsigned int width) {
-  setUniform(fragment.width, width);
-  return *this;
-}
-striped_t &striped_t::setSpacing(const unsigned int spacing) {
-  setUniform(fragment.spacing, spacing);
-  return *this;
-}
+SET_UNIFORM(trans_t, ParentPos, glm::vec2, parent_pos, vertex)
+SET_UNIFORM(trans_t, Rotation, float, rotation, vertex)
+SET_UNIFORM(trans_t, View, glm::mat4 &, view, vertex)
+SET_UNIFORM(trans_t, FragColor, color_t &, frag_color, fragment)
+
+SET_UNIFORM(striped_t, View, glm::mat4 &, view, vertex)
+SET_UNIFORM(striped_t, Width, unsigned int, width, fragment)
+SET_UNIFORM(striped_t, Spacing, unsigned int, spacing, fragment)
 striped_t &striped_t::setPattern(const Pattern pattern) {
   setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
   return *this;
 }
-striped_t &striped_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(striped_t, FragColor, color_t &, frag_color, fragment)
 
-line_t &line_t::setView(const glm::mat4 &view) {
-  setUniform(geometry.view, view);
-  return *this;
-}
-line_t &line_t::setThickness(const float thickness) {
-  setUniform(geometry.thickness, thickness);
-  return *this;
-}
-line_t &line_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(line_t, View, glm::mat4 &, view, geometry)
+SET_UNIFORM(line_t, Thickness, float, thickness, geometry)
+SET_UNIFORM(line_t, FragColor, color_t &, frag_color, fragment)
 
-circ_t &circ_t::setView(const glm::mat4 &view) {
-  setUniform(geometry.view, view);
-  return *this;
-}
-circ_t &circ_t::setRadius(const float radius) {
-  setUniform(geometry.radius, radius);
-  return *this;
-}
-circ_t &circ_t::setCenter(const glm::vec2 &center) {
-  setUniform(fragment.center, center);
-  return *this;
-}
-circ_t &circ_t::setScreenDimensions(const glm::uvec2 &screen_dimensions) {
-  setUniform(fragment.screen_dimensions, screen_dimensions);
-  return *this;
-}
-circ_t &circ_t::setFragColor(const color_t &frag_color) {
-  setUniform(fragment.frag_color, frag_color);
-  return *this;
-}
+SET_UNIFORM(circ_t, View, glm::mat4 &, view, geometry)
+SET_UNIFORM(circ_t, Radius, float, radius, geometry)
+SET_UNIFORM(circ_t, Center, glm::vec2, center, fragment)
+SET_UNIFORM(circ_t, ScreenDimensions, glm::uvec2, screen_dimensions, fragment)
+SET_UNIFORM(circ_t, FragColor, color_t &, frag_color, fragment)

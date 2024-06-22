@@ -22,12 +22,17 @@ struct texture {
 };
 
 inline namespace tex_storage {
-texture font{"consolas1024.png"};
-std::vector<texture *> textures{&font};
+std::vector<texture> textures{
+    vec::New<texture>("consolas1024.png", "sdf1024.png")};
+texture &font = textures[0];
+texture &sdfFont = textures[1];
 
 void init() {
-  for (texture *tex : textures) {
-    tex->init();
+  // for (texture *tex : textures) {
+  //   tex->init();
+  // }
+  for (texture &tex : textures) {
+    tex.init();
   }
 }
 } // namespace tex_storage

@@ -1,0 +1,194 @@
+{
+	"connections": [
+		{
+			"from": "image",
+			"from_port": 0,
+			"to": "invert",
+			"to_port": 0
+		},
+		{
+			"from": "dilate",
+			"from_port": 0,
+			"to": "tones_map",
+			"to_port": 0
+		},
+		{
+			"from": "dilate_2",
+			"from_port": 0,
+			"to": "tones_map_2",
+			"to_port": 0
+		},
+		{
+			"from": "invert",
+			"from_port": 0,
+			"to": "dilate_2",
+			"to_port": 0
+		},
+		{
+			"from": "image",
+			"from_port": 0,
+			"to": "dilate",
+			"to_port": 0
+		},
+		{
+			"from": "tones_map",
+			"from_port": 0,
+			"to": "math",
+			"to_port": 0
+		},
+		{
+			"from": "tones_map_2",
+			"from_port": 0,
+			"to": "math",
+			"to_port": 1
+		}
+	],
+	"label": "Graph",
+	"longdesc": "",
+	"name": "@@322",
+	"node_position": {
+		"x": 0,
+		"y": 0
+	},
+	"nodes": [
+		{
+			"export_paths": {
+
+			},
+			"name": "Material",
+			"node_position": {
+				"x": -304,
+				"y": -141
+			},
+			"parameters": {
+				"albedo_color": {
+					"a": 1,
+					"b": 1,
+					"g": 1,
+					"r": 1,
+					"type": "Color"
+				},
+				"ao": 1,
+				"depth_scale": 0.5,
+				"emission_energy": 1,
+				"flags_transparent": true,
+				"metallic": 0,
+				"normal": 1,
+				"roughness": 1,
+				"size": 11,
+				"sss": 1
+			},
+			"seed_int": 0,
+			"type": "material"
+		},
+		{
+			"name": "image",
+			"node_position": {
+				"x": -46,
+				"y": 317
+			},
+			"parameters": {
+				"clamp": false,
+				"fix_ar": false,
+				"image": "%PROJECT_PATH%/consolas4096.png"
+			},
+			"seed_int": 0,
+			"type": "image"
+		},
+		{
+			"name": "invert",
+			"node_position": {
+				"x": 313,
+				"y": 474
+			},
+			"parameters": {
+
+			},
+			"seed_int": 0,
+			"type": "invert"
+		},
+		{
+			"name": "tones_map",
+			"node_position": {
+				"x": 677,
+				"y": 227
+			},
+			"parameters": {
+				"in_max": 1,
+				"in_min": 0,
+				"out_max": 0.5,
+				"out_min": 0
+			},
+			"seed_int": 0,
+			"type": "tones_map"
+		},
+		{
+			"name": "tones_map_2",
+			"node_position": {
+				"x": 774,
+				"y": 471
+			},
+			"parameters": {
+				"in_max": 0,
+				"in_min": 1,
+				"out_max": 0.5,
+				"out_min": 0
+			},
+			"seed_int": 0,
+			"type": "tones_map"
+		},
+		{
+			"name": "dilate",
+			"node_position": {
+				"x": 412,
+				"y": 204
+			},
+			"parameters": {
+				"param0": 12,
+				"param1": 0.05,
+				"param2": 0,
+				"param3": 0,
+				"param4": false
+			},
+			"seed_int": 0,
+			"type": "dilate"
+		},
+		{
+			"name": "dilate_2",
+			"node_position": {
+				"x": 528,
+				"y": 538
+			},
+			"parameters": {
+				"param0": 12,
+				"param1": 0.05,
+				"param2": 0,
+				"param3": 0,
+				"param4": false
+			},
+			"seed_int": 0,
+			"type": "dilate"
+		},
+		{
+			"name": "math",
+			"node_position": {
+				"x": 1124.762207,
+				"y": 357.458923
+			},
+			"parameters": {
+				"clamp": false,
+				"default_in1": 0,
+				"default_in2": 0,
+				"op": 0
+			},
+			"seed_int": 0,
+			"type": "math"
+		}
+	],
+	"parameters": {
+
+	},
+	"seed_int": 0,
+	"shortdesc": "",
+	"type": "graph"
+}

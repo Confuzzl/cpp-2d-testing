@@ -6,6 +6,7 @@ export module shaders:vertex;
 
 import :shader;
 import glm;
+import vertex_layout;
 import <concepts>;
 
 export namespace shaders {
@@ -20,9 +21,7 @@ struct identity {
 
   void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
-    glEnableVertexArrayAttrib(vao, 0);
-    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
-    glVertexArrayAttribBinding(vao, 0, 0);
+    vertex_layout::enable<vertex_layout::pos>(vao);
   }
   void createUniforms(const GLuint ID) {}
 };
@@ -34,9 +33,7 @@ struct basic {
 
   void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
-    glEnableVertexArrayAttrib(vao, 0);
-    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
-    glVertexArrayAttribBinding(vao, 0, 0);
+    vertex_layout::enable<vertex_layout::pos>(vao);
   }
 
   void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
@@ -51,9 +48,7 @@ struct trans {
 
   void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
-    glEnableVertexArrayAttrib(vao, 0);
-    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
-    glVertexArrayAttribBinding(vao, 0, 0);
+    vertex_layout::enable<vertex_layout::pos>(vao);
   }
 
   void createUniforms(const GLuint ID) {
@@ -69,13 +64,7 @@ struct tex {
 
   void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
-    glEnableVertexArrayAttrib(vao, 0);
-    glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, false, 0);
-    glVertexArrayAttribBinding(vao, 0, 0);
-    glEnableVertexArrayAttrib(vao, 1);
-    glVertexArrayAttribFormat(vao, 1, 2, GL_UNSIGNED_SHORT, false,
-                              2 * sizeof(GLfloat));
-    glVertexArrayAttribBinding(vao, 1, 0);
+    vertex_layout::enable<vertex_layout::postex>(vao);
   }
 
   void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }

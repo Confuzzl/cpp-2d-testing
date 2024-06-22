@@ -8,7 +8,7 @@ import <numbers>;
 import app;
 import shaders;
 // import buffer_objects;
-import vertices;
+import vertex_layout;
 
 // VBOHandle BaseFrame::POINT = VBO_HOLDER.get(sizeof(vertex::simple), 1);
 // VBOHandle BaseFrame::LINE = VBO_HOLDER.get(sizeof(vertex::simple), 2);
@@ -129,5 +129,5 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
   }
 
   shaders::basic.setView(matrix).setFragColor(color);
-  shaders::basic.dr aw(GL_TRIANGLE_STRIP, QUAD);
+  shaders::basic.draw(GL_TRIANGLE_STRIP, QUAD);
 }

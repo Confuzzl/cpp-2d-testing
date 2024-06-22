@@ -9,7 +9,6 @@ import glm;
 import buffer_object;
 import gui_frame;
 import world_frame;
-import vertices;
 
 import query_object;
 
