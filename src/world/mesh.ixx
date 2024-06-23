@@ -10,10 +10,11 @@ import vector;
 import <functional>;
 import <map>;
 import <memory>;
+import <optional>;
 
-// import buffer_objects;
-// import vertices;
 import poly;
+import vertex_layout;
+import buffer_object;
 
 // template <typename T> struct BufferHolder {
 //   std::map<unsigned char, T> objects{};
@@ -39,4 +40,8 @@ import poly;
 //         ebo{EBOHolder.get(static_cast<unsigned char>(data.size()))} {}
 // };
 
-export struct Mesh {};
+export struct Mesh {
+  std::vector<vertex_layout::pos> data;
+  mutable VBOHandle vbo;
+  std::optional<EBOHandle> ebo;
+};

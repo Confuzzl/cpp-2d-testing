@@ -26,8 +26,8 @@ export struct Renderer {
   VBOHandle tri;
   VBOHandle quad;
 
-  GUIFrame guiFrame{};
-  WorldFrame worldFrame{};
+  GUIFrame guiFrame;
+  WorldFrame worldFrame;
 
   Renderer();
 

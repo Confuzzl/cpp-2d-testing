@@ -12,8 +12,6 @@ import buffer_object;
 import shaders;
 import math;
 
-WorldFrame::WorldFrame() : BaseFrame(glm::mat4{1.0f}) {}
-
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
@@ -34,24 +32,9 @@ void WorldFrame::render() {
   // }
 }
 
-void WorldFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
-                          const float rot, const color_t &color,
-                          const GLenum primitive) const {
-  // GLintptr offset = 0;
-  // for (const vertex::simple &vertex : mesh.localVertexData) {
-  //   glNamedBufferSubData(mesh.vbo.ID, offset, sizeof(vertex),
-  //                        glm::value_ptr(vertex.pos));
-  //   offset += sizeof(vertex);
-  // }
-
-  // shaders::shape.use(mesh.vbo, mesh.ebo);
-  // shaders::shape.setParentPos(pos)
-  //     .setRotation(rot)
-  //     .setView(matrix)
-  //     .setFragColor(color);
-
-  // glDrawElements(primitive, mesh.ebo.count, GL_UNSIGNED_BYTE, 0);
-}
+// void WorldFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
+//                           const float rot, const color_t &color,
+//                           const GLenum primitive) const {}
 
 void WorldFrame::drawGrid() const {
   static constexpr auto HALF_SIZE = 10;

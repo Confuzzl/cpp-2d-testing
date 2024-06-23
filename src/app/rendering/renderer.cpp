@@ -15,7 +15,6 @@ import vector;
 import glm;
 import debug;
 import vertex_layout;
-// import buffer_objects;
 import mesh;
 import app;
 

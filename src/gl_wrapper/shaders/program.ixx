@@ -32,7 +32,6 @@ private:
 
   void createShaders();
   virtual void createVAO() = 0;
-  // void createVAO();
   virtual void createUniforms() = 0;
 
   void bind(const VBOHandle &vbo) const;

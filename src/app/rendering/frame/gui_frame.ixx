@@ -13,8 +13,6 @@ constexpr unsigned char COLUMNS = 16, ROWS = 8;
 } // namespace font
 
 export struct GUIFrame : BaseFrame {
-  GUIFrame();
-
   void render() override;
 
   void text(const std::string &str, const color_t &color = colors::WHITE,

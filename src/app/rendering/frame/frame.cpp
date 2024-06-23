@@ -15,7 +15,7 @@ import vertex_layout;
 // VBOHandle BaseFrame::TRI = VBO_HOLDER.get(sizeof(vertex::simple), 3);
 // VBOHandle BaseFrame::QUAD = VBO_HOLDER.get(sizeof(vertex::simple), 4);
 
-BaseFrame::BaseFrame(const glm::mat4 &matrix) : matrix{matrix} {}
+// BaseFrame::BaseFrame(const glm::mat4 &matrix) : matrix{matrix} {}
 
 void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
                           const color_t &color) const {
@@ -130,4 +130,17 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_TRIANGLE_STRIP, QUAD);
+}
+
+import mesh;
+
+void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
+                         const float rot, const color_t &color,
+                         const GLenum primitive) const {
+
+  shaders::trans.setView(matrix)
+      .setParentPos(pos)
+      .setRotation(rot)
+      .setFragColor(color);
+  shaders::trans.draw(primitive, mesh.vbo);
 }

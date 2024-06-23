@@ -1,3 +1,7 @@
+module;
+
+#include "util/gl.h"
+
 export module frame;
 
 import glm;
@@ -6,14 +10,12 @@ import dimensions;
 
 import buffer_object;
 
-export struct BaseFrame {
-  // static VBOHandle POINT;
-  // static VBOHandle LINE;
-  // static VBOHandle TRI;
-  // static VBOHandle QUAD;
+export struct Mesh;
 
-  glm::mat4 matrix;
-  BaseFrame(const glm::mat4 &matrix);
+export struct BaseFrame {
+  glm::mat4 matrix{1.0f};
+
+  // BaseFrame(const glm::mat4 &matrix);
 
   virtual void render() = 0;
 
@@ -40,4 +42,7 @@ export struct BaseFrame {
                     const color_t &color = colors::WHITE) const;
   void drawQuad(const dimension_t &dimensions,
                 const color_t &color = colors::WHITE) const;
+
+  void drawMesh(const Mesh &mesh, const glm::vec2 &pos, const float rot,
+                const color_t &color, const GLenum primitive) const;
 };

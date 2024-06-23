@@ -17,8 +17,6 @@ import <vector>;
 import <format>;
 import debug;
 
-GUIFrame::GUIFrame() : BaseFrame(Renderer::UI_MATRIX) {}
-
 void GUIFrame::render() {
   matrix = Renderer::UI_MATRIX;
 

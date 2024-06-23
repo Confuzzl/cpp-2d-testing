@@ -10,7 +10,7 @@ export namespace shaders {
 texcol_t texcol{};
 sdf_t sdf{};
 basic_t basic{};
-trans_t shape{};
+trans_t trans{};
 striped_t striped{};
 line_t line{};
 circ_t circ{};
@@ -19,7 +19,7 @@ void init() {
   texcol.init();
   sdf.init();
   basic.init();
-  shape.init();
+  trans.init();
   striped.init();
   line.init();
   circ.init();
