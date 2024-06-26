@@ -17,6 +17,7 @@ import :geometry;
 import buffer_object;
 
 export namespace shaders {
+// merge w simple
 struct base_program_t {
   GLuint ID;
   GLuint vao;
@@ -88,6 +89,7 @@ struct texcol_t : simple_program_t<vert::tex, frag::texcol> {
   texcol_t &setFragColor(const color_t &frag_color);
   texcol_t &bindTexture(const tex::texture &texture);
 };
+
 struct sdf_t : simple_program_t<vert::tex, frag::sdf_font> {
   sdf_t &setView(const glm::mat4 &view);
   sdf_t &setFragColor(const color_t &frag_color);

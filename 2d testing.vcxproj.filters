@@ -1058,6 +1058,9 @@
     <ClInclude Include="src\gl_wrapper\shaders\uniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\main_objects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\consolas1024.png">

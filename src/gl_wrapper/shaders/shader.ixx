@@ -11,9 +11,7 @@ import color;
 import debug;
 import glm;
 
-// import buffer_objects;
-
-namespace shaders {
+export namespace shaders {
 template <typename T>
 concept has_uniform = requires(T t, const GLuint ID) {
   { T::name } -> std::convertible_to<const char *>;

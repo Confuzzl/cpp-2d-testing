@@ -1,15 +1,16 @@
 module;
 
 #include "util/gl.h"
+#include "util/main_objects.h"
 #include <cmath>
 #include <limits.h>
 
 module gui_frame;
 
-import glm;
-import vertex_layout;
 import app;
 import rendering;
+import glm;
+import vertex_layout;
 import shaders;
 import texture;
 import input_handler;
@@ -39,7 +40,8 @@ void GUIFrame::text(const std::string &str, const color_t &color,
   static constexpr auto MAX_LENGTH = 0x100u;
   static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                 {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
+  static VBOHandle &CHAR_VBO =
+      VBOHolder::getHandle<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
     return;
@@ -83,20 +85,17 @@ void GUIFrame::text(const std::string &str, const color_t &color,
   }
 
   for (const vertex_layout::postex &vertex : vertices) {
-    CHAR_VBO.writePartial(vertex.pos);
-    CHAR_VBO.write(vertex.tex);
+    CHAR_VBO.write(vertex);
   }
 
   if (scale < 2) {
     shaders::texcol.setView(matrix).setFragColor(color).bindTexture(tex::font);
-    // glBindTextureUnit(0, tex::font.ID);
     shaders::texcol.draw(GL_TRIANGLES, CHAR_VBO);
   } else {
     shaders::sdf.setView(matrix)
         .setFragColor(color)
         .setFontSize(scale)
         .bindTexture(tex::sdfFont);
-    // glBindTextureUnit(0, tex::sdfFont.ID);
     shaders::sdf.draw(GL_TRIANGLES, CHAR_VBO);
   }
 }

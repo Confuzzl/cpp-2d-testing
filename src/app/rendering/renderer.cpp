@@ -35,12 +35,8 @@ void Renderer::init() {
     MAIN_APP.close();
   }
 
-  vboHolder.init();
-  eboHolder.init();
-  point = vboHolder.get<vertex_layout::pos>(1);
-  line = vboHolder.get<vertex_layout::pos>(2);
-  tri = vboHolder.get<vertex_layout::pos>(3);
-  quad = vboHolder.get<vertex_layout::pos>(4);
+  VBOHolder::init();
+  EBOHolder::init();
 
   queryObject.init();
 }

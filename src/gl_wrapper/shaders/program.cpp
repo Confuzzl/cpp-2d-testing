@@ -62,42 +62,13 @@ void base_program_t::draw(const GLenum primitive, VBOHandle &vbo,
   vbo.reset();
 }
 
-template <>
-void base_program_t::setUniform<bool>(const uniform<bool> &uniform,
-                                      const bool &value) const {
-  glProgramUniform1i(ID, uniform.location, value);
-}
-template <>
-void base_program_t::setUniform<unsigned int>(
-    const uniform<unsigned int> &uniform, const unsigned int &value) const {
-  glProgramUniform1ui(ID, uniform.location, value);
-}
-template <>
-void base_program_t::setUniform<float>(const uniform<float> &uniform,
-                                       const float &value) const {
-  glProgramUniform1f(ID, uniform.location, value);
-}
-template <>
-void base_program_t::setUniform<glm::mat4>(const uniform<glm::mat4> &uniform,
-                                           const glm::mat4 &matrix) const {
-  glProgramUniformMatrix4fv(ID, uniform.location, 1, GL_FALSE,
-                            glm::value_ptr(matrix));
-}
-template <>
-void base_program_t::setUniform<glm::vec2>(const uniform<glm::vec2> &uniform,
-                                           const glm::vec2 &vector) const {
-  glProgramUniform2fv(ID, uniform.location, 1, glm::value_ptr(vector));
-}
-template <>
-void base_program_t::setUniform<glm::uvec2>(const uniform<glm::uvec2> &uniform,
-                                            const glm::uvec2 &vector) const {
-  glProgramUniform2uiv(ID, uniform.location, 1, glm::value_ptr(vector));
-}
-template <>
-void base_program_t::setUniform<glm::uvec3>(const uniform<glm::uvec3> &uniform,
-                                            const glm::uvec3 &vector) const {
-  glProgramUniform3uiv(ID, uniform.location, 1, glm::value_ptr(vector));
-}
+SET_SCALAR(bool, i)
+SET_SCALAR(unsigned int, ui)
+SET_SCALAR(float, f)
+SET_MATRIX(glm::mat4, 4)
+SET_VECTOR(glm::vec2, 2f)
+SET_VECTOR(glm::uvec2, 2ui)
+SET_VECTOR(glm::uvec3, 3ui)
 
 SET_UNIFORM(texcol_t, View, glm::mat4 &, view, vertex)
 SET_UNIFORM(texcol_t, FragColor, color_t &, frag_color, fragment)

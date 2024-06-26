@@ -1,10 +1,13 @@
 module;
 
 #include "util/gl.h"
+#include "util/main_objects.h"
+#include <variant>
 
 module world_frame;
 
 import app;
+import camera;
 import mesh;
 import glm;
 import vertex_layout;
@@ -41,7 +44,8 @@ void WorldFrame::drawGrid() const {
   static constexpr auto WIDTH = 1.f;
   static constexpr auto AXIS_COUNT = 2 * (HALF_SIZE * 2 + 1);
   static constexpr auto VERTEX_COUNT = 2 * AXIS_COUNT;
-  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::pos>(VERTEX_COUNT);
+  static VBOHandle &VBO =
+      VBOHolder::getHandle<vertex_layout::pos>(VERTEX_COUNT);
   static const glm::vec2 AXES[]{{1.0f, 0.0f}, {0.0f, 1.0f}};
 
   for (auto a = 0; a < 2; a++) {
@@ -57,3 +61,19 @@ void WorldFrame::drawGrid() const {
   shaders::basic.setView(matrix).setFragColor(colors::GRAY);
   shaders::basic.draw(GL_LINES, VBO);
 }
+
+// import collider;
+// import object;
+// import circle;
+//  import <variant>;
+
+// void WorldFrame::drawObject(const Object &object) const {
+//  if (std::holds_alternative<Circle>(object.collider)) {
+//    const Circle &circle = std::get<Circle>(object.collider);
+//    drawCircle(circle.pos(), circle.radius);
+//  } else {
+//    const Object::poly_mesh &polyMesh =
+//        std::get<Object::poly_mesh>(object.collider);
+//    drawMesh(polyMesh.mesh, polyMesh.poly.pos(), polyMesh.poly.rot());
+//  }
+//}

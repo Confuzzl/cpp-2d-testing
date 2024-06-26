@@ -19,3 +19,10 @@ import <format>;
 export std::string vec_string(const glm::vec2 &vec) {
   return std::format("({:+.2f} {:+.2f})", vec.x, vec.y);
 }
+
+export namespace glm {
+template <typename T>
+concept has_value_ptr = requires(T t) {
+  { glm::value_ptr(t) } -> std::convertible_to<void *>;
+};
+}

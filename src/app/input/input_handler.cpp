@@ -1,13 +1,14 @@
 module;
 
 #include "util/gl.h"
+#include "util/main_objects.h"
 #include <algorithm>
 
 module input_handler;
 
 import app;
+import camera;
 import debug;
-// import gui_frame;
 import rendering;
 
 glm::ivec2 InputHandler::cursorPos{0, 0};

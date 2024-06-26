@@ -17,22 +17,19 @@ void VBOHandle::reset() {
   localOffset = 0;
 }
 
-void VBOHolder::init() { vbos.emplace_back(); }
-VBOHandle VBOHolder::get(const std::size_t vertexSize,
-                         const unsigned int count) {
-  const GLsizeiptr capacity = vertexSize * count;
-  for (VBO &vbo : vbos) {
-    if (vbo.offset + capacity > VBO::SIZE) {
-      VBO &v = vbos.emplace_back();
-      VBOHandle out = {v.ID, 0, vertexSize};
-      v.offset += capacity;
-      return out;
-    }
-    VBOHandle out = {vbo.ID, vbo.offset, vertexSize};
-    vbo.offset += capacity;
-    return out;
-  }
-  return {};
+std::vector<VBO> VBOHolder::vbos{};
+std::vector<VBOHandle> VBOHolder::handles{};
+VBOHandle *VBOHolder::POINT = nullptr;
+VBOHandle *VBOHolder::LINE = nullptr;
+VBOHandle *VBOHolder::TRI = nullptr;
+VBOHandle *VBOHolder::QUAD = nullptr;
+
+void VBOHolder::init() {
+  vbos.emplace_back();
+  POINT = VBOHolder::getPair<vertex_layout::pos>(1).first;
+  LINE = VBOHolder::getPair<vertex_layout::pos>(2).first;
+  TRI = VBOHolder::getPair<vertex_layout::pos>(3).first;
+  QUAD = VBOHolder::getPair<vertex_layout::pos>(4).first;
 }
 
 EBO::EBO() { glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT); }
@@ -45,19 +42,31 @@ EBOHandle::EBOHandle(const GLuint eboID, const GLintptr offset,
   glNamedBufferSubData(eboID, offset, size, indices.begin());
 }
 
+std::vector<EBO> EBOHolder::ebos{};
+std::vector<EBOHandle> EBOHolder::handles{};
+
 void EBOHolder::init() { ebos.emplace_back(); }
-EBOHandle EBOHolder::get(const std::initializer_list<GLuint> &indices) {
+
+std::pair<EBOHandle *, int>
+EBOHolder::get(const std::initializer_list<GLuint> &indices) {
   const GLsizeiptr size = indices.size() * sizeof(GLuint);
   for (EBO &ebo : ebos) {
     if (ebo.offset + size > EBO::SIZE) {
       EBO &e = ebos.emplace_back();
-      EBOHandle out = {e.ID, 0, size, indices};
       e.offset += size;
-      return out;
+      return {&handles.emplace_back(e.ID, 0, size, indices),
+              static_cast<int>(handles.size() - 1)};
     }
-    EBOHandle out = {ebo.ID, ebo.offset, size, indices};
+    const auto offset = ebo.offset;
     ebo.offset += size;
-    return out;
+    return {&handles.emplace_back(ebo.ID, offset, size, indices),
+            static_cast<int>(handles.size() - 1)};
   }
   return {};
+}
+EBOHandle &EBOHolder::getHandle(const std::initializer_list<GLuint> &indices) {
+  return *get(indices).first;
+}
+int EBOHolder::getIndex(const std::initializer_list<GLuint> &indices) {
+  return get(indices).second;
 }

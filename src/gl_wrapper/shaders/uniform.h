@@ -6,17 +6,29 @@
 
 #define CREATE_UNIFORM(name) name.create(ID, #name)
 
+#define SET_UNIFORM_TEMPLATE(type, call)                                       \
+  template <>                                                                  \
+  void base_program_t::setUniform<type>(const uniform<type> &uniform,          \
+                                        const type &value) const {             \
+    call;                                                                      \
+  }
+#define SET_SCALAR(type, scalar_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniform1##scalar_type(ID, uniform.location, value))
+#define SET_VECTOR(type, vector_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniform##vector_type##v(ID, uniform.location, 1,          \
+                                             glm::value_ptr(value)))
+#define SET_MATRIX(type, matrix_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniformMatrix##matrix_type##fv(                           \
+                ID, uniform.location, 1, GL_FALSE, glm::value_ptr(value)))
+
 #define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
   type &type::set##func_name(const param_t param_name) {                       \
     setUniform(shader.param_name, param_name);                                 \
     return *this;                                                              \
   }
-
-//#define BIND_TEXTURE(type, binding)                                            \
-//  type &type::bindTexture(const tex::texture &texture) {                       \
-//    glBindTextureUnit(binding, texture.ID);                                    \
-//    return *this;                                                              \
-//  }
 
 #define BIND_TEXTURE(type, sampler_name)                                       \
   type &type::bindTexture(const tex::texture &texture) {                       \

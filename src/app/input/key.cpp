@@ -1,10 +1,12 @@
 module;
 
 #include "util/gl.h"
+#include "util/main_objects.h"
 
 module key;
 
 import app;
+import camera;
 import debug;
 
 Key::Key(const Callback &processJustOn, const Callback &processOn,

@@ -18,13 +18,10 @@ export struct Renderer {
   query_object_t queryObject;
   GLint elapsed = 0;
 
-  VBOHolder vboHolder{};
-  EBOHolder eboHolder{};
-
-  VBOHandle point;
-  VBOHandle line;
-  VBOHandle tri;
-  VBOHandle quad;
+  VBOHandle *point;
+  VBOHandle *line;
+  VBOHandle *tri;
+  VBOHandle *quad;
 
   GUIFrame guiFrame;
   WorldFrame worldFrame;

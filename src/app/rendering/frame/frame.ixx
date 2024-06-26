@@ -10,12 +10,14 @@ import dimensions;
 
 import buffer_object;
 
-export struct Mesh;
+import vertex_layout;
+import mesh;
+import shaders;
+
+import <format>;
 
 export struct BaseFrame {
   glm::mat4 matrix{1.0f};
-
-  // BaseFrame(const glm::mat4 &matrix);
 
   virtual void render() = 0;
 
@@ -43,6 +45,20 @@ export struct BaseFrame {
   void drawQuad(const dimension_t &dimensions,
                 const color_t &color = colors::WHITE) const;
 
-  void drawMesh(const Mesh &mesh, const glm::vec2 &pos, const float rot,
-                const color_t &color, const GLenum primitive) const;
+  template <shaders::vert::format V, shaders::has_uniform F, is_vertex_layout T>
+  void drawMesh(const shaders::simple_program_t<V, F> &shader,
+                const Mesh<T> &mesh, const glm::vec2 &pos,
+                const float rot) const {
+    static_assert(std::same_as<V::layout_t, T>,
+                  "shader vertex layout does not match mesh vertex layout");
+
+    // static constexpr auto MAX_VERTICES = 0xffff;
+    // static VBOHandle &VBO = VBOHolder::getHandle<T>(MAX_VERTICES);
+
+    // for (const T &vertex : mesh.data) {
+    //   VBO.write(vertex);
+    // }
+
+    // shader.draw(mesh.primitive, VBO);
+  }
 };

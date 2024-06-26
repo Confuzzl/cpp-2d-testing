@@ -7,6 +7,11 @@ export module vertex_layout;
 import glm;
 import gl_type_macro;
 
+export template <typename T>
+concept is_vertex_layout = requires(const T t) {
+  { t.data() } -> std::same_as<const void *>;
+};
+
 export namespace vertex_layout {
 template <typename T>
 void enable_helper(const GLuint ID, GLuint &index, GLint &offset) {

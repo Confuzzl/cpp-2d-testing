@@ -4,6 +4,21 @@ module;
 
 export module object;
 
+import <variant>;
+
+import vertex_layout;
+import circle;
+import polygon;
+import mesh;
+
+export template <is_vertex_layout T> struct Object {
+  struct poly_mesh {
+    Polygon poly;
+    Mesh<T> mesh;
+  };
+  std::variant<Circle, poly_mesh> collider;
+};
+
 // import glm;
 // import <memory>;
 //
@@ -12,7 +27,7 @@ export module object;
 // import circle;
 // import polygon;
 // import app;
-//// import scene;
+// import scene;
 // import color;
 // import func;
 // import rendering;
