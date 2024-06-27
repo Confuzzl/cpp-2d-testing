@@ -4,79 +4,60 @@ module;
 
 export module shaders:fragment;
 
+import :shader;
 import glm;
 
 export namespace shaders {
 namespace frag {
+template <typename T>
+concept format = has_uniform<T> && has_extension<T>("frag");
+
 struct basic {
   static constexpr char name[] = "basic.frag";
 
-  uniform<glm::uvec3> frag_color;
+  static uniform<glm::uvec3> frag_color;
 
-  void createUniforms(const GLuint ID) { CREATE_UNIFORM(frag_color); }
+  static void createUniforms(const GLuint ID);
 };
 struct circle {
   static constexpr char name[] = "circle.frag";
 
-  uniform<glm::vec2> center;
-  uniform<float> radius;
+  static uniform<glm::vec2> center;
+  static uniform<float> radius;
+  static uniform<glm::uvec2> screen_dimensions;
+  static uniform<glm::mat4> view;
+  static uniform<glm::uvec3> frag_color;
 
-  uniform<glm::uvec2> screen_dimensions;
-  uniform<glm::mat4> view;
-
-  uniform<glm::uvec3> frag_color;
-
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(center);
-    CREATE_UNIFORM(radius);
-    CREATE_UNIFORM(screen_dimensions);
-    CREATE_UNIFORM(view);
-    CREATE_UNIFORM(frag_color);
-  }
+  static void createUniforms(const GLuint ID);
 };
 struct striped {
   static constexpr char name[] = "striped.frag";
 
-  uniform<unsigned int> width;
-  uniform<unsigned int> spacing;
-  uniform<unsigned int> pattern;
+  static uniform<unsigned int> width;
+  static uniform<unsigned int> spacing;
+  static uniform<unsigned int> pattern;
+  static uniform<glm::uvec3> frag_color;
 
-  uniform<glm::uvec3> frag_color;
-
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(width);
-    CREATE_UNIFORM(spacing);
-    CREATE_UNIFORM(pattern);
-    CREATE_UNIFORM(frag_color);
-  }
+  static void createUniforms(const GLuint ID);
 };
 struct texcol {
   static constexpr char name[] = "texcol.frag";
 
-  sampler_t sampler;
-  uniform<glm::uvec3> frag_color;
+  static sampler_t sampler;
+  static uniform<glm::uvec3> frag_color;
 
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(sampler);
-    CREATE_UNIFORM(frag_color);
-  }
+  static void createUniforms(const GLuint ID);
 };
 struct sdf_font {
   static constexpr char name[] = "sdf_font.frag";
 
-  sampler_t sampler;
-  uniform<glm::uvec3> frag_color;
-  uniform<float> threshold;
-  uniform<float> font_size;
-  uniform<bool> anti_alias;
+  static sampler_t sampler;
+  static uniform<glm::uvec3> frag_color;
+  static uniform<float> threshold;
+  static uniform<float> font_size;
+  static uniform<bool> anti_alias;
 
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(sampler);
-    CREATE_UNIFORM(frag_color);
-    CREATE_UNIFORM(threshold);
-    CREATE_UNIFORM(font_size);
-    CREATE_UNIFORM(anti_alias);
-  }
+  static void createUniforms(const GLuint ID);
 };
 } // namespace frag
 } // namespace shaders

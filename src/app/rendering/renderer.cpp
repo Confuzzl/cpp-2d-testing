@@ -29,16 +29,17 @@ Renderer::Renderer() {}
 void Renderer::init() {
   try {
     shaders::init();
+
     tex::init();
+
+    VBOHolder::init();
+    EBOHolder::init();
+
+    queryObject.init();
   } catch (const std::runtime_error &e) {
     println("{}", e.what());
     MAIN_APP.close();
   }
-
-  VBOHolder::init();
-  EBOHolder::init();
-
-  queryObject.init();
 }
 
 void Renderer::renderFrame(const double t) {

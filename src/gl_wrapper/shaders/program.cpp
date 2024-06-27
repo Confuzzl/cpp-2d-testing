@@ -8,77 +8,15 @@ import debug;
 
 using namespace shaders;
 
-base_program_t::base_program_t(const std::string &vert, const std::string &frag,
-                               std::vector<shader_t> &&otherShaders) {
-  compileList.reserve(2 + otherShaders.size());
-  compileList.emplace_back(GL_VERTEX_SHADER, vert);
-  compileList.emplace_back(GL_FRAGMENT_SHADER, frag);
-  for (shader_t &shader : otherShaders)
-    compileList.emplace_back(std::move(shader));
-}
-base_program_t::~base_program_t() { glDeleteProgram(ID); }
-
-void base_program_t::createShaders() {
-  println("PROGRAM: {}", ID);
-  for (shader_t &shader : compileList) {
-    shader.compile();
-    glAttachShader(ID, shader.ID);
-  }
-  glLinkProgram(ID);
-  for (shader_t &shader : compileList) {
-    glDetachShader(ID, shader.ID);
-    glDeleteShader(shader.ID);
-  }
-}
-
-void base_program_t::bind(const VBOHandle &vbo) const {
-  glUseProgram(ID);
-  glBindVertexArray(vao);
-  glVertexArrayVertexBuffer(vao, 0, vbo.vboID, vbo.offset,
-                            static_cast<GLsizei>(vbo.vertexSize));
-}
-void base_program_t::bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
-  bind(vbo);
-  glVertexArrayElementBuffer(vao, ebo.eboID);
-}
-
-void base_program_t::init() {
-  ID = glCreateProgram();
-  createShaders();
-  createVAO();
-  createUniforms();
-}
-
-void base_program_t::draw(const GLenum primitive, VBOHandle &vbo) const {
-  bind(vbo);
-  glDrawArrays(primitive, 0, vbo.count);
-  vbo.reset();
-}
-void base_program_t::draw(const GLenum primitive, VBOHandle &vbo,
-                          const EBOHandle &ebo) const {
-  bind(vbo, ebo);
-  glDrawElements(primitive, ebo.count, GL_UNSIGNED_INT,
-                 reinterpret_cast<void *>(ebo.offset));
-  vbo.reset();
-}
-
-SET_SCALAR(bool, i)
-SET_SCALAR(unsigned int, ui)
-SET_SCALAR(float, f)
-SET_MATRIX(glm::mat4, 4)
-SET_VECTOR(glm::vec2, 2f)
-SET_VECTOR(glm::uvec2, 2ui)
-SET_VECTOR(glm::uvec3, 3ui)
-
-SET_UNIFORM(texcol_t, View, glm::mat4 &, view, vertex)
-SET_UNIFORM(texcol_t, FragColor, color_t &, frag_color, fragment)
+SET_UNIFORM_V(texcol_t, View, glm::mat4 &, view)
+SET_UNIFORM_F(texcol_t, FragColor, color_t &, frag_color)
 BIND_TEXTURE(texcol_t, sampler);
 
-SET_UNIFORM(sdf_t, View, glm::mat4 &, view, vertex)
-SET_UNIFORM(sdf_t, FragColor, color_t &, frag_color, fragment)
-SET_UNIFORM(sdf_t, Threshold, float, threshold, fragment)
-SET_UNIFORM(sdf_t, FontSize, float, font_size, fragment)
-SET_UNIFORM(sdf_t, AntiAlias, bool, anti_alias, fragment)
+SET_UNIFORM_V(sdf_t, View, glm::mat4 &, view)
+SET_UNIFORM_F(sdf_t, FragColor, color_t &, frag_color)
+SET_UNIFORM_F(sdf_t, Threshold, float, threshold)
+SET_UNIFORM_F(sdf_t, FontSize, float, font_size)
+SET_UNIFORM_F(sdf_t, AntiAlias, bool, anti_alias)
 BIND_TEXTURE(sdf_t, sampler);
 
 SET_UNIFORM(basic_t, View, glm::mat4 &, view, vertex)
@@ -93,7 +31,7 @@ SET_UNIFORM(striped_t, View, glm::mat4 &, view, vertex)
 SET_UNIFORM(striped_t, Width, unsigned int, width, fragment)
 SET_UNIFORM(striped_t, Spacing, unsigned int, spacing, fragment)
 striped_t &striped_t::setPattern(const Pattern pattern) {
-  setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
+  setUniform(fragment::pattern, static_cast<unsigned int>(pattern));
   return *this;
 }
 SET_UNIFORM(striped_t, FragColor, color_t &, frag_color, fragment)

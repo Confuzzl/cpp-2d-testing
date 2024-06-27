@@ -8,8 +8,8 @@
 
 #define SET_UNIFORM_TEMPLATE(type, call)                                       \
   template <>                                                                  \
-  void base_program_t::setUniform<type>(const uniform<type> &uniform,          \
-                                        const type &value) const {             \
+  void setUniform<type>(const uniform<type> &uniform, const type &value)       \
+      const {                                                                  \
     call;                                                                      \
   }
 #define SET_SCALAR(type, scalar_type)                                          \
@@ -26,13 +26,19 @@
 
 #define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
   type &type::set##func_name(const param_t param_name) {                       \
-    setUniform(shader.param_name, param_name);                                 \
+    setUniform(shader::param_name, param_name);                                \
     return *this;                                                              \
   }
+#define SET_UNIFORM_V(type, func_name, param_t, param_name)                    \
+  SET_UNIFORM(type, func_name, param_t, param_name, vertex)
+#define SET_UNIFORM_F(type, func_name, param_t, param_name)                    \
+  SET_UNIFORM(type, func_name, param_t, param_name, fragment)
+#define SET_UNIFORM_G(type, func_name, param_t, param_name)                    \
+  SET_UNIFORM(type, func_name, param_t, param_name, geometry)
 
 #define BIND_TEXTURE(type, sampler_name)                                       \
   type &type::bindTexture(const tex::texture &texture) {                       \
-    glBindTextureUnit(fragment.sampler_name.binding, texture.ID);              \
+    glBindTextureUnit(fragment::sampler_name.binding, texture.ID);             \
     return *this;                                                              \
   }
 

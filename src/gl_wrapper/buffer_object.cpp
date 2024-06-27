@@ -12,6 +12,12 @@ VBOHandle::VBOHandle(const GLuint vboID, const GLintptr offset,
                      const std::size_t vertexSize)
     : vboID{vboID}, offset{offset}, vertexSize{vertexSize} {}
 
+void VBOHandle::write(const void *data, const std::size_t size) {
+  glNamedBufferSubData(vboID, offset + localOffset, size, data);
+  localOffset += size;
+  count++;
+}
+
 void VBOHandle::reset() {
   count = 0;
   localOffset = 0;
@@ -19,17 +25,13 @@ void VBOHandle::reset() {
 
 std::vector<VBO> VBOHolder::vbos{};
 std::vector<VBOHandle> VBOHolder::handles{};
-VBOHandle *VBOHolder::POINT = nullptr;
-VBOHandle *VBOHolder::LINE = nullptr;
-VBOHandle *VBOHolder::TRI = nullptr;
-VBOHandle *VBOHolder::QUAD = nullptr;
 
 void VBOHolder::init() {
   vbos.emplace_back();
-  POINT = VBOHolder::getPair<vertex_layout::pos>(1).first;
-  LINE = VBOHolder::getPair<vertex_layout::pos>(2).first;
-  TRI = VBOHolder::getPair<vertex_layout::pos>(3).first;
-  QUAD = VBOHolder::getPair<vertex_layout::pos>(4).first;
+  VBOHolder::getIndex<vertex_layout::pos>(1);
+  VBOHolder::getIndex<vertex_layout::pos>(2);
+  VBOHolder::getIndex<vertex_layout::pos>(3);
+  VBOHolder::getIndex<vertex_layout::pos>(4);
 }
 
 EBO::EBO() { glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT); }

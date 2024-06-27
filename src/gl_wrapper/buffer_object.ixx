@@ -26,22 +26,31 @@ export struct VBOHandle {
   GLintptr localOffset = 0;
   std::size_t vertexSize;
 
+  // std::string str() const {
+  //   return std::format("{{\n"
+  //                      "\tvboID = {}\n"
+  //                      "\tcount = {}\n"
+  //                      "\toffset = {}\n"
+  //                      "\tlocalOffset = {}\n"
+  //                      "\tvertexSize = {}\n"
+  //                      "}}",
+  //                      vboID, count, offset, localOffset, vertexSize);
+  // }
+
   VBOHandle() = default;
   VBOHandle(const GLuint vboID, const GLintptr offset,
             const std::size_t vertexSize);
   VBOHandle(const VBOHandle &) = delete;
   VBOHandle(VBOHandle &&) = default;
+  VBOHandle &operator=(const VBOHandle &) = delete;
+  VBOHandle &operator=(VBOHandle &&) = default;
 
+  void write(const void *data, const std::size_t size);
   template <is_vertex_layout T> void write(const T &vertex) {
-    glNamedBufferSubData(vboID, offset + localOffset, sizeof(T), vertex.data());
-    localOffset += sizeof(T);
-    count++;
+    write(vertex.data(), sizeof(T));
   }
   template <glm::has_value_ptr T> void write(const T &data) {
-    glNamedBufferSubData(vboID, offset + localOffset, sizeof(data),
-                         glm::value_ptr(data));
-    localOffset += sizeof(data);
-    count++;
+    write(glm::value_ptr(data), sizeof(T));
   }
 
   void reset();
@@ -49,9 +58,9 @@ export struct VBOHandle {
 
 export struct VBOHolder {
   static std::vector<VBO> vbos;
-  static std::vector<VBOHandle> handles;
+  // static std::vector<VBOHandle> handles;
 
-  static VBOHandle *POINT, *LINE, *TRI, *QUAD;
+  // static VBOHandle *POINT, *LINE, *TRI, *QUAD;
 
   static void init();
 
@@ -98,7 +107,6 @@ export struct EBOHandle {
 };
 export struct EBOHolder {
   static std::vector<EBO> ebos;
-  static std::vector<EBOHandle> handles;
 
   static void init();
 

@@ -4,31 +4,29 @@ module;
 
 export module shaders:geometry;
 
+import :shader;
 import glm;
 
 export namespace shaders {
 namespace geom {
+template <typename T>
+concept format = has_uniform<T> && has_extension<T>("geom");
+
 struct line {
   static constexpr char name[] = "line.geom";
 
-  uniform<glm::mat4> view;
-  uniform<float> thickness;
+  static uniform<glm::mat4> view;
+  static uniform<float> thickness;
 
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(view);
-    CREATE_UNIFORM(thickness);
-  }
+  static void createUniforms(const GLuint ID);
 };
 struct circle {
   static constexpr char name[] = "circle.geom";
 
-  uniform<glm::mat4> view;
-  uniform<float> radius;
+  static uniform<glm::mat4> view;
+  static uniform<float> radius;
 
-  void createUniforms(const GLuint ID) {
-    CREATE_UNIFORM(view);
-    CREATE_UNIFORM(radius);
-  }
+  static void createUniforms(const GLuint ID);
 };
 } // namespace geom
 } // namespace shaders

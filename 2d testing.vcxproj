@@ -39,6 +39,8 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\gl_wrapper\buffer_object.cpp" />
     <ClCompile Include="src\gl_wrapper\query_object.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\fragment.cpp" />
+    <ClCompile Include="src\gl_wrapper\shaders\geometry.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\program.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\program.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\shader.cpp" />
@@ -46,6 +48,7 @@
     <ClCompile Include="src\gl_wrapper\shaders\fragment.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\geometry.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\vertex.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
@@ -383,7 +386,6 @@
     <None Include="assets\shaders\striped.frag" />
     <None Include="assets\shaders\tex.vert" />
     <None Include="assets\shaders\texcol.frag" />
-    <None Include="cpp.hint" />
     <None Include="Libraries\include\glm\detail\func_common.inl" />
     <None Include="Libraries\include\glm\detail\func_common_simd.inl" />
     <None Include="Libraries\include\glm\detail\func_exponential.inl" />

@@ -21,9 +21,9 @@ import debug;
 void GUIFrame::render() {
   matrix = Renderer::UI_MATRIX;
 
-  text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
-       colors::BLACK);
-  text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
+  // text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
+  //      colors::BLACK);
+  // text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
 }
 
 static constexpr unsigned short charWidthConvert(const unsigned char w) {
