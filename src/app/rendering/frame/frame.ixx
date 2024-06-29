@@ -45,19 +45,18 @@ export struct BaseFrame {
   void drawQuad(const dimension_t &dimensions,
                 const color_t &color = colors::WHITE) const;
 
-  template <shaders::vert::format V, shaders::has_uniform F, is_vertex_layout T>
+  template <shaders::vert::format V, shaders::frag::format F,
+            is_vertex_layout T>
   void drawMesh(const shaders::simple_program_t<V, F> &shader,
                 const Mesh<T> &mesh, const glm::vec2 &pos,
                 const float rot) const {
     static_assert(std::same_as<V::layout_t, T>,
                   "shader vertex layout does not match mesh vertex layout");
 
-    // static constexpr auto MAX_VERTICES = 0xffff;
-    // static VBOHandle &VBO = VBOHolder::getHandle<T>(MAX_VERTICES);
+    static constexpr auto MAX_VERTICES = 0xffff;
+    static VBOHandle VBO = VBOHolder::getHandle<T>(MAX_VERTICES);
 
-    // for (const T &vertex : mesh.data) {
-    //   VBO.write(vertex);
-    // }
+    // VBO.writeList(mesh.data);
 
     // shader.draw(mesh.primitive, VBO);
   }

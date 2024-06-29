@@ -9,6 +9,8 @@ import glm;
 import vertex_layout;
 import <concepts>;
 
+import debug;
+
 export namespace shaders {
 namespace vert {
 template <typename T>

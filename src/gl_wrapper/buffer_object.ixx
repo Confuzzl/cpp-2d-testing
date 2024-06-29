@@ -26,17 +26,6 @@ export struct VBOHandle {
   GLintptr localOffset = 0;
   std::size_t vertexSize;
 
-  // std::string str() const {
-  //   return std::format("{{\n"
-  //                      "\tvboID = {}\n"
-  //                      "\tcount = {}\n"
-  //                      "\toffset = {}\n"
-  //                      "\tlocalOffset = {}\n"
-  //                      "\tvertexSize = {}\n"
-  //                      "}}",
-  //                      vboID, count, offset, localOffset, vertexSize);
-  // }
-
   VBOHandle() = default;
   VBOHandle(const GLuint vboID, const GLintptr offset,
             const std::size_t vertexSize);
@@ -52,40 +41,43 @@ export struct VBOHandle {
   template <glm::has_value_ptr T> void write(const T &data) {
     write(glm::value_ptr(data), sizeof(T));
   }
+  template <typename T> void writeList(const T &list) {
+    for (const T::value_type &vertex : list) {
+      write(vertex);
+    }
+  }
+  template <typename T, std::size_t L> void writeList(const T (&list)[L]) {
+    for (const T &vertex : list) {
+      write(vertex);
+    }
+  }
 
   void reset();
 };
 
 export struct VBOHolder {
   static std::vector<VBO> vbos;
-  // static std::vector<VBOHandle> handles;
-
-  // static VBOHandle *POINT, *LINE, *TRI, *QUAD;
 
   static void init();
 
-  template <typename T>
-  static std::pair<VBOHandle *, int> getPair(const unsigned int count) {
+  template <typename T> static VBOHandle get(const unsigned int count) {
     const GLsizeiptr capacity = sizeof(T) * count;
     for (VBO &vbo : vbos) {
       if (vbo.offset + capacity > VBO::SIZE) {
         VBO &v = vbos.emplace_back();
         v.offset += capacity;
-        return {&handles.emplace_back(v.ID, 0, sizeof(T)),
-                static_cast<int>(handles.size() - 1)};
+        return {v.ID, 0, sizeof(T)};
       }
       const auto offset = vbo.offset;
       vbo.offset += capacity;
-      return {&handles.emplace_back(vbo.ID, offset, sizeof(T)),
-              static_cast<int>(handles.size() - 1)};
+      return {vbo.ID, offset, sizeof(T)};
     }
-    return {nullptr, -1};
+    return {};
   }
-  template <typename T> static VBOHandle &getHandle(const unsigned int count) {
-    return *getPair<T>(count).first;
-  }
-  template <typename T> static int getIndex(const unsigned int count) {
-    return getPair<T>(count).second;
+
+  template <typename T, std::size_t L> static VBOHandle &cachedGet() {
+    static VBOHandle out = get<T>(L);
+    return out;
   }
 };
 
@@ -110,8 +102,5 @@ export struct EBOHolder {
 
   static void init();
 
-  static std::pair<EBOHandle *, int>
-  get(const std::initializer_list<GLuint> &indices);
-  static EBOHandle &getHandle(const std::initializer_list<GLuint> &indices);
-  static int getIndex(const std::initializer_list<GLuint> &indices);
+  static EBOHandle get(const std::initializer_list<GLuint> &indices);
 };

@@ -7,7 +7,6 @@ module frame;
 
 import <numbers>;
 import app;
-// import shaders;
 import vertex_layout;
 
 void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
@@ -49,7 +48,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
   // 2 | 3
   //   |
   //   0
-  static EBOHandle &INDICES = EBOHolder::getHandle({0, 1, 1, 2, 1, 3});
+  static EBOHandle INDICES = EBOHolder::get({0, 1, 1, 2, 1, 3});
 
   static constexpr float HEAD_SIZE = 0.5f;
   static constexpr float ANGLE_OFFSET = std::numbers::pi_v<float> / 4;
@@ -70,6 +69,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
   for (const glm::vec2 vertex : vertices) {
     VBO_4.write(vertex);
   }
+  // VBO_4.writeList(vertices);
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_LINES, VBO_4, INDICES);
@@ -107,6 +107,7 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
   for (const glm::vec2 corner : corners) {
     VBO_4.write(corner);
   }
+  // VBO_4.writeList(corners);
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_LINE_LOOP, VBO_4);
@@ -120,6 +121,7 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
   for (const glm::vec2 corner : corners) {
     VBO_4.write(corner);
   }
+  // VBO_4.writeList(corners);
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_TRIANGLE_STRIP, VBO_4);

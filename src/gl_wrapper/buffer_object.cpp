@@ -24,15 +24,8 @@ void VBOHandle::reset() {
 }
 
 std::vector<VBO> VBOHolder::vbos{};
-std::vector<VBOHandle> VBOHolder::handles{};
 
-void VBOHolder::init() {
-  vbos.emplace_back();
-  VBOHolder::getIndex<vertex_layout::pos>(1);
-  VBOHolder::getIndex<vertex_layout::pos>(2);
-  VBOHolder::getIndex<vertex_layout::pos>(3);
-  VBOHolder::getIndex<vertex_layout::pos>(4);
-}
+void VBOHolder::init() { vbos.emplace_back(); }
 
 EBO::EBO() { glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT); }
 
@@ -45,30 +38,20 @@ EBOHandle::EBOHandle(const GLuint eboID, const GLintptr offset,
 }
 
 std::vector<EBO> EBOHolder::ebos{};
-std::vector<EBOHandle> EBOHolder::handles{};
 
 void EBOHolder::init() { ebos.emplace_back(); }
 
-std::pair<EBOHandle *, int>
-EBOHolder::get(const std::initializer_list<GLuint> &indices) {
+EBOHandle EBOHolder::get(const std::initializer_list<GLuint> &indices) {
   const GLsizeiptr size = indices.size() * sizeof(GLuint);
   for (EBO &ebo : ebos) {
     if (ebo.offset + size > EBO::SIZE) {
       EBO &e = ebos.emplace_back();
       e.offset += size;
-      return {&handles.emplace_back(e.ID, 0, size, indices),
-              static_cast<int>(handles.size() - 1)};
+      return {e.ID, 0, size, indices};
     }
     const auto offset = ebo.offset;
     ebo.offset += size;
-    return {&handles.emplace_back(ebo.ID, offset, size, indices),
-            static_cast<int>(handles.size() - 1)};
+    return {ebo.ID, offset, size, indices};
   }
   return {};
-}
-EBOHandle &EBOHolder::getHandle(const std::initializer_list<GLuint> &indices) {
-  return *get(indices).first;
-}
-int EBOHolder::getIndex(const std::initializer_list<GLuint> &indices) {
-  return get(indices).second;
 }
