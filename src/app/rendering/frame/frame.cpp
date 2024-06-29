@@ -123,6 +123,7 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
   }
   // VBO_4.writeList(corners);
 
-  shaders::basic.setView(matrix).setFragColor(color);
+  shaders::basic.setView(matrix);
+  shaders::basic.setFragColor(color);
   shaders::basic.draw(GL_TRIANGLE_STRIP, VBO_4);
 }

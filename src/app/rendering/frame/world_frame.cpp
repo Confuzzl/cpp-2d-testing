@@ -18,8 +18,8 @@ import math;
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
-  drawQuad({{0, 0}, {1, 1}}, colors::RED);
-  // drawCircle({0, 0}, 0.5f, colors::BLUE);
+  // drawQuad({{0, 0}, {1, 1}}, colors::RED);
+  //   drawCircle({0, 0}, 0.5f, colors::BLUE);
 
   // drawGrid();
 

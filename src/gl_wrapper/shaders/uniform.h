@@ -62,7 +62,7 @@ struct sampler_t {
     const GLint loc = glGetUniformLocation(shaderID, name.c_str());
     if (loc == -1)
       throw std::runtime_error{
-          std::format("{}: {} was not a valid uniform name", shaderID, name)};
+          std::format("{}: {} was not a valid sampler name", shaderID, name)};
     glGetUniformuiv(shaderID, loc, &binding);
   }
 };
