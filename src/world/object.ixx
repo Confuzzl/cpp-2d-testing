@@ -11,10 +11,10 @@ import circle;
 import polygon;
 import mesh;
 
-export template <is_vertex_layout T> struct Object {
+export struct Object {
   struct poly_mesh {
     Polygon poly;
-    Mesh<T> mesh;
+    Mesh mesh;
   };
   std::variant<Circle, poly_mesh> collider;
 };

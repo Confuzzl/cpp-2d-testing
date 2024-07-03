@@ -15,7 +15,7 @@ export namespace shaders {
 template <typename T>
 concept has_uniform = requires(T t, const GLuint ID) {
   { T::name } -> std::convertible_to<const char *>;
-  { T::createUniforms(ID) } -> std::same_as<void>;
+  { t.createUniforms(ID) } -> std::same_as<void>;
 };
 
 template <std::size_t L> constexpr const char *extension(const char (&str)[L]) {

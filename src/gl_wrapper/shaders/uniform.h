@@ -2,6 +2,7 @@
 
 #include "util/gl.h"
 #include <format>
+#include <iostream>
 #include <stdexcept>
 
 #define CREATE_UNIFORM(name) name.create(ID, #name)
@@ -26,7 +27,7 @@
 
 #define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
   type &type::set##func_name(const param_t param_name) {                       \
-    setUniform(shader::param_name, param_name);                                \
+    setUniform(shader.param_name, param_name);                                 \
     return *this;                                                              \
   }
 #define SET_UNIFORM_V(type, func_name, param_t, param_name)                    \
@@ -38,7 +39,7 @@
 
 #define BIND_TEXTURE(type, sampler_name)                                       \
   type &type::bindTexture(const tex::texture &texture) {                       \
-    glBindTextureUnit(fragment::sampler_name.binding, texture.ID);             \
+    glBindTextureUnit(fragment.sampler_name.binding, texture.ID);              \
     return *this;                                                              \
   }
 
@@ -48,6 +49,7 @@ template <typename T = void> struct uniform {
 
   void create(const GLuint shaderID, const std::string &name) {
     const GLint loc = glGetUniformLocation(shaderID, name.c_str());
+    std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
     if (loc == -1)
       throw std::runtime_error{
           std::format("{}: {} was not a valid uniform name", shaderID, name)};

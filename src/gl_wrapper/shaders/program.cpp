@@ -31,7 +31,7 @@ SET_UNIFORM(striped_t, View, glm::mat4 &, view, vertex)
 SET_UNIFORM(striped_t, Width, unsigned int, width, fragment)
 SET_UNIFORM(striped_t, Spacing, unsigned int, spacing, fragment)
 striped_t &striped_t::setPattern(const Pattern pattern) {
-  setUniform(fragment::pattern, static_cast<unsigned int>(pattern));
+  setUniform(fragment.pattern, static_cast<unsigned int>(pattern));
   return *this;
 }
 SET_UNIFORM(striped_t, FragColor, color_t &, frag_color, fragment)

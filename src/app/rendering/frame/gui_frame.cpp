@@ -21,10 +21,6 @@ import debug;
 void GUIFrame::render() {
   matrix = Renderer::UI_MATRIX;
 
-  // text("abc", colors::BLACK);
-
-  drawQuad({{0, 0}, {100, 100}}, colors::RED);
-
   // text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
   //      colors::BLACK);
   // text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
@@ -87,19 +83,11 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  for (const vertex_layout::postex &vertex : vertices) {
-    CHAR_VBO.write(vertex);
-  }
-  // CHAR_VBO.writeList(vertices);
+  CHAR_VBO.writeList(vertices);
 
-  if (scale < 2) {
-    shaders::texcol.setView(matrix).setFragColor(color).bindTexture(tex::font);
-    shaders::texcol.draw(GL_TRIANGLES, CHAR_VBO);
-  } else {
-    shaders::sdf.setView(matrix)
-        .setFragColor(color)
-        .setFontSize(scale)
-        .bindTexture(tex::sdfFont);
-    shaders::sdf.draw(GL_TRIANGLES, CHAR_VBO);
-  }
+  shaders::sdf.setView(matrix)
+      .setFragColor(color)
+      .setFontSize(scale)
+      .bindTexture(tex::sdfFont);
+  shaders::sdf.draw(GL_TRIANGLES, CHAR_VBO);
 }

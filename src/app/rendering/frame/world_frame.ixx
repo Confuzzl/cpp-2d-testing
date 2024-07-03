@@ -14,7 +14,7 @@ export struct WorldFrame : BaseFrame {
 
   void drawGrid() const;
 
-  template <is_vertex_layout T> void drawObject(const Object<T> &object) const {
+  void drawObject(const Object &object) const {
     if (std::holds_alternative<Circle>(object.collider)) {
       const Circle &circle = std::get<Circle>(object.collider);
       drawCircle(circle.pos(), circle.radius);

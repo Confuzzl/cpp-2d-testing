@@ -33,6 +33,7 @@ struct pos {
   glm::vec2 _pos;
 
   pos(const float x, const float y) : _pos{x, y} {}
+  pos(const glm::vec2 pos) : _pos{pos} {}
 
   const void *data() const { return &_pos; }
 };
@@ -47,6 +48,7 @@ struct postex {
   postex(const float x, const float y, const unsigned short u,
          const unsigned short v)
       : pos{x, y}, tex{u, v} {}
+  postex(const glm::vec2 pos, const glm::u16vec2 tex) : pos{pos}, tex{tex} {}
 
   const void *data() const { return &pos; }
 };

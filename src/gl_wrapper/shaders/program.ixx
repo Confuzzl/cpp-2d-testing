@@ -19,8 +19,8 @@ import debug;
 
 export namespace shaders {
 template <vert::format V, frag::format F> struct base_program_t {
-  using vertex = V;
-  using fragment = F;
+  V vertex;
+  F fragment;
 
   GLuint ID;
   GLuint vao;
@@ -47,12 +47,12 @@ private:
       glDeleteShader(shader.ID);
     }
   }
-  void createVAO() { V::createVAO(vao); }
+  void createVAO() { vertex.createVAO(vao); }
 
 protected:
   virtual void createUniforms() {
-    V::createUniforms(ID);
-    F::createUniforms(ID);
+    vertex.createUniforms(ID);
+    fragment.createUniforms(ID);
   }
 
 private:
@@ -94,7 +94,12 @@ public:
   SET_SCALAR(bool, i)
   SET_SCALAR(unsigned int, ui)
   SET_SCALAR(float, f)
-  SET_MATRIX(glm::mat4, 4)
+  template <>
+  void setUniform<glm::mat4>(const uniform<glm::mat4> &uniform,
+                             const glm::mat4 &value) const {
+    glad_glProgramUniformMatrix4fv(ID, uniform.location, 1, 0,
+                                   glm::value_ptr(value));
+  }
   SET_VECTOR(glm::vec2, 2f)
   SET_VECTOR(glm::uvec2, 2ui)
   SET_VECTOR(glm::uvec3, 3ui)
@@ -143,7 +148,7 @@ struct striped_t : simple_program_t<vert::basic, frag::striped> {
 
 template <vert::format V, frag::format F, geom::format G>
 struct geometry_program_t : base_program_t<V, F> {
-  using geometry = G;
+  G geometry;
 
   geometry_program_t()
       : base_program_t<V, F>(
@@ -154,7 +159,7 @@ struct geometry_program_t : base_program_t<V, F> {
 protected:
   void createUniforms() override {
     base_program_t<V, F>::createUniforms();
-    G::createUniforms(this->ID);
+    geometry.createUniforms(this->ID);
   }
 };
 

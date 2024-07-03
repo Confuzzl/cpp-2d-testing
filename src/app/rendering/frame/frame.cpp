@@ -66,10 +66,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
       to + glm::vec2{head.x * COS - head.y * SIN, head.x * SIN + head.y * COS},
       to + glm::vec2{head.x * COS + head.y * SIN, head.y * COS - head.x * SIN}};
 
-  for (const glm::vec2 vertex : vertices) {
-    VBO_4.write(vertex);
-  }
-  // VBO_4.writeList(vertices);
+  VBO_4.writeList(vertices);
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_LINES, VBO_4, INDICES);
@@ -104,10 +101,7 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  for (const glm::vec2 corner : corners) {
-    VBO_4.write(corner);
-  }
-  // VBO_4.writeList(corners);
+  VBO_4.writeList(corners);
 
   shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_LINE_LOOP, VBO_4);
@@ -118,12 +112,27 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {{from.x, to.y}, from, to, {to.x, from.y}};
 
-  for (const glm::vec2 corner : corners) {
-    VBO_4.write(corner);
-  }
-  // VBO_4.writeList(corners);
+  VBO_4.writeList(corners);
 
-  shaders::basic.setView(matrix);
-  shaders::basic.setFragColor(color);
+  shaders::basic.setView(matrix).setFragColor(color);
   shaders::basic.draw(GL_TRIANGLE_STRIP, VBO_4);
+}
+
+void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
+                         const float rot) const {
+  static constexpr auto MAX_VERTICES = 0xffff;
+  static VBOHandle VBO = VBOHolder::get<vertex_layout::pos>(MAX_VERTICES);
+
+  VBO.writeList(mesh.data);
+
+  shaders::trans.setView(matrix)
+      .setParentPos(pos)
+      .setRotation(rot)
+      .setFragColor(mesh.color);
+
+  if (mesh.ebo.count == -1) {
+    shaders::trans.draw(mesh.primitive, VBO);
+  } else {
+    shaders::trans.draw(mesh.primitive, VBO, mesh.ebo);
+  }
 }

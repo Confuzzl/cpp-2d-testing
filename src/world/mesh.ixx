@@ -11,11 +11,15 @@ import vertex_layout;
 import buffer_object;
 import color;
 
-export template <is_vertex_layout vertex_t = vertex_layout::pos> struct Mesh {
-  std::vector<vertex_t> data;
+export struct Mesh {
+  std::vector<vertex_layout::pos> data;
 
   EBOHandle ebo{};
 
-  color_t color = colors::WHITE;
+  color_t color;
   GLenum primitive;
+
+  Mesh(std::vector<vertex_layout::pos> &&data, const GLenum primitive,
+       const color_t &color = colors::WHITE)
+      : data{std::move(data)}, primitive{primitive}, color{color} {}
 };

@@ -18,10 +18,11 @@ import math;
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
-  // drawQuad({{0, 0}, {1, 1}}, colors::RED);
-  //   drawCircle({0, 0}, 0.5f, colors::BLUE);
+  drawGrid();
 
-  // drawGrid();
+  static Mesh mesh{{{-1, -1}, {+1, -1}, {+2, +1}, {+0, +2}, {-2, +1}},
+                   GL_TRIANGLE_FAN};
+  drawMesh(mesh);
 
   // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
   //   obj->draw();
