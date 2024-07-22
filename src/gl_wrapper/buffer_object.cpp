@@ -13,15 +13,11 @@ VBOHandle::VBOHandle(const GLuint vboID, const GLintptr offset,
     : vboID{vboID}, offset{offset}, vertexSize{vertexSize} {}
 
 void VBOHandle::write(const void *data, const std::size_t size) {
-  glNamedBufferSubData(vboID, offset + localOffset, size, data);
-  localOffset += size;
+  glNamedBufferSubData(vboID, offset, size, data);
   count++;
 }
 
-void VBOHandle::reset() {
-  count = 0;
-  localOffset = 0;
-}
+void VBOHandle::reset() { count = 0; }
 
 std::vector<VBO> VBOHolder::vbos{};
 

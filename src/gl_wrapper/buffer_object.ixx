@@ -23,8 +23,7 @@ export struct VBOHandle {
   GLuint vboID = 0;
   unsigned int count = 0;
   GLintptr offset = -1;
-  GLintptr localOffset = 0;
-  std::size_t vertexSize;
+  std::size_t vertexSize = 0;
 
   VBOHandle() = default;
   VBOHandle(const GLuint vboID, const GLintptr offset,
@@ -42,7 +41,7 @@ export struct VBOHandle {
     write(glm::value_ptr(data), sizeof(T));
   }
   template <typename T> void writeList(const T &list) {
-    for (const T::value_type &vertex : list) {
+    for (const auto &vertex : list) {
       write(vertex);
     }
   }
