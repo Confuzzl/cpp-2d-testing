@@ -13,7 +13,7 @@ struct gl_buffer_obj {
   GLuint ID;
   gl_buffer_obj();
 };
-
+// balls :3
 export struct VBO : gl_buffer_obj {
   static constexpr GLsizeiptr SIZE = 0xffffff;
   GLintptr offset = 0;
