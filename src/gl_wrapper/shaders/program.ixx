@@ -8,7 +8,8 @@ import vector;
 import texture;
 import glm;
 import color;
-import buffer_object;
+// import buffer_object;
+import bo_heap;
 
 import :shader;
 import :vertex;

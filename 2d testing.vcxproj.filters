@@ -198,6 +198,12 @@
     <ClCompile Include="src\gl_wrapper\shaders\fragment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl_wrapper\bo_heap.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\bo_heap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\gl.h">

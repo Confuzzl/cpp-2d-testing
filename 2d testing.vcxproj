@@ -37,6 +37,8 @@
     <ClCompile Include="src\app\rendering\frame\world_frame.ixx" />
     <ClCompile Include="src\app\update_cycle.ixx" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\gl_wrapper\bo_heap.cpp" />
+    <ClCompile Include="src\gl_wrapper\bo_heap.ixx" />
     <ClCompile Include="src\gl_wrapper\buffer_object.cpp" />
     <ClCompile Include="src\gl_wrapper\query_object.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\fragment.cpp" />
