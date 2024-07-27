@@ -9,6 +9,8 @@ import <numbers>;
 import app;
 import vertex_layout;
 
+import bo_heap;
+
 void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
                           const color_t &color) const {
   static constexpr float SCALE = 0.002f;
@@ -121,7 +123,8 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
                          const float rot) const {
   static constexpr auto MAX_VERTICES = 0xffff;
-  static VBOHandle VBO = VBOHolder::get<vertex_layout::pos>(MAX_VERTICES);
+  static heap::vbo_handle VBO =
+      heap::VBO_HOLDER.get<vertex_layout::pos>(MAX_VERTICES);
 
   VBO.writeList(mesh.data);
 
@@ -130,9 +133,9 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
       .setRotation(rot)
       .setFragColor(mesh.color);
 
-  if (mesh.ebo.count == -1) {
-    shaders::trans.draw(mesh.primitive, VBO);
-  } else {
+  if (mesh.ebo->parent) {
     shaders::trans.draw(mesh.primitive, VBO, mesh.ebo);
+  } else {
+    shaders::trans.draw(mesh.primitive, VBO);
   }
 }

@@ -6,7 +6,8 @@ export module rendering;
 
 import glm;
 
-import buffer_object;
+// import buffer_object;
+import bo_heap;
 import gui_frame;
 import world_frame;
 
@@ -18,10 +19,14 @@ export struct Renderer {
   query_object_t queryObject;
   GLint elapsed = 0;
 
-  VBOHandle *point;
-  VBOHandle *line;
-  VBOHandle *tri;
-  VBOHandle *quad;
+  // VBOHandle *point;
+  // VBOHandle *line;
+  // VBOHandle *tri;
+  // VBOHandle *quad;
+  heap::vbo_handle point;
+  heap::vbo_handle line;
+  heap::vbo_handle tri;
+  heap::vbo_handle quad;
 
   GUIFrame guiFrame;
   WorldFrame worldFrame;

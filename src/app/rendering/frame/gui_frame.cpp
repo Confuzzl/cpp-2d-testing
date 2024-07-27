@@ -17,6 +17,7 @@ import input_handler;
 import <vector>;
 import <format>;
 import debug;
+import bo_heap;
 
 void GUIFrame::render() {
   matrix = Renderer::UI_MATRIX;
@@ -40,7 +41,10 @@ void GUIFrame::text(const std::string &str, const color_t &color,
   static constexpr auto MAX_LENGTH = 0x100u;
   static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                 {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle CHAR_VBO = VBOHolder::get<vertex_layout::postex>(MAX_LENGTH);
+  // static VBOHandle CHAR_VBO =
+  // VBOHolder::get<vertex_layout::postex>(MAX_LENGTH);
+  static heap::vbo_handle CHAR_VBO =
+      heap::VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
     return;
@@ -83,7 +87,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  CHAR_VBO.writeList(vertices);
+  CHAR_VBO->writeList(vertices);
 
   shaders::sdf.setView(matrix)
       .setFragColor(color)

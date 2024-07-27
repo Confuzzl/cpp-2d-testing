@@ -15,12 +15,17 @@ raw_handle::~raw_handle() {
   }
 }
 raw_vbo_handle::raw_vbo_handle(buffer_object *parent, const GLuint offset,
-                               const GLuint size, const GLuint count,
-                               const GLuint vertexSize)
-    : raw_handle(parent, offset, size), count{count}, vertexSize{vertexSize} {}
+                               const GLuint size, const GLuint vertexSize)
+    : raw_handle(parent, offset, size), vertexSize{vertexSize} {}
 void raw_vbo_handle::writeRaw(const void *data, const GLuint size) {
   glNamedBufferSubData(parent->ID, offset, size, data);
+  count++;
+  if (count * vertexSize > size)
+    throw std::runtime_error{""};
 }
+raw_ebo_handle::raw_ebo_handle(buffer_object *parent, const GLuint offset,
+                               const GLuint size, const GLuint length)
+    : raw_handle(parent, offset, size), length{length} {}
 void raw_ebo_handle::write(const std::initializer_list<GLuint> &indices) {
   glNamedBufferSubData(parent->ID, offset, size, indices.begin());
 }
@@ -61,7 +66,8 @@ ebo_handle ebo::allocate(const std::initializer_list<GLuint> &indices) {
 
     const auto newSize = current->size - size;
 
-    auto out = std::make_unique<raw_ebo_handle>(this, current->offset, size);
+    auto out = std::make_unique<raw_ebo_handle>(
+        this, current->offset, size, static_cast<GLuint>(indices.size()));
 
     out->write(indices);
     if (newSize == 0) {

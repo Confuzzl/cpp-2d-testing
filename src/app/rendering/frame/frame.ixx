@@ -8,7 +8,7 @@ import glm;
 import color;
 import dimensions;
 
-import buffer_object;
+// import buffer_object;
 
 import vertex_layout;
 import mesh;

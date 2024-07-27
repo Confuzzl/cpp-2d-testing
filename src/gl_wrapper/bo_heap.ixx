@@ -26,7 +26,7 @@ struct raw_vbo_handle : raw_handle {
 
   raw_vbo_handle() = default;
   raw_vbo_handle(buffer_object *parent, const GLuint offset, const GLuint size,
-                 const GLuint count, const GLuint vertexSize);
+                 const GLuint vertexSize);
 
   void writeRaw(const void *data, const GLuint size);
   template <is_vertex_layout T> void write(const T &vertex) {
@@ -42,7 +42,11 @@ struct raw_vbo_handle : raw_handle {
   }
 };
 struct raw_ebo_handle : raw_handle {
-  using raw_handle::raw_handle;
+  GLuint length = 0;
+
+  raw_ebo_handle() = default;
+  raw_ebo_handle(buffer_object *parent, const GLuint offset, const GLuint size,
+                 const GLuint length);
 
   void write(const std::initializer_list<GLuint> &indices);
 };
@@ -81,7 +85,7 @@ struct vbo : buffer_object {
       const auto newSize = current->size - size;
 
       auto out = std::make_unique<raw_vbo_handle>(
-          this, current->offset, size, count, static_cast<GLuint>(sizeof(T)));
+          this, current->offset, size, static_cast<GLuint>(sizeof(T)));
 
       if (newSize == 0) {
         freeList.erase(current);

@@ -57,15 +57,15 @@ protected:
   }
 
 private:
-  void bind(const VBOHandle &vbo) const {
+  void bind(const heap::vbo_handle &vbo) const {
     glUseProgram(ID);
     glBindVertexArray(vao);
-    glVertexArrayVertexBuffer(vao, 0, vbo.vboID, vbo.offset,
-                              static_cast<GLsizei>(vbo.vertexSize));
+    glVertexArrayVertexBuffer(vao, 0, vbo->parent->ID, vbo->offset,
+                              static_cast<GLsizei>(vbo->vertexSize));
   }
-  void bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
+  void bind(const heap::vbo_handle &vbo, const heap::ebo_handle &ebo) const {
     bind(vbo);
-    glVertexArrayElementBuffer(vao, ebo.eboID);
+    glVertexArrayElementBuffer(vao, ebo->parent->ID);
   }
 
 public:
@@ -76,16 +76,16 @@ public:
     createUniforms();
   }
 
-  void draw(const GLenum primitive, VBOHandle &vbo) const {
+  void draw(const GLenum primitive, heap::vbo_handle &vbo) const {
     bind(vbo);
-    glDrawArrays(primitive, 0, vbo.count);
+    glDrawArrays(primitive, 0, vbo->count);
     vbo.reset();
   }
-  void draw(const GLenum primitive, VBOHandle &vbo,
-            const EBOHandle &ebo) const {
+  void draw(const GLenum primitive, heap::vbo_handle &vbo,
+            const heap::ebo_handle &ebo) const {
     bind(vbo, ebo);
-    glDrawElements(primitive, ebo.count, GL_UNSIGNED_INT,
-                   reinterpret_cast<void *>(ebo.offset));
+    glDrawElements(primitive, ebo->length, GL_UNSIGNED_INT,
+                   reinterpret_cast<void *>(ebo->offset));
     vbo.reset();
   }
 

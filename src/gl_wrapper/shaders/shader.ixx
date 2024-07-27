@@ -18,11 +18,8 @@ concept has_uniform = requires(T t, const GLuint ID) {
   { t.createUniforms(ID) } -> std::same_as<void>;
 };
 
-template <std::size_t L> constexpr const char *extension(const char (&str)[L]) {
-  return str + (L - 5);
-}
 template <has_uniform T> constexpr bool has_extension(const char *ext) {
-  return std::string_view{extension(T::name)} == ext;
+  return std::string_view{T::name}.ends_with(ext);
 }
 
 struct shader_t {
