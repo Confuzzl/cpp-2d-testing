@@ -50,7 +50,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
   // 2 | 3
   //   |
   //   0
-  static EBOHandle INDICES = EBOHolder::get({0, 1, 1, 2, 1, 3});
+  static heap::ebo_handle INDICES = heap::EBO_HOLDER.get({0, 1, 1, 2, 1, 3});
 
   static constexpr float HEAD_SIZE = 0.5f;
   static constexpr float ANGLE_OFFSET = std::numbers::pi_v<float> / 4;
@@ -126,7 +126,7 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
   static heap::vbo_handle VBO =
       heap::VBO_HOLDER.get<vertex_layout::pos>(MAX_VERTICES);
 
-  VBO.writeList(mesh.data);
+  VBO->writeList(mesh.data);
 
   shaders::trans.setView(matrix)
       .setParentPos(pos)
