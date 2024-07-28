@@ -43,8 +43,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
                                                 {{0, 0}, {1, 1}, {0, 1}}};
   // static VBOHandle CHAR_VBO =
   // VBOHolder::get<vertex_layout::postex>(MAX_LENGTH);
-  static heap::vbo_handle CHAR_VBO =
-      heap::VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
+  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
     return;

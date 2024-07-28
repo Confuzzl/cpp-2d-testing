@@ -18,11 +18,11 @@ void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
 }
 void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
                                const color_t &color) const {
-  VBO_1.write(point);
+  VBO_HOLDER.get<1>()->write(point);
 
   shaders::basic.setView(matrix).setFragColor(color);
   glPointSize(size);
-  shaders::basic.draw(GL_POINTS, VBO_1);
+  shaders::basic.draw(GL_POINTS, VBO_HOLDER.get<1>());
 }
 
 void BaseFrame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
@@ -50,7 +50,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
   // 2 | 3
   //   |
   //   0
-  static heap::ebo_handle INDICES = heap::EBO_HOLDER.get({0, 1, 1, 2, 1, 3});
+  static EBOHandle INDICES = EBO_HOLDER.get({0, 1, 1, 2, 1, 3});
 
   static constexpr float HEAD_SIZE = 0.5f;
   static constexpr float ANGLE_OFFSET = std::numbers::pi_v<float> / 4;
@@ -76,14 +76,14 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
 
 void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
                            const color_t &color) const {
-  VBO_1.write(center);
+  VBO_HOLDER.get<1>().write(center);
 
   shaders::circ.setView(matrix)
       .setRadius(radius)
       .setCenter(center)
       .setScreenDimensions({App::WIDTH, App::HEIGHT})
       .setFragColor(color);
-  shaders::circ.draw(GL_POINTS, VBO_1);
+  shaders::circ.draw(GL_POINTS, VBO_HOLDER.get<1>());
 }
 
 void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,
@@ -123,8 +123,7 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
                          const float rot) const {
   static constexpr auto MAX_VERTICES = 0xffff;
-  static heap::vbo_handle VBO =
-      heap::VBO_HOLDER.get<vertex_layout::pos>(MAX_VERTICES);
+  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::pos>(MAX_VERTICES);
 
   VBO->writeList(mesh.data);
 

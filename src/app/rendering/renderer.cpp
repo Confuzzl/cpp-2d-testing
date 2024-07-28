@@ -34,8 +34,8 @@ void Renderer::init() {
 
     // VBOHolder::init();
     // EBOHolder::init();
-    heap::VBO_HOLDER.init();
-    heap::EBO_HOLDER.init();
+    VBO_HOLDER.init();
+    EBO_HOLDER.init();
 
     queryObject.init();
   } catch (const std::runtime_error &e) {

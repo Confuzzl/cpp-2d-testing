@@ -15,10 +15,10 @@ static std::string sourceToString(const std::string &name) {
 
 using namespace shaders;
 
-shader_t::shader_t(const GLenum type, const std::string &name)
+Shader::Shader(const GLenum type, const std::string &name)
     : type{type}, name{name} {}
 
-void shader_t::compile() {
+void Shader::compile() {
   const std::string source = std::format("assets/shaders/{}", name);
 
   ID = glCreateShader(type);

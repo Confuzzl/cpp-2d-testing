@@ -6,36 +6,37 @@ module bo_heap;
 
 using namespace heap;
 
-raw_handle::raw_handle(buffer_object *parent, const GLuint offset,
-                       const GLuint size)
+BufferObjectHeapHandle::BufferObjectHeapHandle(BufferObject *parent,
+                                               const GLuint offset,
+                                               const GLuint size)
     : parent{parent}, offset{offset}, size{size} {}
-raw_handle::~raw_handle() {
+BufferObjectHeapHandle::~BufferObjectHeapHandle() {
   if (parent) {
     parent->free(this);
   }
 }
-raw_vbo_handle::raw_vbo_handle(buffer_object *parent, const GLuint offset,
-                               const GLuint size, const GLuint vertexSize)
-    : raw_handle(parent, offset, size), vertexSize{vertexSize} {}
-void raw_vbo_handle::writeRaw(const void *data, const GLuint size) {
+VBOHeapHandle::VBOHeapHandle(BufferObject *parent, const GLuint offset,
+                             const GLuint size, const GLuint vertexSize)
+    : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
+void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
   glNamedBufferSubData(parent->ID, offset, size, data);
   count++;
   if (count * vertexSize > size)
     throw std::runtime_error{""};
 }
-raw_ebo_handle::raw_ebo_handle(buffer_object *parent, const GLuint offset,
-                               const GLuint size, const GLuint length)
-    : raw_handle(parent, offset, size), length{length} {}
-void raw_ebo_handle::write(const std::initializer_list<GLuint> &indices) {
+EBOHeapHandle::EBOHeapHandle(BufferObject *parent, const GLuint offset,
+                             const GLuint size, const GLuint length)
+    : BufferObjectHeapHandle(parent, offset, size), length{length} {}
+void EBOHeapHandle::write(const std::initializer_list<GLuint> &indices) {
   glNamedBufferSubData(parent->ID, offset, size, indices.begin());
 }
 
-buffer_object::buffer_object() {
+BufferObject::BufferObject() {
   glCreateBuffers(1, &ID);
-  glNamedBufferStorage(ID, SIZE, NULL, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferStorage(ID, MAX_SIZE, NULL, GL_DYNAMIC_STORAGE_BIT);
 }
 
-void buffer_object::free(const raw_handle *handle) {
+void BufferObject::free(const BufferObjectHeapHandle *handle) {
   auto after = freeList.cbegin();
   while (after != freeList.cend() &&
          handle->offset + handle->size > after->offset) {
@@ -43,12 +44,12 @@ void buffer_object::free(const raw_handle *handle) {
   }
   coalesce(freeList.insert(after, {handle->offset, handle->size}));
 }
-void buffer_object::coalesce(const free_list::iterator &block) {
+void BufferObject::coalesce(const FreeList::iterator &block) {
   coalesceRight(block);
   if (block != freeList.cbegin())
     coalesceRight(std::prev(block));
 }
-void buffer_object::coalesceRight(const free_list::iterator &block) {
+void BufferObject::coalesceRight(const FreeList::iterator &block) {
   auto next = std::next(block);
   if (block->offset + block->size == next->offset) {
     block->size += next->size;
@@ -56,9 +57,9 @@ void buffer_object::coalesceRight(const free_list::iterator &block) {
   }
 }
 
-ebo_handle ebo::allocate(const std::initializer_list<GLuint> &indices) {
+EBOHandle EBO::allocate(const std::initializer_list<GLuint> &indices) {
   const GLuint size = static_cast<GLuint>(indices.size() * sizeof(GLuint));
-  if (size > SIZE)
+  if (size > MAX_SIZE)
     return {};
   for (auto current = freeList.begin(); current != freeList.cend(); current++) {
     if (size > current->size)
@@ -66,8 +67,8 @@ ebo_handle ebo::allocate(const std::initializer_list<GLuint> &indices) {
 
     const auto newSize = current->size - size;
 
-    auto out = std::make_unique<raw_ebo_handle>(
-        this, current->offset, size, static_cast<GLuint>(indices.size()));
+    auto out = std::make_unique<EBOHandle>(this, current->offset, size,
+                                           static_cast<GLuint>(indices.size()));
 
     out->write(indices);
     if (newSize == 0) {
@@ -81,7 +82,7 @@ ebo_handle ebo::allocate(const std::initializer_list<GLuint> &indices) {
   return {};
 }
 
-ebo_handle ebo_allocator::get(const std::initializer_list<GLuint> &indices) {
+EBOHandle EBOAllocator::get(const std::initializer_list<GLuint> &indices) {
   for (auto &buffer : buffers) {
     if (auto out = buffer.allocate(indices); out)
       return out;

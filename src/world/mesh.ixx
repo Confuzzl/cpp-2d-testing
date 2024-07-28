@@ -16,7 +16,7 @@ export struct Mesh {
   std::vector<vertex_layout::pos> data;
 
   // EBOHandle ebo{};
-  heap::ebo_handle ebo;
+  EBOHandle ebo;
 
   color_t color;
   GLenum primitive;

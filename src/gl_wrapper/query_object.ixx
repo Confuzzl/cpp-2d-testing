@@ -4,7 +4,7 @@ module;
 
 export module query_object;
 
-export struct query_object_t {
+export struct QueryObject {
   GLuint ID;
 
   void init() { glGenQueries(1, &ID); }
