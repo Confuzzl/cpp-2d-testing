@@ -14,34 +14,27 @@ import vector;
 
 import glm;
 import debug;
-import vertex_layout;
-import mesh;
 import app;
-
-import shaders;
-import texture;
 
 const glm::mat4 Renderer::UI_MATRIX{
     glm::ortho(0.0f, static_cast<float>(App::WIDTH), 0.0f,
                static_cast<float>(App::HEIGHT))};
 
-Renderer::Renderer() {}
+// Renderer::Renderer() {}
 void Renderer::init() {
-  try {
-    shaders::init();
+  // try {
+  //   // shaders::init();
 
-    tex::init();
+  //  // tex::init();
 
-    // VBOHolder::init();
-    // EBOHolder::init();
-    VBO_HOLDER.init();
-    EBO_HOLDER.init();
+  //  // VBO_HOLDER.init();
+  //  // EBO_HOLDER.init();
 
-    queryObject.init();
-  } catch (const std::runtime_error &e) {
-    println("{}", e.what());
-    MAIN_APP.close();
-  }
+  //  // queryObject.init();
+  //} catch (const std::runtime_error &e) {
+  //  println("{}", e.what());
+  //  MAIN_APP.close();
+  //}
 }
 
 void Renderer::renderFrame(const double t) {

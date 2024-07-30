@@ -19,8 +19,6 @@ import debug;
 
 export namespace shaders {
 template <vert::format V, frag::format F> struct BaseProgram {
-  V vertex;
-  F fragment;
 
   GLuint ID;
   GLuint vao;
@@ -31,8 +29,16 @@ private:
   std::vector<Shader> compileList;
 
 protected:
-  BaseProgram(std::vector<Shader> &&shaders)
-      : compileList{std::move(shaders)} {}
+  V vertex;
+  F fragment;
+
+  BaseProgram(std::vector<Shader> &&shaders) : compileList{std::move(shaders)} {
+    glfwInit();
+    ID = glCreateProgram();
+    createShaders();
+    createVAO();
+    createUniforms();
+  }
 
 private:
   void createShaders() {
@@ -69,10 +75,10 @@ private:
 
 public:
   void init() {
-    ID = glCreateProgram();
-    createShaders();
-    createVAO();
-    createUniforms();
+    // ID = glCreateProgram();
+    // createShaders();
+    // createVAO();
+    // createUniforms();
   }
 
   void draw(const GLenum primitive, VBOHandle &vbo) const {
@@ -83,8 +89,9 @@ public:
   void draw(const GLenum primitive, VBOHandle &vbo,
             const EBOHandle &ebo) const {
     bind(vbo, ebo);
-    glDrawElements(primitive, ebo->length, GL_UNSIGNED_INT,
-                   reinterpret_cast<void *>(ebo->offset));
+    glDrawElements(
+        primitive, ebo->length, GL_UNSIGNED_INT,
+        reinterpret_cast<void *>(static_cast<GLuint64>(ebo->offset)));
     vbo->reset();
   }
 
@@ -108,37 +115,37 @@ struct SimpleProgram : BaseProgram<V, F> {
                              Shader{GL_FRAGMENT_SHADER, F::name})) {}
 };
 
-struct texcol_t : SimpleProgram<vert::tex, frag::texcol> {
-  texcol_t &setView(const glm::mat4 &view);
-  texcol_t &setFragColor(const color_t &frag_color);
-  texcol_t &bindTexture(const tex::texture &texture);
+struct TexCol : SimpleProgram<vert::tex, frag::texcol> {
+  TexCol &setView(const glm::mat4 &view);
+  TexCol &setFragColor(const color_t &frag_color);
+  TexCol &bindTexture(const tex::texture &texture);
 };
 
-struct sdf_t : SimpleProgram<vert::tex, frag::sdf_font> {
-  sdf_t &setView(const glm::mat4 &view);
-  sdf_t &setFragColor(const color_t &frag_color);
-  sdf_t &setThreshold(const float threshold);
-  sdf_t &setFontSize(const float font_size);
-  sdf_t &setAntiAlias(const bool anti_alias);
-  sdf_t &bindTexture(const tex::texture &texture);
+struct Sdf : SimpleProgram<vert::tex, frag::sdf_font> {
+  Sdf &setView(const glm::mat4 &view);
+  Sdf &setFragColor(const color_t &frag_color);
+  Sdf &setThreshold(const float threshold);
+  Sdf &setFontSize(const float font_size);
+  Sdf &setAntiAlias(const bool anti_alias);
+  Sdf &bindTexture(const tex::texture &texture);
 };
-struct basic_t : SimpleProgram<vert::basic, frag::basic> {
-  basic_t &setView(const glm::mat4 &view);
-  basic_t &setFragColor(const color_t &frag_color);
+struct Basic : SimpleProgram<vert::basic, frag::basic> {
+  Basic &setView(const glm::mat4 &view);
+  Basic &setFragColor(const color_t &frag_color);
 };
-struct trans_t : SimpleProgram<vert::trans, frag::basic> {
-  trans_t &setParentPos(const glm::vec2 parent_pos);
-  trans_t &setRotation(const float rotation);
-  trans_t &setView(const glm::mat4 &view);
-  trans_t &setFragColor(const color_t &frag_color);
+struct Transform : SimpleProgram<vert::trans, frag::basic> {
+  Transform &setParentPos(const glm::vec2 parent_pos);
+  Transform &setRotation(const float rotation);
+  Transform &setView(const glm::mat4 &view);
+  Transform &setFragColor(const color_t &frag_color);
 };
-struct striped_t : SimpleProgram<vert::basic, frag::striped> {
-  striped_t &setView(const glm::mat4 &view);
-  striped_t &setWidth(const unsigned int width);
-  striped_t &setSpacing(const unsigned int spacing);
+struct Striped : SimpleProgram<vert::basic, frag::striped> {
+  Striped &setView(const glm::mat4 &view);
+  Striped &setWidth(const unsigned int width);
+  Striped &setSpacing(const unsigned int spacing);
   enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
-  striped_t &setPattern(const Pattern pattern);
-  striped_t &setFragColor(const color_t &frag_color);
+  Striped &setPattern(const Pattern pattern);
+  Striped &setFragColor(const color_t &frag_color);
 };
 
 template <vert::format V, frag::format F, geom::format G>
@@ -158,10 +165,10 @@ protected:
   }
 };
 
-struct line_t : GeometryProgram<vert::identity, frag::basic, geom::line> {
-  line_t &setView(const glm::mat4 &view);
-  line_t &setThickness(const float thickness);
-  line_t &setFragColor(const color_t &frag_color);
+struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {
+  Line &setView(const glm::mat4 &view);
+  Line &setThickness(const float thickness);
+  Line &setFragColor(const color_t &frag_color);
 };
 
 struct circ_t : GeometryProgram<vert::identity, frag::circle, geom::circle> {

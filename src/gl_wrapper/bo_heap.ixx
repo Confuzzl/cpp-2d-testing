@@ -4,24 +4,27 @@ module;
 
 export module bo_heap;
 
-import <vector>;
 import <memory>;
+import <vector>;
 import <list>;
 
 import glm;
 import vertex_layout;
 
-struct BufferObject;
-struct BufferObjectHeapHandle {
-  BufferObject *parent = nullptr;
-  GLuint offset = 0, size = 0;
+export {
+  struct BufferObject;
+  struct BufferObjectHeapHandle {
+    BufferObject *parent = nullptr;
+    GLuint offset = 0, size = 0;
 
-  BufferObjectHeapHandle() = default;
-  BufferObjectHeapHandle(BufferObject *parent, const GLuint offset,
-                         const GLuint size);
-  ~BufferObjectHeapHandle();
-};
-struct VBOHeapHandle : BufferObjectHeapHandle {
+    BufferObjectHeapHandle() = default;
+    BufferObjectHeapHandle(BufferObject *parent, const GLuint offset,
+                           const GLuint size);
+    ~BufferObjectHeapHandle();
+  };
+}
+
+export struct VBOHeapHandle : BufferObjectHeapHandle {
   GLuint count = 0, vertexSize = 0;
 
   VBOHeapHandle() = default;
@@ -40,8 +43,10 @@ struct VBOHeapHandle : BufferObjectHeapHandle {
       write(vertex);
     }
   }
+
+  void reset();
 };
-struct EBOHeapHandle : BufferObjectHeapHandle {
+export struct EBOHeapHandle : BufferObjectHeapHandle {
   GLuint length = 0;
 
   EBOHeapHandle() = default;
@@ -51,10 +56,10 @@ struct EBOHeapHandle : BufferObjectHeapHandle {
   void write(const std::initializer_list<GLuint> &indices);
 };
 
-using VBOHandle = std::unique_ptr<VBOHeapHandle>;
-using EBOHandle = std::unique_ptr<EBOHeapHandle>;
+export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
+export using EBOHandle = std::unique_ptr<EBOHeapHandle>;
 
-struct BufferObject {
+export struct BufferObject {
   static constexpr auto MAX_SIZE = 0xffffffu;
 
   GLuint ID;
@@ -72,7 +77,7 @@ struct BufferObject {
   void coalesceRight(const FreeList::iterator &block);
 };
 
-struct VBO : BufferObject {
+export struct VBO : BufferObject {
   template <typename T> VBOHandle allocate(const GLuint count) {
     const GLuint size = count * static_cast<GLuint>(sizeof(T));
     if (size > MAX_SIZE)
@@ -99,18 +104,22 @@ struct VBO : BufferObject {
   }
 };
 
-struct EBO : BufferObject {
+export struct EBO : BufferObject {
   EBOHandle allocate(const std::initializer_list<GLuint> &indices);
 };
 
-template <typename T> struct BufferObjectAllocator {
+export template <typename T> struct BufferObjectAllocator {
   std::vector<T> buffers;
 
-  BufferObjectAllocator() { buffers.reserve(8); }
+  BufferObjectAllocator() {
+    buffers.reserve(8);
+    glfwInit();
+    buffers.emplace_back();
+  }
 
-  void init() { buffers.emplace_back(); }
+  void init() {}
 };
-struct VBOAllocator : BufferObjectAllocator<VBO> {
+export struct VBOAllocator : BufferObjectAllocator<VBO> {
   template <typename T> VBOHandle get(const GLuint count) {
     for (auto &buffer : buffers) {
       if (auto out = buffer.allocate<T>(count); out)
@@ -119,14 +128,21 @@ struct VBOAllocator : BufferObjectAllocator<VBO> {
     return buffers.emplace_back().allocate<T>(count);
   }
 
-  template <GLuint count, typename T = vertex_layout::pos> VBOHandle get() {
+  template <GLuint count, typename T = vertex_layout::pos> VBOHandle &get() {
     static VBOHandle cache = get<T>(count);
     return cache;
   }
 };
-struct EBOAllocator : BufferObjectAllocator<EBO> {
+export struct EBOAllocator : BufferObjectAllocator<EBO> {
   EBOHandle get(const std::initializer_list<GLuint> &indices);
 };
 
-VBOAllocator VBO_HOLDER{};
-EBOAllocator EBO_HOLDER{};
+// export VBOAllocator VBO_HOLDER{};
+// export EBOAllocator EBO_HOLDER{};
+//
+// export {
+//   VBOHandle &VBO_1 = VBO_HOLDER.get<1>();
+//   VBOHandle &VBO_2 = VBO_HOLDER.get<2>();
+//   VBOHandle &VBO_3 = VBO_HOLDER.get<3>();
+//   VBOHandle &VBO_4 = VBO_HOLDER.get<4>();
+// }

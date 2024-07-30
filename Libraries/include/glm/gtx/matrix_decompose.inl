@@ -25,11 +25,11 @@ namespace detail
 }//namespace detail
 
 	// Matrix decompose
-	// http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformationMatrix.cpp
+	// http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformformationMatrix.cpp
 	// Decomposes the mode matrix to translations,rotation scale components
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER bool decompose(mat<4, 4, T, Q> const& ModelMatrix, vec<3, T, Q> & Scale, qua<T, Q> & Orientation, vec<3, T, Q> & Translation, vec<3, T, Q> & Skew, vec<4, T, Q> & Perspective)
+	GLM_FUNC_QUALIFIER bool decompose(mat<4, 4, T, Q> const& ModelMatrix, vec<3, T, Q> & Scale, qua<T, Q> & Orientation, vec<3, T, Q> & Transformlation, vec<3, T, Q> & Skew, vec<4, T, Q> & Perspective)
 	{
 		mat<4, 4, T, Q> LocalMatrix(ModelMatrix);
 
@@ -70,9 +70,9 @@ namespace detail
 			// rightHandSide by the inverse.  (This is the easiest way, not
 			// necessarily the best.)
 			mat<4, 4, T, Q> InversePerspectiveMatrix = glm::inverse(PerspectiveMatrix);//   inverse(PerspectiveMatrix, inversePerspectiveMatrix);
-			mat<4, 4, T, Q> TransposedInversePerspectiveMatrix = glm::transpose(InversePerspectiveMatrix);//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
+			mat<4, 4, T, Q> TransformposedInversePerspectiveMatrix = glm::transpose(InversePerspectiveMatrix);//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
 
-			Perspective = TransposedInversePerspectiveMatrix * RightHandSide;
+			Perspective = TransformposedInversePerspectiveMatrix * RightHandSide;
 			//  v4MulPointByMatrix(rightHandSide, transposedInversePerspectiveMatrix, perspectivePoint);
 
 			// Clear the perspective partition
@@ -86,7 +86,7 @@ namespace detail
 		}
 
 		// Next take care of translation (easy).
-		Translation = vec<3, T, Q>(LocalMatrix[3]);
+		Transformlation = vec<3, T, Q>(LocalMatrix[3]);
 		LocalMatrix[3] = vec<4, T, Q>(0, 0, 0, LocalMatrix[3].w);
 
 		vec<3, T, Q> Row[3], Pdum3;

@@ -7,5 +7,10 @@ export module query_object;
 export struct QueryObject {
   GLuint ID;
 
-  void init() { glGenQueries(1, &ID); }
+  QueryObject() {
+    glfwInit();
+    glGenQueries(1, &ID);
+  }
+
+  void init() {}
 };

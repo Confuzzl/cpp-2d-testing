@@ -8,14 +8,12 @@ import vector;
 
 import poly;
 import vertex_layout;
-// import buffer_object;
 import bo_heap;
 import color;
 
 export struct Mesh {
   std::vector<vertex_layout::pos> data;
 
-  // EBOHandle ebo{};
   EBOHandle ebo;
 
   color_t color;

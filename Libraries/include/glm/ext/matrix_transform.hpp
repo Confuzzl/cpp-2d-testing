@@ -59,7 +59,7 @@ namespace glm
 	///
 	/// @see - translate(mat<4, 4, T, Q> const& m, T x, T y, T z)
 	/// @see - translate(vec<3, T, Q> const& v)
-	/// @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glTranslate.xml">glTranslate man page</a>
+	/// @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glTransformlate.xml">glTransformlate man page</a>
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<4, 4, T, Q> translate(
 		mat<4, 4, T, Q> const& m, vec<3, T, Q> const& v);

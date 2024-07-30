@@ -12,21 +12,21 @@ import gl_debug;
 import rendering;
 
 App::App() : loopCycle{0}, updateCycle{120}, frameCycle{60} {
-  glfwInit();
+  // glfwInit();
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  window = glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", NULL, NULL);
-  if (window == NULL) {
-    throw std::runtime_error{"window creation error"};
-  }
-  glfwMakeContextCurrent(window);
+  // window = glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", NULL, NULL);
+  // if (window == NULL) {
+  //   throw std::runtime_error{"window creation error"};
+  // }
+  // glfwMakeContextCurrent(window);
 
-  gladLoadGL();
-  glViewport(0, 0, WIDTH, HEIGHT);
+  // gladLoadGL();
+  // glViewport(0, 0, WIDTH, HEIGHT);
 
   glfwSetCursorPosCallback(window, InputHandler::mousePosCallback);
   glfwSetMouseButtonCallback(window, InputHandler::mouseClickCallback);

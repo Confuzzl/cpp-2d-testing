@@ -30,27 +30,27 @@ namespace glm
 	/// @addtogroup gtx_transform2
 	/// @{
 
-	//! Transforms a matrix with a shearing on X axis.
+	//! Transformforms a matrix with a shearing on X axis.
 	//! From GLM_GTX_transform2 extension.
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<3, 3, T, Q> shearX2D(mat<3, 3, T, Q> const& m, T y);
 
-	//! Transforms a matrix with a shearing on Y axis.
+	//! Transformforms a matrix with a shearing on Y axis.
 	//! From GLM_GTX_transform2 extension.
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<3, 3, T, Q> shearY2D(mat<3, 3, T, Q> const& m, T x);
 
-	//! Transforms a matrix with a shearing on X axis
+	//! Transformforms a matrix with a shearing on X axis
 	//! From GLM_GTX_transform2 extension.
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<4, 4, T, Q> shearX3D(mat<4, 4, T, Q> const& m, T y, T z);
 
-	//! Transforms a matrix with a shearing on Y axis.
+	//! Transformforms a matrix with a shearing on Y axis.
 	//! From GLM_GTX_transform2 extension.
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<4, 4, T, Q> shearY3D(mat<4, 4, T, Q> const& m, T x, T z);
 
-	//! Transforms a matrix with a shearing on Z axis.
+	//! Transformforms a matrix with a shearing on Z axis.
 	//! From GLM_GTX_transform2 extension.
 	template<typename T, qualifier Q>
 	GLM_FUNC_DECL mat<4, 4, T, Q> shearZ3D(mat<4, 4, T, Q> const& m, T x, T y);

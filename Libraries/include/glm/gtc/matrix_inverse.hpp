@@ -42,7 +42,7 @@ namespace glm
 	/// @tparam genType Squared floating-point matrix: half, float or double. Inverse of matrix based of half-qualifier floating point value is highly innacurate.
 	/// @see gtc_matrix_inverse
 	template<typename genType>
-	GLM_FUNC_DECL genType inverseTranspose(genType const& m);
+	GLM_FUNC_DECL genType inverseTransformpose(genType const& m);
 
 	/// @}
 }//namespace glm

@@ -4,8 +4,6 @@ module;
 
 module bo_heap;
 
-using namespace heap;
-
 BufferObjectHeapHandle::BufferObjectHeapHandle(BufferObject *parent,
                                                const GLuint offset,
                                                const GLuint size)
@@ -15,6 +13,7 @@ BufferObjectHeapHandle::~BufferObjectHeapHandle() {
     parent->free(this);
   }
 }
+
 VBOHeapHandle::VBOHeapHandle(BufferObject *parent, const GLuint offset,
                              const GLuint size, const GLuint vertexSize)
     : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
@@ -22,8 +21,11 @@ void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
   glNamedBufferSubData(parent->ID, offset, size, data);
   count++;
   if (count * vertexSize > size)
-    throw std::runtime_error{""};
+    throw std::runtime_error{
+        std::format("Overwrite at VBO handle at VBO {}", parent->ID)};
 }
+void VBOHeapHandle::reset() { count = 0; }
+
 EBOHeapHandle::EBOHeapHandle(BufferObject *parent, const GLuint offset,
                              const GLuint size, const GLuint length)
     : BufferObjectHeapHandle(parent, offset, size), length{length} {}
@@ -67,8 +69,8 @@ EBOHandle EBO::allocate(const std::initializer_list<GLuint> &indices) {
 
     const auto newSize = current->size - size;
 
-    auto out = std::make_unique<EBOHandle>(this, current->offset, size,
-                                           static_cast<GLuint>(indices.size()));
+    auto out = std::make_unique<EBOHeapHandle>(
+        this, current->offset, size, static_cast<GLuint>(indices.size()));
 
     out->write(indices);
     if (newSize == 0) {

@@ -26,7 +26,7 @@ namespace glm
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER mat<2, 2, T, Q> inverseTranspose(mat<2, 2, T, Q> const& m)
+	GLM_FUNC_QUALIFIER mat<2, 2, T, Q> inverseTransformpose(mat<2, 2, T, Q> const& m)
 	{
 		T Determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
 
@@ -40,7 +40,7 @@ namespace glm
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER mat<3, 3, T, Q> inverseTranspose(mat<3, 3, T, Q> const& m)
+	GLM_FUNC_QUALIFIER mat<3, 3, T, Q> inverseTransformpose(mat<3, 3, T, Q> const& m)
 	{
 		T Determinant =
 			+ m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
@@ -63,7 +63,7 @@ namespace glm
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> inverseTranspose(mat<4, 4, T, Q> const& m)
+	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> inverseTransformpose(mat<4, 4, T, Q> const& m)
 	{
 		T SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
 		T SubFactor01 = m[2][1] * m[3][3] - m[3][1] * m[2][3];

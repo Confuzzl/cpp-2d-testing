@@ -10,7 +10,9 @@ module texture;
 
 import <format>;
 
-void tex::texture::init() {
+tex::texture::texture(const std::string &path) : path{path} {
+  glfwInit();
+
   std::string apath = "assets/" + path;
   glCreateTextures(GL_TEXTURE_2D, 1, &ID);
   glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -19,7 +21,7 @@ void tex::texture::init() {
   stbi_set_flip_vertically_on_load(true);
   unsigned char *data =
       stbi_load(apath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-  if (not data) {
+  if (!data) {
     stbi_image_free(data);
     throw std::runtime_error{std::format("TEXTURE {} FAILED TO LOAD", apath)};
   }
@@ -29,3 +31,6 @@ void tex::texture::init() {
   glGenerateTextureMipmap(ID);
   stbi_image_free(data);
 }
+tex::texture::~texture() { glDeleteTextures(1, &ID); }
+
+void tex::texture::init() {}

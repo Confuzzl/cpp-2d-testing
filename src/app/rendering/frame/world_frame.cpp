@@ -45,7 +45,7 @@ void WorldFrame::drawGrid() const {
   static constexpr auto WIDTH = 1.f;
   static constexpr auto AXIS_COUNT = 2 * (HALF_SIZE * 2 + 1);
   static constexpr auto VERTEX_COUNT = 2 * AXIS_COUNT;
-  static vbo_handle VBO = VBO_HOLDER.get<vertex_layout::pos>(VERTEX_COUNT);
+  static auto VBO = VBO_HOLDER.get<vertex_layout::pos>(VERTEX_COUNT);
   static const glm::vec2 AXES[]{{1.0f, 0.0f}, {0.0f, 1.0f}};
 
   for (auto a = 0; a < 2; a++) {

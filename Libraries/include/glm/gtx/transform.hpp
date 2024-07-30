@@ -32,7 +32,7 @@ namespace glm
 	/// @addtogroup gtx_transform
 	/// @{
 
-	/// Transforms a matrix with a translation 4 * 4 matrix created from 3 scalars.
+	/// Transformforms a matrix with a translation 4 * 4 matrix created from 3 scalars.
 	/// @see gtc_matrix_transform
 	/// @see gtx_transform
 	template<typename T, qualifier Q>
@@ -47,7 +47,7 @@ namespace glm
 		T angle,
 		vec<3, T, Q> const& v);
 
-	/// Transforms a matrix with a scale 4 * 4 matrix created from a vector of 3 components.
+	/// Transformforms a matrix with a scale 4 * 4 matrix created from a vector of 3 components.
 	/// @see gtc_matrix_transform
 	/// @see gtx_transform
 	template<typename T, qualifier Q>
