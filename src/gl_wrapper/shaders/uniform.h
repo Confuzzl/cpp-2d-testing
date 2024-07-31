@@ -5,7 +5,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#define CREATE_UNIFORM(name) name.create(ID, #name)
+// #define CREATE_UNIFORM(name) name.create(ID, #name)
+#define NEW_UNIFORM(type, name)                                                \
+  uniform<##type>##name { programID, #name }
 
 #define SET_UNIFORM_TEMPLATE(type, call)                                       \
   template <>                                                                  \
@@ -47,25 +49,48 @@ namespace shaders {
 template <typename T = void> struct uniform {
   GLint location;
 
-  void create(const GLuint shaderID, const std::string &name) {
-    const GLint loc = glGetUniformLocation(shaderID, name.c_str());
-    std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
-    if (loc == -1)
+  uniform(const GLuint shaderID, const char *name)
+      : location{glGetUniformLocation(shaderID, name)} {
+    if (location == -1)
       throw std::runtime_error{
           std::format("{}: {} was not a valid uniform name", shaderID, name)};
-    location = loc;
+    std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
   }
+
+  // void create(const GLuint shaderID, const std::string &name) {
+  //   const GLint loc = glGetUniformLocation(shaderID, name.c_str());
+  //   std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
+  //   if (loc == -1)
+  //     throw std::runtime_error{
+  //         std::format("{}: {} was not a valid uniform name", shaderID,
+  //         name)};
+  //   location = loc;
+  // }
 };
 
 struct sampler_t {
   GLuint binding;
 
-  void create(const GLuint shaderID, const std::string &name) {
-    const GLint loc = glGetUniformLocation(shaderID, name.c_str());
-    if (loc == -1)
+  static GLuint getBinding(const GLuint shaderID, const char *name) {
+    const GLint location = glGetUniformLocation(shaderID, name);
+    if (location == -1)
       throw std::runtime_error{
           std::format("{}: {} was not a valid sampler name", shaderID, name)};
-    glGetUniformuiv(shaderID, loc, &binding);
+    GLuint binding;
+    glGetUniformuiv(shaderID, location, &binding);
+    return binding;
   }
+
+  sampler_t(const GLuint shaderID, const char *name)
+      : binding{getBinding(shaderID, name)} {}
+
+  // void create(const GLuint shaderID, const std::string &name) {
+  //   const GLint loc = glGetUniformLocation(shaderID, name.c_str());
+  //   if (loc == -1)
+  //     throw std::runtime_error{
+  //         std::format("{}: {} was not a valid sampler name", shaderID,
+  //         name)};
+  //   glGetUniformuiv(shaderID, loc, &binding);
+  // }
 };
 } // namespace shaders

@@ -17,7 +17,7 @@ Key::Key(const Callback &processOn, const Callback &processOff)
     : Key(processOn, processOn, processOff, processOff){};
 Key::Key(const Callback &processOn) : Key(processOn, NONE()) {}
 
-void Key::change(int action) {
+void Key::change(const int action) {
   switch (action) {
   case GLFW_RELEASE: {
     on = false;
@@ -60,6 +60,5 @@ Key::Callback Key::moveFunction(const glm::vec2 &direction) {
 }
 
 Key::Callback Key::NONE() {
-  static Callback out{[](const double) {}};
-  return out;
+  return [](const double) {};
 }

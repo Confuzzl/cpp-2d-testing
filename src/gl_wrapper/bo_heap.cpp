@@ -35,7 +35,7 @@ void EBOHeapHandle::write(const std::initializer_list<GLuint> &indices) {
 
 BufferObject::BufferObject() {
   glCreateBuffers(1, &ID);
-  glNamedBufferStorage(ID, MAX_SIZE, NULL, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferStorage(ID, MAX_SIZE, nullptr, GL_DYNAMIC_STORAGE_BIT);
 }
 
 void BufferObject::free(const BufferObjectHeapHandle *handle) {
@@ -52,7 +52,7 @@ void BufferObject::coalesce(const FreeList::iterator &block) {
     coalesceRight(std::prev(block));
 }
 void BufferObject::coalesceRight(const FreeList::iterator &block) {
-  auto next = std::next(block);
+  const auto next = std::next(block);
   if (block->offset + block->size == next->offset) {
     block->size += next->size;
     freeList.erase(next);

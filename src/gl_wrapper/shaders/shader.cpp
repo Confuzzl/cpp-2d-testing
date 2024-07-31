@@ -2,6 +2,7 @@ module;
 
 #include "gl_wrapper/shaders/uniform.h"
 #include <fstream>
+#include <stdexcept>
 
 module shaders:shader;
 
@@ -15,25 +16,18 @@ static std::string sourceToString(const std::string &name) {
 
 using namespace shaders;
 
-Shader::Shader(const GLenum type, const std::string &name)
-    : type{type}, name{name} {}
-
-void Shader::compile() {
-  const std::string source = std::format("assets/shaders/{}", name);
-
-  ID = glCreateShader(type);
-
-  const std::string temp = sourceToString(source);
+Shader::Shader(const GLenum type, const char *name)
+    : ID{glCreateShader(type)}, type{type}, name{name} {
+  const std::string temp =
+      sourceToString(std::format("assets/shaders/{}", name));
   const char *chars = temp.c_str();
-  glShaderSource(ID, 1, &chars, NULL);
+  glShaderSource(ID, 1, &chars, nullptr);
 
   glCompileShader(ID);
 
   GLint success = 0;
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    println("COMPILATION ERROR {}", name);
-    return;
-  }
-  println("Compiled {}: {}", name, ID);
+  if (!success)
+    throw std::runtime_error{std::format("COMPILATION ERROR {}", name)};
 }
+Shader::~Shader() { glDeleteShader(ID); }

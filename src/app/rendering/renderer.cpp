@@ -17,10 +17,7 @@ import debug;
 import app;
 
 const glm::mat4 Renderer::UI_MATRIX{
-    glm::ortho(0.0f, static_cast<float>(App::WIDTH), 0.0f,
-               static_cast<float>(App::HEIGHT))};
-
-// Renderer::Renderer() {}
+    glm::ortho<float>(0, App::WIDTH, 0, App::HEIGHT)};
 
 void Renderer::renderFrame(const double t) {
   glBeginQuery(GL_TIME_ELAPSED, queryObject.ID);

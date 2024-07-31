@@ -7,7 +7,7 @@ export module gl_debug;
 import debug;
 
 export namespace GL {
-std::string sourceName(GLenum source) {
+std::string sourceName(const GLenum source) {
   switch (source) {
   case GL_DEBUG_SOURCE_API:
     return "API";
@@ -25,7 +25,7 @@ std::string sourceName(GLenum source) {
   return "";
 }
 
-std::string typeName(GLenum type) {
+std::string typeName(const GLenum type) {
   switch (type) {
   case GL_DEBUG_TYPE_ERROR:
     return "ERROR";
@@ -49,7 +49,7 @@ std::string typeName(GLenum type) {
   return "";
 }
 
-std::string severityName(GLenum severity) {
+std::string severityName(const GLenum severity) {
   switch (severity) {
   case GL_DEBUG_SEVERITY_HIGH:
     return "HIGH";

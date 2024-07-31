@@ -18,9 +18,10 @@ export struct Window {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, false);
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", NULL, NULL);
+    window =
+        glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", nullptr, nullptr);
     if (!window) {
       throw std::runtime_error{"window creation error"};
     }

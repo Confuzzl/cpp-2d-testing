@@ -35,17 +35,14 @@ void App::start() {
   MAIN_SCENE.init();
 
   while (!glfwWindowShouldClose(window)) {
-    double currentTime = glfwGetTime();
+    const double currentTime = glfwGetTime();
 
     loopCycle.pushNewTime(currentTime);
-    if (updateCycle.isPastLength(currentTime)) {
+    if (updateCycle.isPastLength(currentTime))
       startUpdate(currentTime);
-    }
-    if (frameCycle.isPastLength(currentTime)) {
+    if (frameCycle.isPastLength(currentTime))
       startFrame(currentTime);
-    }
-    if (currentTime - seconds >= 1) {
-      seconds++;
+    if (currentTime - seconds++ >= 1) {
       loopCycle.pushCount();
       updateCycle.pushCount();
       frameCycle.pushCount();

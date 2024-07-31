@@ -25,40 +25,27 @@ template <vert::format V, frag::format F> struct BaseProgram {
 
   ~BaseProgram() { glDeleteProgram(ID); }
 
-private:
-  std::vector<Shader> compileList;
-
 protected:
   V vertex;
   F fragment;
 
   BaseProgram(std::vector<Shader> &&shaders)
-      : ID{glCreateProgram()}, compileList{std::move(shaders)} {
-    createShaders();
-    createVAO();
-    createUniforms();
-  }
-
-private:
-  void createShaders() {
+      : ID{glCreateProgram()}, vertex{ID}, fragment{ID} {
     println("PROGRAM: {}", ID);
-    for (Shader &shader : compileList) {
-      shader.compile();
+    for (auto &shader : shaders)
       glAttachShader(ID, shader.ID);
-    }
     glLinkProgram(ID);
-    for (Shader &shader : compileList) {
+    for (auto &shader : shaders)
       glDetachShader(ID, shader.ID);
-      glDeleteShader(shader.ID);
-    }
+    vertex.createVAO(vao);
+    // createUniforms();
   }
-  void createVAO() { vertex.createVAO(vao); }
 
 protected:
-  virtual void createUniforms() {
-    vertex.createUniforms(ID);
-    fragment.createUniforms(ID);
-  }
+  // virtual void createUniforms() {
+  //   vertex.createUniforms(ID);
+  //   fragment.createUniforms(ID);
+  // }
 
 private:
   void bind(const VBOHandle &vbo) const {

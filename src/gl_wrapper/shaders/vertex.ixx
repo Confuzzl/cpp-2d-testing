@@ -23,6 +23,10 @@ concept format =
 template <typename T> struct base {
   using layout_t = T;
 
+  GLuint programID;
+
+  base(const GLuint programID) : programID{programID} {}
+
   void createVAO(GLuint &vao) {
     glCreateVertexArrays(1, &vao);
     vertex_layout::enable<layout_t>(vao);
@@ -32,32 +36,48 @@ template <typename T> struct base {
 struct identity : base<vertex_layout::pos> {
   static constexpr char name[] = "identity.vert";
 
-  void createUniforms(const GLuint ID);
+  using base<vertex_layout::pos>::base;
+
+  // void createUniforms(const GLuint ID);
 };
 
 struct basic : base<vertex_layout::pos> {
   static constexpr char name[] = "basic.vert";
 
-  uniform<glm::mat4> view;
+  NEW_UNIFORM(glm::mat4, view);
 
-  void createUniforms(const GLuint ID);
+  using base::base;
+
+  // uniform<glm::mat4> view;
+
+  // void createUniforms(const GLuint ID);
 };
 
 struct trans : base<vertex_layout::pos> {
   static constexpr char name[] = "trans.vert";
 
-  uniform<glm::vec2> parent_pos;
-  uniform<float> rotation;
-  uniform<glm::mat4> view;
+  NEW_UNIFORM(glm::vec2, parent_pos);
+  NEW_UNIFORM(float, rotation);
+  NEW_UNIFORM(glm::mat4, view);
 
-  void createUniforms(const GLuint ID);
+  using base::base;
+
+  // uniform<glm::vec2> parent_pos;
+  // uniform<float> rotation;
+  // uniform<glm::mat4> view;
+
+  // void createUniforms(const GLuint ID);
 };
 struct tex : base<vertex_layout::postex> {
   static constexpr char name[] = "tex.vert";
 
-  uniform<glm::mat4> view;
+  NEW_UNIFORM(glm::mat4, view);
 
-  void createUniforms(const GLuint ID);
+  using base::base;
+
+  // uniform<glm::mat4> view;
+
+  // void createUniforms(const GLuint ID);
 };
 } // namespace vert
 } // namespace shaders

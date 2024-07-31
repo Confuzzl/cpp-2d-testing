@@ -40,7 +40,6 @@
     <ClCompile Include="src\gl.c" />
     <ClCompile Include="src\gl_wrapper\bo_heap.cpp" />
     <ClCompile Include="src\gl_wrapper\bo_heap.ixx" />
-    <ClCompile Include="src\gl_wrapper\buffer_object.cpp" />
     <ClCompile Include="src\gl_wrapper\query_object.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\fragment.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\geometry.cpp" />
@@ -56,7 +55,6 @@
     <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
     <ClCompile Include="src\gl_wrapper\texture.ixx" />
-    <ClCompile Include="src\gl_wrapper\buffer_object.ixx" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\util\color.ixx" />
     <ClCompile Include="src\util\debug.ixx" />

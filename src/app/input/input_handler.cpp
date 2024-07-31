@@ -29,9 +29,8 @@ void InputHandler::processInput(const double dt) {
 void InputHandler::keyCallback(GLFWwindow *window, int key, int scancode,
                                int action, int mods) {
   const auto iterator = keys.find(key);
-  if (iterator == keys.end())
-    return;
-  iterator->second.change(action);
+  if (iterator != keys.cend())
+    iterator->second.change(action);
 }
 void InputHandler::mousePosCallback(GLFWwindow *window, double xpos,
                                     double ypos) {
@@ -39,12 +38,10 @@ void InputHandler::mousePosCallback(GLFWwindow *window, double xpos,
                std::clamp<double>(ypos, 0, App::HEIGHT)};
 }
 void InputHandler::mouseClickCallback(GLFWwindow *window, int button,
-                                      int action, int mods) {
-  // MAIN_RENDERER.guiFrame.
-}
+                                      int action, int mods) {}
 void InputHandler::scrollCallback(GLFWwindow *window, double xpos,
                                   double ypos) {
-  static float INCREMENT = 0.1f;
+  static constexpr float INCREMENT = 0.1f;
   MAIN_CAMERA.zoom = std::fmax(
       INCREMENT, static_cast<float>(MAIN_CAMERA.zoom + ypos * INCREMENT));
 }

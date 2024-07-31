@@ -129,13 +129,3 @@ export struct VBOAllocator : BufferObjectAllocator<VBO> {
 export struct EBOAllocator : BufferObjectAllocator<EBO> {
   EBOHandle get(const std::initializer_list<GLuint> &indices);
 };
-
-// export VBOAllocator VBO_HOLDER{};
-// export EBOAllocator EBO_HOLDER{};
-//
-// export {
-//   VBOHandle &VBO_1 = VBO_HOLDER.get<1>();
-//   VBOHandle &VBO_2 = VBO_HOLDER.get<2>();
-//   VBOHandle &VBO_3 = VBO_HOLDER.get<3>();
-//   VBOHandle &VBO_4 = VBO_HOLDER.get<4>();
-// }
