@@ -1,6 +1,13 @@
-import debug;
+#include <stdexcept>
+
 import app;
 
-import glm;
+import debug;
 
-int main() { MAIN_APP.start(); }
+int main() {
+  try {
+    MAIN_APP.start();
+  } catch (const std::exception &e) {
+    println(e.what());
+  }
+}

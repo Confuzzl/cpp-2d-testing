@@ -21,12 +21,12 @@ export struct Window {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", NULL, NULL);
-    if (window == NULL) {
+    if (!window) {
       throw std::runtime_error{"window creation error"};
     }
     glfwMakeContextCurrent(window);
 
-    gladLoadGL();
+    gladLoadGL(glfwGetProcAddress);
     glViewport(0, 0, WIDTH, HEIGHT);
   }
 

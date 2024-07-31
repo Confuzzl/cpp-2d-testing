@@ -21,21 +21,6 @@ const glm::mat4 Renderer::UI_MATRIX{
                static_cast<float>(App::HEIGHT))};
 
 // Renderer::Renderer() {}
-void Renderer::init() {
-  // try {
-  //   // shaders::init();
-
-  //  // tex::init();
-
-  //  // VBO_HOLDER.init();
-  //  // EBO_HOLDER.init();
-
-  //  // queryObject.init();
-  //} catch (const std::runtime_error &e) {
-  //  println("{}", e.what());
-  //  MAIN_APP.close();
-  //}
-}
 
 void Renderer::renderFrame(const double t) {
   glBeginQuery(GL_TIME_ELAPSED, queryObject.ID);

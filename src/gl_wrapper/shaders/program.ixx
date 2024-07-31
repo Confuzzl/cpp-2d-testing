@@ -32,9 +32,8 @@ protected:
   V vertex;
   F fragment;
 
-  BaseProgram(std::vector<Shader> &&shaders) : compileList{std::move(shaders)} {
-    glfwInit();
-    ID = glCreateProgram();
+  BaseProgram(std::vector<Shader> &&shaders)
+      : ID{glCreateProgram()}, compileList{std::move(shaders)} {
     createShaders();
     createVAO();
     createUniforms();
@@ -74,13 +73,6 @@ private:
   }
 
 public:
-  void init() {
-    // ID = glCreateProgram();
-    // createShaders();
-    // createVAO();
-    // createUniforms();
-  }
-
   void draw(const GLenum primitive, VBOHandle &vbo) const {
     bind(vbo);
     glDrawArrays(primitive, 0, vbo->count);
@@ -171,11 +163,11 @@ struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {
   Line &setFragColor(const color_t &frag_color);
 };
 
-struct circ_t : GeometryProgram<vert::identity, frag::circle, geom::circle> {
-  circ_t &setView(const glm::mat4 &view);
-  circ_t &setRadius(const float radius);
-  circ_t &setCenter(const glm::vec2 center);
-  circ_t &setScreenDimensions(const glm::uvec2 screen_dimensions);
-  circ_t &setFragColor(const color_t &frag_color);
+struct Circle : GeometryProgram<vert::identity, frag::circle, geom::circle> {
+  Circle &setView(const glm::mat4 &view);
+  Circle &setRadius(const float radius);
+  Circle &setCenter(const glm::vec2 center);
+  Circle &setScreenDimensions(const glm::uvec2 screen_dimensions);
+  Circle &setFragColor(const color_t &frag_color);
 };
 } // namespace shaders

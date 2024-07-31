@@ -24,7 +24,7 @@ void GUIFrame::render() {
 
   // text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
   //      colors::BLACK);
-  // text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
+  //  text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 50);
 }
 
 static constexpr unsigned short charWidthConvert(const unsigned char w) {
@@ -88,9 +88,9 @@ void GUIFrame::text(const std::string &str, const color_t &color,
 
   CHAR_VBO->writeList(vertices);
 
-  shaders::sdf.setView(matrix)
+  SHADERS.sdf.setView(matrix)
       .setFragColor(color)
       .setFontSize(scale)
-      .bindTexture(tex::sdfFont);
-  shaders::sdf.draw(GL_TRIANGLES, CHAR_VBO);
+      .bindTexture(TEXTURE.sdfFont);
+  SHADERS.sdf.draw(GL_TRIANGLES, CHAR_VBO);
 }

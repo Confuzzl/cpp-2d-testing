@@ -4,14 +4,15 @@ module;
 
 module bo_heap;
 
+import debug;
+
 BufferObjectHeapHandle::BufferObjectHeapHandle(BufferObject *parent,
                                                const GLuint offset,
                                                const GLuint size)
     : parent{parent}, offset{offset}, size{size} {}
 BufferObjectHeapHandle::~BufferObjectHeapHandle() {
-  if (parent) {
+  if (parent)
     parent->free(this);
-  }
 }
 
 VBOHeapHandle::VBOHeapHandle(BufferObject *parent, const GLuint offset,
@@ -19,8 +20,7 @@ VBOHeapHandle::VBOHeapHandle(BufferObject *parent, const GLuint offset,
     : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
 void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
   glNamedBufferSubData(parent->ID, offset, size, data);
-  count++;
-  if (count * vertexSize > size)
+  if (++count * vertexSize > this->size)
     throw std::runtime_error{
         std::format("Overwrite at VBO handle at VBO {}", parent->ID)};
 }

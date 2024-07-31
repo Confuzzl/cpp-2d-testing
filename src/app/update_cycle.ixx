@@ -18,7 +18,7 @@ export struct UpdateCycle {
     length = 1.0 / rate;
   }
 
-  bool pastLength(const double time) { return time - currTime >= length; }
+  bool isPastLength(const double time) { return time - currTime >= length; }
   void pushNewTime(const double newCurrTime) {
     currCount++;
     prevTime = currTime;

@@ -11,6 +11,8 @@ import <list>;
 import glm;
 import vertex_layout;
 
+import debug;
+
 export {
   struct BufferObject;
   struct BufferObjectHeapHandle {
@@ -39,9 +41,8 @@ export struct VBOHeapHandle : BufferObjectHeapHandle {
     writeRaw(glm::value_ptr(data), sizeof(T));
   }
   template <typename T> void writeList(const T &list) {
-    for (const auto &vertex : list) {
+    for (const auto &vertex : list)
       write(vertex);
-    }
   }
 
   void reset();
@@ -113,24 +114,16 @@ export template <typename T> struct BufferObjectAllocator {
 
   BufferObjectAllocator() {
     buffers.reserve(8);
-    glfwInit();
     buffers.emplace_back();
   }
-
-  void init() {}
 };
 export struct VBOAllocator : BufferObjectAllocator<VBO> {
-  template <typename T> VBOHandle get(const GLuint count) {
+  template <typename T = vertex_layout::pos> VBOHandle get(const GLuint count) {
     for (auto &buffer : buffers) {
       if (auto out = buffer.allocate<T>(count); out)
         return out;
     }
     return buffers.emplace_back().allocate<T>(count);
-  }
-
-  template <GLuint count, typename T = vertex_layout::pos> VBOHandle &get() {
-    static VBOHandle cache = get<T>(count);
-    return cache;
   }
 };
 export struct EBOAllocator : BufferObjectAllocator<EBO> {

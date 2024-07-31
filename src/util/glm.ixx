@@ -7,16 +7,16 @@ export import <glm/gtx/string_cast.hpp>;
 export import <glm/gtx/matrix_interpolation.hpp>;
 export import <glm/gtx/norm.hpp>;
 
-export glm::vec2 cw_perp(const glm::vec2 &v) { return {v.y, -v.x}; }
-export glm::vec2 ccw_perp(const glm::vec2 &v) { return {-v.y, v.x}; }
+export glm::vec2 cw_perp(const glm::vec2 v) { return {v.y, -v.x}; }
+export glm::vec2 ccw_perp(const glm::vec2 v) { return {-v.y, v.x}; }
 
 import math;
-export glm::vec2 random_vec(const glm::vec2 &min, const glm::vec2 &max) {
+export glm::vec2 random_vec(const glm::vec2 min, const glm::vec2 max) {
   return {random_float(min.x, max.x), random_float(min.y, max.y)};
 }
 
 import <format>;
-export std::string vec_string(const glm::vec2 &vec) {
+export std::string vec_string(const glm::vec2 vec) {
   return std::format("({:+.2f} {:+.2f})", vec.x, vec.y);
 }
 

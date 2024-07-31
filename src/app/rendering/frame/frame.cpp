@@ -19,9 +19,9 @@ void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
                                const color_t &color) const {
   VBO_1->write(point);
 
-  shaders::basic.setView(matrix).setFragColor(color);
+  SHADERS.basic.setView(matrix).setFragColor(color);
   glPointSize(size);
-  shaders::basic.draw(GL_POINTS, VBO_1);
+  SHADERS.basic.draw(GL_POINTS, VBO_1);
 }
 
 void BaseFrame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
@@ -29,16 +29,16 @@ void BaseFrame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
   VBO_2->write(from);
   VBO_2->write(to);
 
-  shaders::line.setView(matrix).setFragColor(color).setThickness(size);
-  shaders::line.draw(GL_LINES, VBO_2);
+  SHADERS.line.setView(matrix).setFragColor(color).setThickness(size);
+  SHADERS.line.draw(GL_LINES, VBO_2);
 }
 void BaseFrame::drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
                               const color_t &color) const {
   VBO_2->write(from);
   VBO_2->write(to);
 
-  shaders::basic.setView(matrix).setFragColor(color);
-  shaders::line.draw(GL_LINES, VBO_2);
+  SHADERS.basic.setView(matrix).setFragColor(color);
+  SHADERS.line.draw(GL_LINES, VBO_2);
 }
 
 void BaseFrame::drawArrow(const dimension_t &dimensions,
@@ -69,20 +69,20 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
 
   VBO_4->writeList(vertices);
 
-  shaders::basic.setView(matrix).setFragColor(color);
-  shaders::basic.draw(GL_LINES, VBO_4, INDICES);
+  SHADERS.basic.setView(matrix).setFragColor(color);
+  SHADERS.basic.draw(GL_LINES, VBO_4, INDICES);
 }
 
 void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
                            const color_t &color) const {
   VBO_1->write(center);
 
-  shaders::circ.setView(matrix)
+  SHADERS.circ.setView(matrix)
       .setRadius(radius)
       .setCenter(center)
       .setScreenDimensions({App::WIDTH, App::HEIGHT})
       .setFragColor(color);
-  shaders::circ.draw(GL_POINTS, VBO_1);
+  SHADERS.circ.draw(GL_POINTS, VBO_1);
 }
 
 void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,
@@ -104,8 +104,8 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
 
   VBO_4->writeList(corners);
 
-  shaders::basic.setView(matrix).setFragColor(color);
-  shaders::basic.draw(GL_LINE_LOOP, VBO_4);
+  SHADERS.basic.setView(matrix).setFragColor(color);
+  SHADERS.basic.draw(GL_LINE_LOOP, VBO_4);
 }
 void BaseFrame::drawQuad(const dimension_t &dimensions,
                          const color_t &color) const {
@@ -115,14 +115,14 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 
   VBO_4->writeList(corners);
 
-  shaders::basic.setView(matrix).setFragColor(color);
-  shaders::basic.draw(GL_TRIANGLE_STRIP, VBO_4);
+  SHADERS.basic.setView(matrix).setFragColor(color);
+  SHADERS.basic.draw(GL_TRIANGLE_STRIP, VBO_4);
 }
 
 void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
                          const float rot) const {
   static constexpr auto MAX_VERTICES = 0xffff;
-  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::pos>(MAX_VERTICES);
+  static VBOHandle VBO = VBO_HOLDER.get<>(MAX_VERTICES);
 
   VBO->writeList(mesh.data);
 

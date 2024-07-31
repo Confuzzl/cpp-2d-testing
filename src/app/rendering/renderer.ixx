@@ -29,7 +29,7 @@ export struct Renderer {
     shaders::Transform trans;
     shaders::Striped striped;
     shaders::Line line;
-    shaders::circ_t circ;
+    shaders::Circle circ;
   } shaders;
 
   struct {
@@ -40,13 +40,11 @@ export struct Renderer {
   struct {
     VBOAllocator vboHeap;
     EBOAllocator eboHeap;
-    VBOHandle &VBO_1 = vboHeap.get<1>();
-    VBOHandle &VBO_2 = vboHeap.get<2>();
-    VBOHandle &VBO_3 = vboHeap.get<3>();
-    VBOHandle &VBO_4 = vboHeap.get<4>();
+    VBOHandle vbo1 = vboHeap.get<>(1);
+    VBOHandle vbo2 = vboHeap.get<>(2);
+    VBOHandle vbo3 = vboHeap.get<>(3);
+    VBOHandle vbo4 = vboHeap.get<>(4);
   } allocators;
-
-  void init();
 
   void renderFrame(const double t);
 };
