@@ -123,9 +123,6 @@
     <ClCompile Include="src\world\scene.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
     <ClCompile Include="src\gl_wrapper\shaders\geometry.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,12 +169,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\rendering\frame\frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_wrapper\buffer_object.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_wrapper\buffer_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\gl_type_macro.ixx">
@@ -205,6 +193,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\window.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\vao.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\vao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\query_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1513,5 +1516,6 @@
     <Text Include="assets\shaders\line.geom" />
     <Text Include="assets\shaders\identity.vert" />
     <Text Include="assets\shaders\circle.geom" />
+    <Text Include="assets\Text.txt" />
   </ItemGroup>
 </Project>

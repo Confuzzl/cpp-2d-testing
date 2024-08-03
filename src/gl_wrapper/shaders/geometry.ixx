@@ -4,7 +4,6 @@ module;
 
 export module shaders:geometry;
 
-import :shader;
 import glm;
 
 export namespace shaders {
@@ -12,21 +11,21 @@ namespace geom {
 template <typename T>
 concept format = has_uniform<T> && has_extension<T>("geom");
 
-struct line {
+struct line : UniformHolder {
   static constexpr char name[] = "line.geom";
 
-  uniform<glm::mat4> view;
-  uniform<float> thickness;
+  NEW_UNIFORM(glm::mat4, view);
+  NEW_UNIFORM(float, thickness);
 
-  void createUniforms(const GLuint ID);
+  // void createUniforms(const GLuint ID);
 };
-struct circle {
+struct circle : UniformHolder {
   static constexpr char name[] = "circle.geom";
 
-  uniform<glm::mat4> view;
-  uniform<float> radius;
+  NEW_UNIFORM(glm::mat4, view);
+  NEW_UNIFORM(float, radius);
 
-  void createUniforms(const GLuint ID);
+  // void createUniforms(const GLuint ID);
 };
 } // namespace geom
 } // namespace shaders

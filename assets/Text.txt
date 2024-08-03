@@ -1,0 +1,18 @@
+struct striped {
+  static constexpr char name[] = "striped.frag";
+
+  NEW_UNIFORM(unsigned int, width);
+  NEW_UNIFORM(unsigned int, spacing);
+  NEW_UNIFORM(unsigned int, pattern);
+  NEW_UNIFORM(glm::uvec3, frag_color);
+
+  // void createUniforms(const GLuint ID);
+};
+struct texcol {
+  static constexpr char name[] = "texcol.frag";
+
+  sampler_t sampler;
+  NEW_UNIFORM(glm::uvec3, frag_color);
+
+  // void createUniforms(const GLuint ID);
+};

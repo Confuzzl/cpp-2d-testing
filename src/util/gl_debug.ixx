@@ -1,12 +1,12 @@
 module;
 
 #include "util/gl.h"
+#include <stdexcept>
 
 export module gl_debug;
 
 import debug;
 
-export namespace GL {
 std::string sourceName(const GLenum source) {
   switch (source) {
   case GL_DEBUG_SOURCE_API:
@@ -22,7 +22,7 @@ std::string sourceName(const GLenum source) {
   case GL_DEBUG_SOURCE_OTHER:
     return "OTHER";
   }
-  return "";
+  throw std::runtime_error{"INVALID SOURCE ENUM"};
 }
 
 std::string typeName(const GLenum type) {
@@ -46,7 +46,7 @@ std::string typeName(const GLenum type) {
   case GL_DEBUG_TYPE_OTHER:
     return "OTHER";
   }
-  return "";
+  throw std::runtime_error{"INVALID TYPE ENUM"};
 }
 
 std::string severityName(const GLenum severity) {
@@ -60,15 +60,15 @@ std::string severityName(const GLenum severity) {
   case GL_DEBUG_SEVERITY_NOTIFICATION:
     return "NOTIFICATION";
   }
-  return "";
+  throw std::runtime_error{"INVALID SEVERITY ENUM"};
 }
 
-void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
-                            GLenum severity, GLsizei length,
-                            const GLchar *message, const void *userParam) {
+export void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
+                                   GLenum severity, GLsizei length,
+                                   const GLchar *message,
+                                   const void *userParam) {
   if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
     return;
   println("source={} type={} id={} severity={} | {}", sourceName(source),
           typeName(type), id, severityName(severity), message);
 }
-} // namespace GL

@@ -10,7 +10,9 @@ module texture;
 
 import <format>;
 
-tex::texture::texture(const std::string &name) {
+using namespace GL;
+
+Texture::Texture(const std::string &name) {
   std::string path = "assets/" + name;
 
   glCreateTextures(GL_TEXTURE_2D, 1, &ID);
@@ -31,4 +33,13 @@ tex::texture::texture(const std::string &name) {
   glGenerateTextureMipmap(ID);
   stbi_image_free(data);
 }
-tex::texture::~texture() { glDeleteTextures(1, &ID); }
+Texture::~Texture() {
+  if (ID != -1)
+    glDeleteTextures(1, &ID);
+}
+Texture::Texture(Texture &&o) : ID{o.ID} { o.ID = -1; }
+Texture &Texture::operator=(Texture &&o) {
+  ID = o.ID;
+  o.ID = -1;
+  return *this;
+}

@@ -11,7 +11,7 @@ import debug;
 import gl_debug;
 import rendering;
 
-App::App() : loopCycle{0}, updateCycle{120}, frameCycle{60} {
+App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glfwSetCursorPosCallback(window, InputHandler::mousePosCallback);
   glfwSetMouseButtonCallback(window, InputHandler::mouseClickCallback);
   glfwSetScrollCallback(window, InputHandler::scrollCallback);
@@ -23,7 +23,9 @@ App::App() : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glEnable(GL_CULL_FACE);
 
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(GL::debugCallback, 0);
+  glDebugMessageCallback(debugCallback, 0);
+} catch (const std::runtime_error &e) {
+  println(e.what());
 }
 App::~App() {
   println("app terminated at {:.2f}s", glfwGetTime());

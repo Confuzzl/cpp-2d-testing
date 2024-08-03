@@ -45,11 +45,13 @@
     <ClCompile Include="src\gl_wrapper\shaders\geometry.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\program.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\program.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\query_object.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\shader.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\shader.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\fragment.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\geometry.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\vao.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx" />
@@ -81,6 +83,7 @@
     <ClCompile Include="src\world\object.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
     <ClCompile Include="src\world\scene.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\vao.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Libraries\include\glad\glad.h" />
@@ -533,6 +536,7 @@
     <Text Include="assets\shaders\line.geom" />
     <Text Include="assets\shaders\identity.vert" />
     <Text Include="assets\shaders\circle.geom" />
+    <Text Include="assets\Text.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

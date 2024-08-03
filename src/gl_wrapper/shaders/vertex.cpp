@@ -16,4 +16,4 @@ using namespace shaders::vert;
 //   CREATE_UNIFORM(view);
 // }
 //
-// void tex::createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }
+// void createUniforms(const GLuint ID) { CREATE_UNIFORM(view); }

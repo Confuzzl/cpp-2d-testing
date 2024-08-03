@@ -2,6 +2,24 @@ module;
 
 #include "gl_wrapper/shaders/uniform.h"
 
+#define SET_UNIFORM_TEMPLATE(type, call)                                       \
+  template <>                                                                  \
+  void setUniform<type>(const shaders::Uniform<type> &uniform,                 \
+                        const type &value) const {                             \
+    call;                                                                      \
+  }
+#define SET_SCALAR(type, scalar_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniform1##scalar_type(ID, uniform.location, value))
+#define SET_VECTOR(type, vector_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniform##vector_type##v(ID, uniform.location, 1,          \
+                                             glm::value_ptr(value)))
+#define SET_MATRIX(type, matrix_type)                                          \
+  SET_UNIFORM_TEMPLATE(                                                        \
+      type, glProgramUniformMatrix##matrix_type##fv(                           \
+                ID, uniform.location, 1, GL_FALSE, glm::value_ptr(value)))
+
 export module shaders:program;
 
 import vector;
@@ -15,48 +33,57 @@ import :vertex;
 import :fragment;
 import :geometry;
 
+import vao;
+
 import debug;
 
-export namespace shaders {
-template <vert::format V, frag::format F> struct BaseProgram {
-
+namespace GL {
+struct ProgramObject {
   GLuint ID;
-  GLuint vao;
 
-  ~BaseProgram() { glDeleteProgram(ID); }
+  ProgramObject(const std::initializer_list<Shader> &shaders);
+  ~ProgramObject();
+  ProgramObject(const ProgramObject &) = delete;
+  ProgramObject(ProgramObject &&o);
+  ProgramObject &operator=(const ProgramObject &) = delete;
+  ProgramObject &operator=(ProgramObject &&o);
 
+  template <typename T>
+  void setUniform(const shaders::Uniform<T> &uniform, const T &value) const;
+
+  SET_SCALAR(bool, i)
+  SET_SCALAR(unsigned int, ui)
+  SET_SCALAR(float, f)
+  SET_MATRIX(glm::mat4, 4)
+  SET_VECTOR(glm::vec2, 2f)
+  SET_VECTOR(glm::uvec2, 2ui)
+  SET_VECTOR(glm::uvec3, 3ui)
+};
+} // namespace GL
+
+export namespace shaders {
+template <vert::format V, frag::format F>
+struct BaseProgram : ::GL::ProgramObject {
 protected:
+  GL::VertexArrayObject vao;
   V vertex;
   F fragment;
 
-  BaseProgram(std::vector<Shader> &&shaders)
-      : ID{glCreateProgram()}, vertex{ID}, fragment{ID} {
-    println("PROGRAM: {}", ID);
-    for (auto &shader : shaders)
-      glAttachShader(ID, shader.ID);
-    glLinkProgram(ID);
-    for (auto &shader : shaders)
-      glDetachShader(ID, shader.ID);
-    vertex.createVAO(vao);
-    // createUniforms();
+  BaseProgram(const std::initializer_list<GL::Shader> &shaders)
+      : ProgramObject(shaders), vertex{ID}, fragment{ID} {
+    vertex.enableVAO(vao.ID);
   }
-
-protected:
-  // virtual void createUniforms() {
-  //   vertex.createUniforms(ID);
-  //   fragment.createUniforms(ID);
-  // }
 
 private:
   void bind(const VBOHandle &vbo) const {
     glUseProgram(ID);
-    glBindVertexArray(vao);
-    glVertexArrayVertexBuffer(vao, 0, vbo->parent->ID, vbo->offset,
+    glBindVertexArray(vao.ID);
+    glVertexArrayVertexBuffer(vao.ID, 0, vbo->parent->ID, vbo->offset,
                               static_cast<GLsizei>(vbo->vertexSize));
   }
   void bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
     bind(vbo);
-    glVertexArrayElementBuffer(vao, ebo->parent->ID);
+    glVertexArrayElementBuffer(vao.ID, ebo->parent->ID);
   }
 
 public:
@@ -73,31 +100,19 @@ public:
         reinterpret_cast<void *>(static_cast<GLuint64>(ebo->offset)));
     vbo->reset();
   }
-
-  template <typename T>
-  void setUniform(const uniform<T> &uniform, const T &value) const;
-
-  SET_SCALAR(bool, i)
-  SET_SCALAR(unsigned int, ui)
-  SET_SCALAR(float, f)
-  SET_MATRIX(glm::mat4, 4)
-  SET_VECTOR(glm::vec2, 2f)
-  SET_VECTOR(glm::uvec2, 2ui)
-  SET_VECTOR(glm::uvec3, 3ui)
 };
 
 template <vert::format V, frag::format F>
 struct SimpleProgram : BaseProgram<V, F> {
   SimpleProgram()
       : BaseProgram<V, F>(
-            vec::New<Shader>(Shader{GL_VERTEX_SHADER, V::name},
-                             Shader{GL_FRAGMENT_SHADER, F::name})) {}
+            {{GL_VERTEX_SHADER, V::name}, {GL_FRAGMENT_SHADER, F::name}}) {}
 };
 
 struct TexCol : SimpleProgram<vert::tex, frag::texcol> {
   TexCol &setView(const glm::mat4 &view);
   TexCol &setFragColor(const color_t &frag_color);
-  TexCol &bindTexture(const tex::texture &texture);
+  TexCol &bindTexture(const GL::Texture &texture);
 };
 
 struct Sdf : SimpleProgram<vert::tex, frag::sdf_font> {
@@ -106,7 +121,7 @@ struct Sdf : SimpleProgram<vert::tex, frag::sdf_font> {
   Sdf &setThreshold(const float threshold);
   Sdf &setFontSize(const float font_size);
   Sdf &setAntiAlias(const bool anti_alias);
-  Sdf &bindTexture(const tex::texture &texture);
+  Sdf &bindTexture(const GL::Texture &texture);
 };
 struct Basic : SimpleProgram<vert::basic, frag::basic> {
   Basic &setView(const glm::mat4 &view);
@@ -129,19 +144,12 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
 
 template <vert::format V, frag::format F, geom::format G>
 struct GeometryProgram : BaseProgram<V, F> {
-  G geometry;
+  G geometry{0};
 
   GeometryProgram()
-      : BaseProgram<V, F>(
-            vec::New<Shader>(Shader{GL_VERTEX_SHADER, V::name},
-                             Shader{GL_FRAGMENT_SHADER, F::name},
-                             Shader{GL_GEOMETRY_SHADER, G::name})) {}
-
-protected:
-  void createUniforms() override {
-    BaseProgram<V, F>::createUniforms();
-    geometry.createUniforms(this->ID);
-  }
+      : BaseProgram<V, F>({{GL_VERTEX_SHADER, V::name},
+                           {GL_FRAGMENT_SHADER, F::name},
+                           {GL_GEOMETRY_SHADER, G::name}}) {}
 };
 
 struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {

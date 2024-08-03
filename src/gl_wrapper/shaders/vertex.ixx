@@ -4,7 +4,6 @@ module;
 
 export module shaders:vertex;
 
-import :shader;
 import glm;
 import vertex_layout;
 import <concepts>;
@@ -17,26 +16,21 @@ template <typename T>
 concept format =
     has_uniform<T> && has_extension<T>("vert") && requires(T t, GLuint &vao) {
       typename T::layout_t;
-      { t.createVAO(vao) } -> std::same_as<void>;
+      { t.enableVAO(vao) } -> std::same_as<void>;
     };
 
-template <typename T> struct base {
+template <typename T> struct base : UniformHolder {
   using layout_t = T;
 
-  GLuint programID;
+  using UniformHolder::UniformHolder;
 
-  base(const GLuint programID) : programID{programID} {}
-
-  void createVAO(GLuint &vao) {
-    glCreateVertexArrays(1, &vao);
-    vertex_layout::enable<layout_t>(vao);
-  }
+  void enableVAO(GLuint &vao) { vertex_layout::enable<layout_t>(vao); }
 };
 
 struct identity : base<vertex_layout::pos> {
   static constexpr char name[] = "identity.vert";
 
-  using base<vertex_layout::pos>::base;
+  using base::base;
 
   // void createUniforms(const GLuint ID);
 };
@@ -48,7 +42,7 @@ struct basic : base<vertex_layout::pos> {
 
   using base::base;
 
-  // uniform<glm::mat4> view;
+  // NEW_UNIFORM(glm::mat4, view);
 
   // void createUniforms(const GLuint ID);
 };
@@ -62,9 +56,9 @@ struct trans : base<vertex_layout::pos> {
 
   using base::base;
 
-  // uniform<glm::vec2> parent_pos;
-  // uniform<float> rotation;
-  // uniform<glm::mat4> view;
+  // NEW_UNIFORM(glm::vec2, parent_pos);
+  // NEW_UNIFORM(float, rotation);
+  // NEW_UNIFORM(glm::mat4, view);
 
   // void createUniforms(const GLuint ID);
 };
@@ -75,7 +69,7 @@ struct tex : base<vertex_layout::postex> {
 
   using base::base;
 
-  // uniform<glm::mat4> view;
+  // NEW_UNIFORM(glm::mat4, view);
 
   // void createUniforms(const GLuint ID);
 };

@@ -16,7 +16,7 @@ import texture;
 export struct Renderer {
   static const glm::mat4 UI_MATRIX;
 
-  QueryObject queryObject;
+  GL::QueryObject queryObject;
   GLint elapsed = 0;
 
   GUIFrame guiFrame;
@@ -33,8 +33,8 @@ export struct Renderer {
   } shaders;
 
   struct {
-    tex::texture font{"consolas1024.png"};
-    tex::texture sdfFont{"sdf1024.png"};
+    GL::Texture font{"consolas1024.png"};
+    GL::Texture sdfFont{"sdf1024.png"};
   } textures;
 
   struct {
@@ -47,4 +47,6 @@ export struct Renderer {
   } allocators;
 
   void renderFrame(const double t);
+
+  Renderer() = default;
 };

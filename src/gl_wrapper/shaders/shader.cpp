@@ -14,7 +14,7 @@ static std::string sourceToString(const std::string &name) {
   return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
 }
 
-using namespace shaders;
+using namespace GL;
 
 Shader::Shader(const GLenum type, const char *name)
     : ID{glCreateShader(type)}, type{type}, name{name} {
@@ -29,5 +29,19 @@ Shader::Shader(const GLenum type, const char *name)
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
   if (!success)
     throw std::runtime_error{std::format("COMPILATION ERROR {}", name)};
+  println("Successfully compiled {}", name);
 }
-Shader::~Shader() { glDeleteShader(ID); }
+Shader::~Shader() {
+  if (name != nullptr)
+    glDeleteShader(ID);
+}
+Shader::Shader(Shader &&o) : ID{o.ID}, type{o.type}, name{o.name} {
+  o.name = nullptr;
+}
+Shader &Shader::operator=(Shader &&o) {
+  ID = o.ID;
+  type = o.type;
+  name = o.name;
+  o.name = nullptr;
+  return *this;
+}

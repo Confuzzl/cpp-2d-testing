@@ -12,7 +12,6 @@ import dimensions;
 
 import vertex_layout;
 import mesh;
-import shaders;
 
 import <format>;
 

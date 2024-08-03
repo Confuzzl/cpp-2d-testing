@@ -56,9 +56,9 @@ export struct Object {
 //
 //   static std::unique_ptr<Object<Polygon>>
 //   from(Polygon &&poly, const color_t color = colors::random()) {
-//     Mesh mesh{func::map<glm::vec2, vertex::simple>(
+//     Mesh mesh{func::map<glm::vec2, versimple>(
 //         poly.getVertices(), [](const glm::vec2 &v) {
-//           return vertex::simple{v.x, v.y};
+//           return versimple{v.x, v.y};
 //         })};
 //     return std::make_unique<Object<Polygon>>(std::move(poly),
 //     std::move(mesh),

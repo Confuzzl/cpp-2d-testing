@@ -5,70 +5,39 @@
 #include <iostream>
 #include <stdexcept>
 
-// #define CREATE_UNIFORM(name) name.create(ID, #name)
 #define NEW_UNIFORM(type, name)                                                \
-  uniform<##type>##name { programID, #name }
-
-#define SET_UNIFORM_TEMPLATE(type, call)                                       \
-  template <>                                                                  \
-  void setUniform<type>(const uniform<type> &uniform, const type &value)       \
-      const {                                                                  \
-    call;                                                                      \
-  }
-#define SET_SCALAR(type, scalar_type)                                          \
-  SET_UNIFORM_TEMPLATE(                                                        \
-      type, glProgramUniform1##scalar_type(ID, uniform.location, value))
-#define SET_VECTOR(type, vector_type)                                          \
-  SET_UNIFORM_TEMPLATE(                                                        \
-      type, glProgramUniform##vector_type##v(ID, uniform.location, 1,          \
-                                             glm::value_ptr(value)))
-#define SET_MATRIX(type, matrix_type)                                          \
-  SET_UNIFORM_TEMPLATE(                                                        \
-      type, glProgramUniformMatrix##matrix_type##fv(                           \
-                ID, uniform.location, 1, GL_FALSE, glm::value_ptr(value)))
-
-#define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
-  type &type::set##func_name(const param_t param_name) {                       \
-    setUniform(shader.param_name, param_name);                                 \
-    return *this;                                                              \
-  }
-#define SET_UNIFORM_V(type, func_name, param_t, param_name)                    \
-  SET_UNIFORM(type, func_name, param_t, param_name, vertex)
-#define SET_UNIFORM_F(type, func_name, param_t, param_name)                    \
-  SET_UNIFORM(type, func_name, param_t, param_name, fragment)
-#define SET_UNIFORM_G(type, func_name, param_t, param_name)                    \
-  SET_UNIFORM(type, func_name, param_t, param_name, geometry)
-
-#define BIND_TEXTURE(type, sampler_name)                                       \
-  type &type::bindTexture(const tex::texture &texture) {                       \
-    glBindTextureUnit(fragment.sampler_name.binding, texture.ID);              \
-    return *this;                                                              \
-  }
+  Uniform<##type>##name { programID, #name }
 
 namespace shaders {
-template <typename T = void> struct uniform {
-  GLint location;
-
-  uniform(const GLuint shaderID, const char *name)
-      : location{glGetUniformLocation(shaderID, name)} {
-    if (location == -1)
-      throw std::runtime_error{
-          std::format("{}: {} was not a valid uniform name", shaderID, name)};
-    std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
-  }
-
-  // void create(const GLuint shaderID, const std::string &name) {
-  //   const GLint loc = glGetUniformLocation(shaderID, name.c_str());
-  //   std::cout << std::format("{} | {}:{}\n", shaderID, name, loc);
-  //   if (loc == -1)
-  //     throw std::runtime_error{
-  //         std::format("{}: {} was not a valid uniform name", shaderID,
-  //         name)};
-  //   location = loc;
-  // }
+template <typename T>
+concept has_uniform = requires(T t, const GLuint ID) {
+  { T::name } -> std::convertible_to<const char *>;
+  T{ID};
 };
 
-struct sampler_t {
+template <has_uniform T> constexpr bool has_extension(const char *ext) {
+  return std::string_view{T::name}.ends_with(ext);
+}
+
+struct UniformHolder {
+  GLuint programID;
+
+  UniformHolder(const GLuint programID) : programID{programID} {}
+};
+
+template <typename T = void> struct Uniform {
+  GLint location;
+
+  Uniform(const GLuint programID, const char *name)
+      : location{glGetUniformLocation(programID, name)} {
+    if (location == -1)
+      throw std::runtime_error{
+          std::format("{}: {} was not a valid uniform name", programID, name)};
+    std::cout << std::format("{} | {}:{}\n", programID, name, location);
+  }
+};
+
+struct Sampler {
   GLuint binding;
 
   static GLuint getBinding(const GLuint shaderID, const char *name) {
@@ -81,16 +50,7 @@ struct sampler_t {
     return binding;
   }
 
-  sampler_t(const GLuint shaderID, const char *name)
-      : binding{getBinding(shaderID, name)} {}
-
-  // void create(const GLuint shaderID, const std::string &name) {
-  //   const GLint loc = glGetUniformLocation(shaderID, name.c_str());
-  //   if (loc == -1)
-  //     throw std::runtime_error{
-  //         std::format("{}: {} was not a valid sampler name", shaderID,
-  //         name)};
-  //   glGetUniformuiv(shaderID, loc, &binding);
-  // }
+  Sampler(const GLuint programID, const char *name)
+      : binding{getBinding(programID, name)} {}
 };
 } // namespace shaders

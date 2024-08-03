@@ -11,18 +11,7 @@ import color;
 import debug;
 import glm;
 
-export namespace shaders {
-template <typename T>
-concept has_uniform = requires(T t, const GLuint ID) {
-  { T::name } -> std::convertible_to<const char *>;
-  { T{ID} };
-  //{ t.createUniforms(ID) } -> std::same_as<void>;
-};
-
-template <has_uniform T> constexpr bool has_extension(const char *ext) {
-  return std::string_view{T::name}.ends_with(ext);
-}
-
+export namespace GL {
 struct Shader {
   GLuint ID;
   GLenum type;
@@ -31,8 +20,8 @@ struct Shader {
   Shader(const GLenum type, const char *name);
   ~Shader();
   Shader(const Shader &) = delete;
-  Shader(Shader &&) = default;
+  Shader(Shader &&o);
   Shader &operator=(const Shader &) = delete;
-  Shader &operator=(Shader &&) = default;
+  Shader &operator=(Shader &&o);
 };
-} // namespace shaders
+} // namespace GL

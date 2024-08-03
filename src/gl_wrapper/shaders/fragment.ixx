@@ -4,7 +4,6 @@ module;
 
 export module shaders:fragment;
 
-import :shader;
 import glm;
 
 export namespace shaders {
@@ -12,52 +11,57 @@ namespace frag {
 template <typename T>
 concept format = has_uniform<T> && has_extension<T>("frag");
 
-struct basic {
+struct basic : UniformHolder {
   static constexpr char name[] = "basic.frag";
 
-  uniform<glm::uvec3> frag_color;
+  NEW_UNIFORM(glm::uvec3, frag_color);
 
-  void createUniforms(const GLuint ID);
+  using UniformHolder::UniformHolder;
+  // void createUniforms(const GLuint ID);
 };
-struct circle {
+struct circle : UniformHolder {
   static constexpr char name[] = "circle.frag";
 
-  uniform<glm::vec2> center;
-  uniform<float> radius;
-  uniform<glm::uvec2> screen_dimensions;
-  uniform<glm::mat4> view;
-  uniform<glm::uvec3> frag_color;
+  NEW_UNIFORM(glm::vec2, center);
+  NEW_UNIFORM(float, radius);
+  NEW_UNIFORM(glm::uvec2, screen_dimensions);
+  NEW_UNIFORM(glm::mat4, view);
+  NEW_UNIFORM(glm::uvec3, frag_color);
 
-  void createUniforms(const GLuint ID);
+  using UniformHolder::UniformHolder;
+  // void createUniforms(const GLuint ID);
 };
-struct striped {
+struct striped : UniformHolder {
   static constexpr char name[] = "striped.frag";
 
-  uniform<unsigned int> width;
-  uniform<unsigned int> spacing;
-  uniform<unsigned int> pattern;
-  uniform<glm::uvec3> frag_color;
+  NEW_UNIFORM(unsigned int, width);
+  NEW_UNIFORM(unsigned int, spacing);
+  NEW_UNIFORM(unsigned int, pattern);
+  NEW_UNIFORM(glm::uvec3, frag_color);
 
-  void createUniforms(const GLuint ID);
+  using UniformHolder::UniformHolder;
+  // void createUniforms(const GLuint ID);
 };
-struct texcol {
+struct texcol : UniformHolder {
   static constexpr char name[] = "texcol.frag";
 
-  sampler_t sampler;
-  uniform<glm::uvec3> frag_color;
+  Sampler sampler{programID, "sampler"};
+  NEW_UNIFORM(glm::uvec3, frag_color);
 
-  void createUniforms(const GLuint ID);
+  using UniformHolder::UniformHolder;
+  // void createUniforms(const GLuint ID);
 };
-struct sdf_font {
+struct sdf_font : UniformHolder {
   static constexpr char name[] = "sdf_font.frag";
 
-  sampler_t sampler;
-  uniform<glm::uvec3> frag_color;
-  uniform<float> threshold;
-  uniform<float> font_size;
-  uniform<bool> anti_alias;
+  Sampler sampler{programID, "sampler"};
+  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_UNIFORM(float, threshold);
+  NEW_UNIFORM(float, font_size);
+  NEW_UNIFORM(bool, anti_alias);
 
-  void createUniforms(const GLuint ID);
+  using UniformHolder::UniformHolder;
+  // void createUniforms(const GLuint ID);
 };
 } // namespace frag
 } // namespace shaders

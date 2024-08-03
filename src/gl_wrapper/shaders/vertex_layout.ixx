@@ -17,8 +17,7 @@ template <typename T>
 void enable_helper(const GLuint ID, GLuint &index, GLint &offset) {
   glEnableVertexArrayAttrib(ID, index);
   glVertexArrayAttribFormat(ID, index, T::length(),
-                            GL::macroOf<typename T::value_type>(), false,
-                            offset);
+                            macroOf<typename T::value_type>(), false, offset);
   glVertexArrayAttribBinding(ID, index, 0);
   index++;
   offset += sizeof(T);
