@@ -86,7 +86,7 @@ void GUIFrame::text(const std::string &str, const color_t &color,
     xOffset += static_cast<unsigned short>(font::CHAR_WIDTH * scale);
   }
 
-  CHAR_VBO->writeList(vertices);
+  CHAR_VBO->write(vertices);
 
   SHADERS.sdf.setView(matrix)
       .setFragColor(color)

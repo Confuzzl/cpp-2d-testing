@@ -34,12 +34,12 @@ Texture::Texture(const std::string &name) {
   stbi_image_free(data);
 }
 Texture::~Texture() {
-  if (ID != -1)
+  if (ID)
     glDeleteTextures(1, &ID);
 }
-Texture::Texture(Texture &&o) : ID{o.ID} { o.ID = -1; }
+Texture::Texture(Texture &&o) : ID{o.ID} { o.ID = 0; }
 Texture &Texture::operator=(Texture &&o) {
   ID = o.ID;
-  o.ID = -1;
+  o.ID = 0;
   return *this;
 }

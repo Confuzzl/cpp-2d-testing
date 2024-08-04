@@ -8,12 +8,12 @@ using namespace GL;
 
 QueryObject::QueryObject() { glGenQueries(1, &ID); }
 QueryObject::~QueryObject() {
-  if (ID != -1)
+  if (ID)
     glDeleteQueries(1, &ID);
 }
-QueryObject::QueryObject(QueryObject &&o) : ID{o.ID} { o.ID = -1; }
+QueryObject::QueryObject(QueryObject &&o) : ID{o.ID} { o.ID = 0; }
 QueryObject &QueryObject::operator=(QueryObject &&o) {
   ID = o.ID;
-  o.ID = -1;
+  o.ID = 0;
   return *this;
 }

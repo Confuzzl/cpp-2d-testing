@@ -67,7 +67,7 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
       to + glm::vec2{head.x * COS - head.y * SIN, head.x * SIN + head.y * COS},
       to + glm::vec2{head.x * COS + head.y * SIN, head.y * COS - head.x * SIN}};
 
-  VBO_4->writeList(vertices);
+  VBO_4->write(vertices);
 
   SHADERS.basic.setView(matrix).setFragColor(color);
   SHADERS.basic.draw(GL_LINES, VBO_4, INDICES);
@@ -102,7 +102,7 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
-  VBO_4->writeList(corners);
+  VBO_4->write(corners);
 
   SHADERS.basic.setView(matrix).setFragColor(color);
   SHADERS.basic.draw(GL_LINE_LOOP, VBO_4);
@@ -113,7 +113,7 @@ void BaseFrame::drawQuad(const dimension_t &dimensions,
 
   const glm::vec2 corners[4] = {{from.x, to.y}, from, to, {to.x, from.y}};
 
-  VBO_4->writeList(corners);
+  VBO_4->write(corners);
 
   SHADERS.basic.setView(matrix).setFragColor(color);
   SHADERS.basic.draw(GL_TRIANGLE_STRIP, VBO_4);
@@ -124,7 +124,7 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
   static constexpr auto MAX_VERTICES = 0xffff;
   static VBOHandle VBO = VBO_HOLDER.get<>(MAX_VERTICES);
 
-  VBO->writeList(mesh.data);
+  VBO->write(mesh.data);
 
   SHADERS.trans.setView(matrix).setParentPos(pos).setRotation(rot).setFragColor(
       mesh.color);

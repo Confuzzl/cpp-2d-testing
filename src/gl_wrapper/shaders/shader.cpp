@@ -32,16 +32,14 @@ Shader::Shader(const GLenum type, const char *name)
   println("Successfully compiled {}", name);
 }
 Shader::~Shader() {
-  if (name != nullptr)
+  if (name)
     glDeleteShader(ID);
 }
-Shader::Shader(Shader &&o) : ID{o.ID}, type{o.type}, name{o.name} {
-  o.name = nullptr;
-}
+Shader::Shader(Shader &&o) : ID{o.ID}, type{o.type}, name{o.name} { o.ID = 0; }
 Shader &Shader::operator=(Shader &&o) {
   ID = o.ID;
   type = o.type;
   name = o.name;
-  o.name = nullptr;
+  o.ID = 0;
   return *this;
 }

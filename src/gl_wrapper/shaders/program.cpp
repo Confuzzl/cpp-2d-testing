@@ -35,13 +35,13 @@ ProgramObject::ProgramObject(const std::initializer_list<Shader> &shaders)
     glDetachShader(ID, shader.ID);
 }
 ProgramObject ::~ProgramObject() {
-  if (ID != -1)
+  if (ID)
     glDeleteProgram(ID);
 }
-ProgramObject::ProgramObject(ProgramObject &&o) : ID{o.ID} { o.ID = -1; };
+ProgramObject::ProgramObject(ProgramObject &&o) : ID{o.ID} { o.ID = 0; };
 ProgramObject &ProgramObject::operator=(ProgramObject &&o) {
   ID = o.ID;
-  o.ID = -1;
+  o.ID = 0;
   return *this;
 }
 

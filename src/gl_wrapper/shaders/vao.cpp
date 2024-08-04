@@ -8,14 +8,14 @@ using namespace GL;
 
 VertexArrayObject::VertexArrayObject() { glCreateVertexArrays(1, &ID); }
 VertexArrayObject::~VertexArrayObject() {
-  if (ID != -1)
+  if (ID)
     glDeleteVertexArrays(1, &ID);
 }
 VertexArrayObject::VertexArrayObject(VertexArrayObject &&o) : ID{o.ID} {
-  o.ID = -1;
+  o.ID = 0;
 }
 VertexArrayObject &VertexArrayObject::operator=(VertexArrayObject &&o) {
   ID = o.ID;
-  o.ID = -1;
+  o.ID = 0;
   return *this;
 }

@@ -38,17 +38,17 @@ GL::BufferObject::BufferObject() {
   glNamedBufferStorage(ID, MAX_SIZE, nullptr, GL_DYNAMIC_STORAGE_BIT);
 }
 GL::BufferObject::~BufferObject() {
-  if (!freeList.empty())
+  if (ID)
     glDeleteBuffers(1, &ID);
 }
 GL::BufferObject::BufferObject(BufferObject &&o)
     : ID{o.ID}, freeList{std::move(o.freeList)} {
-  o.freeList.clear();
+  o.ID = 0;
 }
 GL::BufferObject &GL::BufferObject::operator=(BufferObject &&o) {
   ID = o.ID;
   freeList = std::move(o.freeList);
-  o.freeList.clear();
+  o.ID = 0;
   return *this;
 }
 

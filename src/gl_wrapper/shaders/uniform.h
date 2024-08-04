@@ -6,11 +6,13 @@
 #include <stdexcept>
 
 #define NEW_UNIFORM(type, name)                                                \
-  Uniform<##type>##name { programID, #name }
+  Uniform<type> name { programID, #name }
+
+import debug;
 
 namespace shaders {
 template <typename T>
-concept has_uniform = requires(T t, const GLuint ID) {
+concept has_uniform = requires(const GLuint ID) {
   { T::name } -> std::convertible_to<const char *>;
   T{ID};
 };
@@ -32,8 +34,8 @@ template <typename T = void> struct Uniform {
       : location{glGetUniformLocation(programID, name)} {
     if (location == -1)
       throw std::runtime_error{
-          std::format("{}: {} was not a valid uniform name", programID, name)};
-    std::cout << std::format("{} | {}:{}\n", programID, name, location);
+          std::format("{} | {} was not a valid uniform name", programID, name)};
+    println("{} | {}:{}", programID, name, location);
   }
 };
 

@@ -41,7 +41,7 @@ export struct VBOHeapHandle : BufferObjectHeapHandle {
   template <glm::has_value_ptr T> void write(const T &data) {
     writeRaw(glm::value_ptr(data), sizeof(T));
   }
-  template <typename T> void writeList(const T &list) {
+  template <typename T> void write(const T &list) {
     for (const auto &vertex : list)
       write(vertex);
   }

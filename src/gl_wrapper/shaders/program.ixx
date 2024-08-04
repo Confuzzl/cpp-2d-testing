@@ -144,12 +144,13 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
 
 template <vert::format V, frag::format F, geom::format G>
 struct GeometryProgram : BaseProgram<V, F> {
-  G geometry{0};
+  G geometry;
 
   GeometryProgram()
       : BaseProgram<V, F>({{GL_VERTEX_SHADER, V::name},
                            {GL_FRAGMENT_SHADER, F::name},
-                           {GL_GEOMETRY_SHADER, G::name}}) {}
+                           {GL_GEOMETRY_SHADER, G::name}}),
+        geometry{GL::ProgramObject::ID} {}
 };
 
 struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {
