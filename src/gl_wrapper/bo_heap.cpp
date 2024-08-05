@@ -27,9 +27,10 @@ void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
 void VBOHeapHandle::reset() { count = 0; }
 
 EBOHeapHandle::EBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
-                             const GLuint size, const GLuint length)
-    : BufferObjectHeapHandle(parent, offset, size), length{length} {}
-void EBOHeapHandle::write(const std::initializer_list<GLuint> &indices) {
+                             const GLuint size,
+                             const std::initializer_list<GLuint> &indices)
+    : BufferObjectHeapHandle(parent, offset, size),
+      length{static_cast<GLuint>(indices.size())} {
   glNamedBufferSubData(parent->ID, offset, size, indices.begin());
 }
 
@@ -84,10 +85,9 @@ EBOHandle GL::ElementBufferObject::allocate(
 
     const auto newSize = current->size - size;
 
-    auto out = std::make_unique<EBOHeapHandle>(
-        this, current->offset, size, static_cast<GLuint>(indices.size()));
+    auto out =
+        std::make_unique<EBOHeapHandle>(this, current->offset, size, indices);
 
-    out->write(indices);
     if (newSize == 0) {
       freeList.erase(current);
     } else {

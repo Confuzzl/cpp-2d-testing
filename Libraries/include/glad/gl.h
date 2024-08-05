@@ -4061,7 +4061,7 @@ typedef void (GLAD_API_PTR *PFNGLLINESTIPPLEPROC)(GLint factor, GLushort pattern
 typedef void (GLAD_API_PTR *PFNGLLINEWIDTHPROC)(GLfloat width);
 typedef void (GLAD_API_PTR *PFNGLLINKPROGRAMPROC)(GLuint program);
 typedef void (GLAD_API_PTR *PFNGLLINKPROGRAMARBPROC)(GLhandleARB programObj);
-typedef void (GLAD_API_PTR *PFNGLLISTBASEPROC)(GLuint base);
+typedef void (GLAD_API_PTR *PFNGLLISTBASEPROC)(GLuint Base);
 typedef void (GLAD_API_PTR *PFNGLLOADIDENTITYPROC)(void);
 typedef void (GLAD_API_PTR *PFNGLLOADMATRIXDPROC)(const GLdouble * m);
 typedef void (GLAD_API_PTR *PFNGLLOADMATRIXFPROC)(const GLfloat * m);

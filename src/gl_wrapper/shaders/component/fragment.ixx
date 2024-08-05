@@ -17,7 +17,6 @@ struct basic : UniformHolder {
   NEW_UNIFORM(glm::uvec3, frag_color);
 
   using UniformHolder::UniformHolder;
-  // void createUniforms(const GLuint ID);
 };
 struct circle : UniformHolder {
   static constexpr char name[] = "circle.frag";
@@ -29,7 +28,6 @@ struct circle : UniformHolder {
   NEW_UNIFORM(glm::uvec3, frag_color);
 
   using UniformHolder::UniformHolder;
-  // void createUniforms(const GLuint ID);
 };
 struct striped : UniformHolder {
   static constexpr char name[] = "striped.frag";
@@ -40,7 +38,6 @@ struct striped : UniformHolder {
   NEW_UNIFORM(glm::uvec3, frag_color);
 
   using UniformHolder::UniformHolder;
-  // void createUniforms(const GLuint ID);
 };
 struct texcol : UniformHolder {
   static constexpr char name[] = "texcol.frag";
@@ -49,7 +46,6 @@ struct texcol : UniformHolder {
   NEW_UNIFORM(glm::uvec3, frag_color);
 
   using UniformHolder::UniformHolder;
-  // void createUniforms(const GLuint ID);
 };
 struct sdf_font : UniformHolder {
   static constexpr char name[] = "sdf_font.frag";
@@ -61,7 +57,6 @@ struct sdf_font : UniformHolder {
   NEW_UNIFORM(bool, anti_alias);
 
   using UniformHolder::UniformHolder;
-  // void createUniforms(const GLuint ID);
 };
 } // namespace frag
 } // namespace shaders

@@ -150,13 +150,13 @@
     <ClCompile Include="src\gl_wrapper\shaders\shader.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\fragment.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\fragment.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\geometry.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\geometry.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\vertex.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\vertex.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\query_object.ixx">
@@ -175,15 +175,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\geometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\fragment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\bo_heap.ixx">

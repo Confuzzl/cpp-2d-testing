@@ -69,9 +69,9 @@ namespace detail
 	// pow
 	using std::pow;
 	template<length_t L, typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER vec<L, T, Q> pow(vec<L, T, Q> const& base, vec<L, T, Q> const& exponent)
+	GLM_FUNC_QUALIFIER vec<L, T, Q> pow(vec<L, T, Q> const& Base, vec<L, T, Q> const& exponent)
 	{
-		return detail::functor2<vec, L, T, Q>::call(pow, base, exponent);
+		return detail::functor2<vec, L, T, Q>::call(pow, Base, exponent);
 	}
 
 	// exp
