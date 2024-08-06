@@ -19,9 +19,9 @@ import math;
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
-  // drawQuad({{0, 0}, {1, 1}}, colors::RED);
+  drawQuad({{0, 0}, {1, 1}}, colors::RED);
 
-  drawGrid();
+  // drawGrid();
 
   // Mesh mesh{{{-1, -1}, {+1, -1}, {+2, +1}, {+0, +2}, {-2, +1}},
   //                  GL_TRIANGLE_FAN};
