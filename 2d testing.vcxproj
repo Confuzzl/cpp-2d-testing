@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="collision.cpp" />
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\app\app.cpp" />
     <ClCompile Include="src\app\app.ixx" />
@@ -46,11 +47,11 @@
     <ClCompile Include="src\gl_wrapper\shaders\query_object.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\shader.cpp" />
     <ClCompile Include="src\gl_wrapper\shaders\shader.ixx" />
-    <ClCompile Include="src\gl_wrapper\shaders\component\fragment.ixx" />
-    <ClCompile Include="src\gl_wrapper\shaders\component\geometry.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\component\frag.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\component\geom.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\vao.ixx" />
-    <ClCompile Include="src\gl_wrapper\shaders\component\vertex.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\component\vert.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\vertex_layout.ixx" />
     <ClCompile Include="src\gl_wrapper\texture.cpp" />
     <ClCompile Include="src\gl_wrapper\texture.ixx" />
@@ -70,17 +71,12 @@
     <ClCompile Include="src\world\camera.cpp" />
     <ClCompile Include="src\world\camera.ixx" />
     <ClCompile Include="src\world\collision\aabb.ixx" />
-    <ClCompile Include="src\world\shapes\circle.cpp" />
-    <ClCompile Include="src\world\shapes\circle.ixx" />
-    <ClCompile Include="src\world\shapes\collider.cpp" />
-    <ClCompile Include="src\world\shapes\collider.ixx" />
-    <ClCompile Include="src\world\shapes\polygon.cpp" />
-    <ClCompile Include="src\world\shapes\polygon.ixx" />
+    <ClCompile Include="src\world\collision\collision.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
     <ClCompile Include="src\world\object.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
     <ClCompile Include="src\world\scene.ixx" />
-    <ClCompile Include="src\gl_wrapper\shaders\vao.cpp" />
+    <ClCompile Include="src\world\shapes\geometry.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Libraries\include\glad\glad.h" />

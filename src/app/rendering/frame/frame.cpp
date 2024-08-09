@@ -10,6 +10,8 @@ import app;
 import vertex_layout;
 import bo_heap;
 
+import debug;
+
 void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
                           const color_t &color) const {
   static constexpr float SCALE = 0.002f;
@@ -24,21 +26,25 @@ void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
   SHADERS.basic.draw(GL_POINTS, VBO_1);
 }
 
-void BaseFrame::drawLine(const glm::vec2 &from, const glm::vec2 &to,
-                         const float size, const color_t &color) const {
+void BaseFrame::drawLine(const dimension_t &dimensions, const float size,
+                         const color_t &color) const {
+  const auto [from, to] = dimensions;
+
   VBO_2->write(from);
   VBO_2->write(to);
 
   SHADERS.line.setView(matrix).setFragColor(color).setThickness(size);
   SHADERS.line.draw(GL_LINES, VBO_2);
 }
-void BaseFrame::drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
+void BaseFrame::drawLineFixed(const dimension_t &dimensions,
                               const color_t &color) const {
+  const auto [from, to] = dimensions;
+
   VBO_2->write(from);
   VBO_2->write(to);
 
   SHADERS.basic.setView(matrix).setFragColor(color);
-  SHADERS.line.draw(GL_LINES, VBO_2);
+  SHADERS.basic.draw(GL_LINES, VBO_2);
 }
 
 void BaseFrame::drawArrow(const dimension_t &dimensions,
@@ -87,18 +93,18 @@ void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
 
 void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,
                         const color_t &color) const {
-  const auto &[from, to] = dimensions;
+  const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-  drawLine(corners[0], corners[1], lineSize, color);
-  drawLine(corners[1], corners[2], lineSize, color);
-  drawLine(corners[2], corners[3], lineSize, color);
-  drawLine(corners[3], corners[0], lineSize, color);
+  drawLine({corners[0], corners[1]}, lineSize, color);
+  drawLine({corners[1], corners[2]}, lineSize, color);
+  drawLine({corners[2], corners[3]}, lineSize, color);
+  drawLine({corners[3], corners[0]}, lineSize, color);
 }
 
 void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
                              const float lineSize, const color_t &color) const {
-  const auto &[from, to] = dimensions;
+  const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
 
@@ -109,9 +115,14 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
 }
 void BaseFrame::drawQuad(const dimension_t &dimensions,
                          const color_t &color) const {
-  const auto &[from, to] = dimensions;
+  const auto [from, to] = dimensions;
 
-  const glm::vec2 corners[4] = {{from.x, to.y}, from, to, {to.x, from.y}};
+  const glm::vec2 corners[4] = {
+      from,
+      {to.x, from.y},
+      {from.x, to.y},
+      to,
+  };
 
   VBO_4->write(corners);
 

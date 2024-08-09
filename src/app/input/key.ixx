@@ -19,11 +19,11 @@ export struct Key {
   Key(const Callback &processOn, const Callback &processOff);
   Key(const Callback &processOn);
 
-  void change(int action);
+  void react(int action);
 
   void operator()(const double dt);
 
-  static Callback moveFunction(const glm::vec2 &direction);
+  static Callback moveFunction(const glm::vec2 direction);
 
   static Callback NONE();
 };

@@ -17,7 +17,7 @@ Key::Key(const Callback &processOn, const Callback &processOff)
     : Key(processOn, processOn, processOff, processOff){};
 Key::Key(const Callback &processOn) : Key(processOn, NONE()) {}
 
-void Key::change(const int action) {
+void Key::react(const int action) {
   switch (action) {
   case GLFW_RELEASE: {
     on = false;
@@ -52,7 +52,7 @@ void Key::operator()(const double dt) {
   }
 }
 
-Key::Callback Key::moveFunction(const glm::vec2 &direction) {
+Key::Callback Key::moveFunction(const glm::vec2 direction) {
   return [direction](const double dt) {
     MAIN_CAMERA.translate(direction *
                           static_cast<float>(dt * MAIN_CAMERA.relSpeed()));

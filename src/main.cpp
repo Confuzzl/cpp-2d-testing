@@ -8,6 +8,6 @@ int main() {
   try {
     MAIN_APP.start();
   } catch (const std::runtime_error &e) {
-    println(e.what());
+    println("APP RUNTIME ERROR:\n{}", e.what());
   }
 }

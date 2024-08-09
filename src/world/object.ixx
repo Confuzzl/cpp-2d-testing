@@ -6,18 +6,35 @@ export module object;
 
 import <variant>;
 
-import vertex_layout;
-import circle;
-import polygon;
-import mesh;
-
-export struct Object {
-  struct poly_mesh {
-    Polygon poly;
-    Mesh mesh;
-  };
-  std::variant<Circle, poly_mesh> collider;
-};
+// import vertex_layout;
+// import collider;
+// import circle;
+// import polygon;
+// import mesh;
+//
+// export struct Object {
+//   Collider &collider;
+//
+//   struct PolyMesh {
+//     Polygon poly;
+//     Mesh mesh;
+//   };
+//   struct CircMesh {
+//     Circle circ;
+//   };
+//   std::variant<CircMesh, PolyMesh> colliderVariant;
+//
+//   Object(Circle &&circle)
+//       : colliderVariant{CircMesh{.circ = std::move(circle)}},
+//         collider{std::get<CircMesh>(colliderVariant).circ} {}
+//   Object(Polygon &&polygon, Mesh &&mesh)
+//       : colliderVariant{PolyMesh{.poly = std::move(polygon),
+//                                  .mesh = std::move(mesh)}},
+//         collider{std::get<PolyMesh>(colliderVariant).poly} {}
+//
+//   Collider &operator->() { return collider; }
+//   const Collider &operator->() const { return collider; }
+// };
 
 // import glm;
 // import <memory>;

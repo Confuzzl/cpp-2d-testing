@@ -36,9 +36,7 @@ struct pos {
 
   const void *data() const { return &_pos; }
 };
-template <> void enable<pos>(const GLuint ID) {
-  enable<decltype(pos::_pos)>(ID);
-}
+template <> void enable<pos>(const GLuint ID) { enable<glm::vec2>(ID); }
 
 struct postex {
   glm::vec2 pos;
@@ -52,6 +50,6 @@ struct postex {
   const void *data() const { return &pos; }
 };
 template <> void enable<postex>(const GLuint ID) {
-  enable<decltype(postex::pos), decltype(postex::tex)>(ID);
+  enable<glm::vec2, glm::u16vec2>(ID);
 }
 } // namespace vertex_layout

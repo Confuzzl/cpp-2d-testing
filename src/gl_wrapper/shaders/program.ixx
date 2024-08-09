@@ -65,14 +65,12 @@ export namespace shaders {
 template <vert::format V, frag::format F>
 struct BaseProgram : ::GL::ProgramObject {
 protected:
-  GL::VertexArrayObject vao;
+  GL::VertexArrayObject<typename V::layout_t> vao;
   V vertex;
   F fragment;
 
   BaseProgram(const std::initializer_list<GL::Shader> &shaders)
-      : ProgramObject(shaders), vertex{ID}, fragment{ID} {
-    vertex.enableVAO(vao.ID);
-  }
+      : ProgramObject(shaders), vertex{ID}, fragment{ID} {}
 
 private:
   void bind(const VBOHandle &vbo) const {
@@ -138,7 +136,7 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
   Striped &setWidth(const unsigned int width);
   Striped &setSpacing(const unsigned int spacing);
   enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
-  Striped &setPattern(const Pattern pattern);
+  Striped &setPattern(const Pattern pattern = Pattern::FORWARD);
   Striped &setFragColor(const color_t &frag_color);
 };
 

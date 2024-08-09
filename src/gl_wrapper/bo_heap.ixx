@@ -54,7 +54,7 @@ export struct EBOHeapHandle : BufferObjectHeapHandle {
   EBOHeapHandle() = default;
   EBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                 const GLuint size,
-                const const std::initializer_list<GLuint> &indices);
+                const std::initializer_list<GLuint> &indices);
 };
 
 export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
@@ -86,6 +86,7 @@ struct BufferObject {
 
 struct VertexBufferObject : BufferObject {
   template <typename T> VBOHandle allocate(const GLuint count) {
+
     const GLuint size = count * static_cast<GLuint>(sizeof(T));
     if (size > MAX_SIZE)
       return {};

@@ -14,10 +14,10 @@ import rendering;
 glm::ivec2 InputHandler::cursorPos{0, 0};
 std::map<int, Key> InputHandler::keys{
     {GLFW_KEY_ESCAPE, {[](const double) { MAIN_APP.close(); }}},
-    {GLFW_KEY_W, {Key::moveFunction(glm::vec2{0, +1})}},
-    {GLFW_KEY_A, {Key::moveFunction(glm::vec2{-1, 0})}},
-    {GLFW_KEY_S, {Key::moveFunction(glm::vec2{0, -1})}},
-    {GLFW_KEY_D, {Key::moveFunction(glm::vec2{+1, 0})}},
+    {GLFW_KEY_W, {Key::moveFunction({0, +1})}},
+    {GLFW_KEY_A, {Key::moveFunction({-1, 0})}},
+    {GLFW_KEY_S, {Key::moveFunction({0, -1})}},
+    {GLFW_KEY_D, {Key::moveFunction({+1, 0})}},
 };
 
 void InputHandler::processInput(const double dt) {
@@ -28,9 +28,8 @@ void InputHandler::processInput(const double dt) {
 
 void InputHandler::keyCallback(GLFWwindow *window, int key, int scancode,
                                int action, int mods) {
-  const auto iterator = keys.find(key);
-  if (iterator != keys.cend())
-    iterator->second.change(action);
+  if (const auto iterator = keys.find(key); iterator != keys.cend())
+    iterator->second.react(action);
 }
 void InputHandler::mousePosCallback(GLFWwindow *window, double xpos,
                                     double ypos) {

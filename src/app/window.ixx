@@ -22,9 +22,8 @@ export struct Window {
 
     window =
         glfwCreateWindow(WIDTH, HEIGHT, "2D Physics Engine", nullptr, nullptr);
-    if (!window) {
-      throw std::runtime_error{"window creation error"};
-    }
+    if (!window)
+      throw std::runtime_error{"WINDOW CREATION ERROR"};
     glfwMakeContextCurrent(window);
 
     gladLoadGL(glfwGetProcAddress);

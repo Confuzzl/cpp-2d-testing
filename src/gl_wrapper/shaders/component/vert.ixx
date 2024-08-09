@@ -13,18 +13,13 @@ import debug;
 export namespace shaders {
 namespace vert {
 template <typename T>
-concept format =
-    has_uniform<T> && has_extension<T>("vert") && requires(T t, GLuint &vao) {
-      typename T::layout_t;
-      { t.enableVAO(vao) } -> std::same_as<void>;
-    };
+concept format = has_uniform<T> && has_extension<T>("vert") &&
+                 requires(T t, GLuint &vao) { typename T::layout_t; };
 
 template <typename T> struct Base : UniformHolder {
   using layout_t = T;
 
   using UniformHolder::UniformHolder;
-
-  void enableVAO(GLuint &vao) { vertex_layout::enable<layout_t>(vao); }
 };
 
 struct identity : Base<vertex_layout::pos> {

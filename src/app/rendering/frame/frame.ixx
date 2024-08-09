@@ -25,10 +25,9 @@ export struct BaseFrame {
   void drawPointFixed(const glm::vec2 &point, const float size = 10,
                       const color_t &color = colors::WHITE) const;
 
-  void drawLine(const glm::vec2 &from, const glm::vec2 &to,
-                const float size = 0.1,
+  void drawLine(const dimension_t &dimensions, const float size = 0.1,
                 const color_t &color = colors::WHITE) const;
-  void drawLineFixed(const glm::vec2 &from, const glm::vec2 &to,
+  void drawLineFixed(const dimension_t &dimensions,
                      const color_t &color = colors::WHITE) const;
 
   void drawArrow(const dimension_t &dimensions,

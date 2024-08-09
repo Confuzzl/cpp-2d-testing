@@ -11,7 +11,6 @@ import camera;
 import mesh;
 import glm;
 import vertex_layout;
-// import buffer_object;
 import bo_heap;
 import shaders;
 import math;
@@ -19,9 +18,7 @@ import math;
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
-  drawQuad({{0, 0}, {1, 1}}, colors::RED);
-
-  // drawGrid();
+  drawGrid();
 
   // Mesh mesh{{{-1, -1}, {+1, -1}, {+2, +1}, {+0, +2}, {-2, +1}},
   //                  GL_TRIANGLE_FAN};

@@ -9,8 +9,8 @@ import <vector>;
 
 import bvh;
 
-import polygon;
-import circle;
+// import polygon;
+// import circle;
 import color;
 
 export struct base_obj_t;

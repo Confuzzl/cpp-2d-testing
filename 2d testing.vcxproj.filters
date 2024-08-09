@@ -87,24 +87,6 @@
     <ClCompile Include="src\util\vector.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\shapes\circle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\shapes\circle.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\shapes\collider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\shapes\collider.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\shapes\polygon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\shapes\polygon.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\world\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,13 +132,13 @@
     <ClCompile Include="src\gl_wrapper\shaders\shader.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\component\fragment.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\frag.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\component\geometry.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\geom.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\component\vertex.ixx">
+    <ClCompile Include="src\gl_wrapper\shaders\component\vert.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\query_object.ixx">
@@ -195,10 +177,16 @@
     <ClCompile Include="src\gl_wrapper\shaders\shaders.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\vao.cpp">
+    <ClCompile Include="src\gl_wrapper\shaders\query_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl_wrapper\shaders\query_object.cpp">
+    <ClCompile Include="src\world\collision\collision.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\shapes\geometry.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

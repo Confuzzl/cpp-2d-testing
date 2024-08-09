@@ -10,8 +10,8 @@ import glm;
 import math;
 
 export using color_t = glm::uvec3;
-export using rgb_t = glm::u8vec3;
-export using rgba_t = glm::u8vec4;
+// export using rgb_t = glm::u8vec3;
+// export using rgba_t = glm::u8vec4;
 
 export namespace colors {
 const color_t BLACK{0}, DARK_GRAY{63}, GRAY{127}, LIGHT_GRAY{191}, WHITE{255};

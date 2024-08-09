@@ -19,7 +19,7 @@ VBOHeapHandle::VBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                              const GLuint size, const GLuint vertexSize)
     : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
 void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
-  glNamedBufferSubData(parent->ID, offset, size, data);
+  glNamedBufferSubData(parent->ID, offset + count * vertexSize, size, data);
   if (++count * vertexSize > this->size)
     throw std::runtime_error{
         std::format("Overwrite at VBO handle at VBO {}", parent->ID)};

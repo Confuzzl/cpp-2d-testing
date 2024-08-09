@@ -25,7 +25,7 @@ App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(debugCallback, 0);
 } catch (const std::runtime_error &e) {
-  println(e.what());
+  println("APP INITIALIZATION ERROR:\n{}", e.what());
 }
 App::~App() {
   println("app terminated at {:.2f}s", glfwGetTime());
