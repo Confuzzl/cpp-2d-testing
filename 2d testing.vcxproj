@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="collision.cpp" />
+    <ClCompile Include="src\world\collision\collision.cpp" />
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\app\app.cpp" />
     <ClCompile Include="src\app\app.ixx" />

@@ -39,18 +39,21 @@ struct Polygon : Shape {
 private:
   std::vector<glm::vec2> vertices;
 
-  static std::vector<glm::vec2> &&
-  verticesCheck(std::vector<glm::vec2> &&vertices) {
-    if (vertices.size() < 3)
-      throw std::runtime_error{"POLYGON MUST HAVE MORE THAN 3 VERTICES"};
-    return std::move(vertices);
-  }
+protected:
+  Polygon(Shape &&shape, std::vector<glm::vec2> &&vertices)
+      : Shape(std::move(shape)), vertices{std::move(vertices)} {}
 
 public:
-  Polygon(Shape &&shape, std::vector<glm::vec2> &&vertices)
-      : Shape(std::move(shape)),
-        vertices{std::move(verticesCheck(std::move(vertices)))} {}
-
   const auto &getVertices() const { return vertices; }
+
+  static Polygon from(Shape &&shape, std::vector<glm::vec2> &&vertices) {
+    if (vertices.size() < 3)
+      throw std::runtime_error{"POLYGON MUST HAVE MORE THAN 3 VERTICES"};
+    return fromUnchecked(std::move(shape), std::move(vertices));
+  }
+  static Polygon fromUnchecked(Shape &&shape,
+                               std::vector<glm::vec2> &&vertices) {
+    return {std::move(shape), std::move(vertices)};
+  }
 };
 } // namespace geometry

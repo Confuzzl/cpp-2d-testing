@@ -186,7 +186,7 @@
     <ClCompile Include="src\world\shapes\geometry.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="collision.cpp">
+    <ClCompile Include="src\world\collision\collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

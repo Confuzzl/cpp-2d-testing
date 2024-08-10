@@ -4,12 +4,9 @@ import glm;
 
 using namespace collision;
 
-Polygon::Polygon(geometry::Polygon &&polygon, const bool isConvex)
-    : geometry::Polygon(std::move(polygon)), isConvex{false} {}
-
-ConvexPolygon::ConvexPolygon(geometry::Polygon &&polygon)
-    : Polygon(std::move(polygon), true) {}
-ConvexPolygon ConvexPolygon::from(geometry::Polygon &&polygon) {
+Polygon::Polygon(geometry::Polygon &&polygon)
+    : geometry::Polygon(std::move(polygon), true) {}
+Polygon Polygon::from(geometry::Polygon &&polygon) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 
   const auto &vertices = polygon.getVertices();
@@ -29,7 +26,7 @@ ConvexPolygon ConvexPolygon::from(geometry::Polygon &&polygon) {
   }
   return fromUnchecked(std::move(polygon));
 }
-ConvexPolygon ConvexPolygon::fromUnchecked(geometry::Polygon &&polygon) {
+Polygon Polygon::fromUnchecked(geometry::Polygon &&polygon) {
   return {std::move(polygon)};
 }
 
@@ -42,21 +39,8 @@ template <> bool colliding<Circle>(const Circle &a, const Circle &b) {
 template <> bool colliding<Polygon>(const Polygon &a, const Polygon &b) {
   return false;
 }
-template <>
-bool colliding<ConvexPolygon>(const ConvexPolygon &a, const ConvexPolygon &b) {
-  return false;
-}
 
 template <> bool colliding<Circle, Polygon>(const Circle &a, const Polygon &b) {
-  return false;
-}
-template <>
-bool colliding<Circle, ConvexPolygon>(const Circle &a, const ConvexPolygon &b) {
-  return false;
-}
-template <>
-bool colliding<Polygon, ConvexPolygon>(const Polygon &a,
-                                       const ConvexPolygon &b) {
   return false;
 }
 } // namespace collision
