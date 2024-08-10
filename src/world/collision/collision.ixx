@@ -8,7 +8,7 @@ export namespace collision {
 struct Circle : geometry::Circle {};
 struct Polygon : geometry::Polygon {
   struct Edge {
-    const glm::vec2 *tail, const *head;
+    const glm::vec2 *tail, *head;
 
     Edge(const glm::vec2 &tail, const glm::vec2 &head)
         : tail{&tail}, head{&head} {}
