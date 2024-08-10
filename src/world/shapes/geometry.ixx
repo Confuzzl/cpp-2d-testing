@@ -39,6 +39,18 @@ struct Polygon : Shape {
 private:
   std::vector<glm::vec2> vertices;
 
+  static bool isCCW(const std::vector<glm::vec2> &vertices) {
+    // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+
+    const auto size = vertices.size();
+    auto sum = 0u;
+    for (auto i = 0; i < size; i++) {
+      const glm::vec2 e = vertices[(i + 1) % size] - vertices[i];
+      sum += e.x * e.y;
+    }
+    return sum < 0;
+  }
+
 protected:
   Polygon(Shape &&shape, std::vector<glm::vec2> &&vertices)
       : Shape(std::move(shape)), vertices{std::move(vertices)} {}
@@ -49,6 +61,8 @@ public:
   static Polygon from(Shape &&shape, std::vector<glm::vec2> &&vertices) {
     if (vertices.size() < 3)
       throw std::runtime_error{"POLYGON MUST HAVE MORE THAN 3 VERTICES"};
+    if (!isCCW(vertices))
+      throw std::runtime_error{"POLYGON MUST HAVE COUNTER CLOCKWISE VERTICES"};
     return fromUnchecked(std::move(shape), std::move(vertices));
   }
   static Polygon fromUnchecked(Shape &&shape,
