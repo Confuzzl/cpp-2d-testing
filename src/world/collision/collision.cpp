@@ -5,7 +5,7 @@ import glm;
 using namespace collision;
 
 Polygon::Polygon(geometry::Polygon &&polygon)
-    : geometry::Polygon(std::move(polygon), true) {}
+    : geometry::Polygon(std::move(polygon)) {}
 Polygon Polygon::from(geometry::Polygon &&polygon) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 

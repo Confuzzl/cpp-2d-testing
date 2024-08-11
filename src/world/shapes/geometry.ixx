@@ -35,10 +35,9 @@ public:
   float getRadius() const { return radius; }
 };
 
+// CCW
 struct Polygon : Shape {
 private:
-  std::vector<glm::vec2> vertices;
-
   static bool isCCW(const std::vector<glm::vec2> &vertices) {
     // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
 
@@ -52,6 +51,8 @@ private:
   }
 
 protected:
+  std::vector<glm::vec2> vertices;
+
   Polygon(Shape &&shape, std::vector<glm::vec2> &&vertices)
       : Shape(std::move(shape)), vertices{std::move(vertices)} {}
 

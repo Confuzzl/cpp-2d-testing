@@ -6,14 +6,19 @@ import <vector>;
 
 export namespace collision {
 struct Circle : geometry::Circle {};
+
+// CCW and convex
 struct Polygon : geometry::Polygon {
   struct Edge {
-    const glm::vec2 *tail, *head;
+    Polygon *parent;
+    unsigned int tail, head;
 
-    Edge(const glm::vec2 &tail, const glm::vec2 &head)
-        : tail{&tail}, head{&head} {}
+    Edge(const unsigned int tail, const unsigned int head)
+        : tail{tail}, head{head} {}
 
-    operator glm::vec2() const { return *head - *tail; }
+    operator glm::vec2() const {
+      return parent->vertices[head] - parent->vertices[tail];
+    }
 
     glm::vec2 normal();
   };
