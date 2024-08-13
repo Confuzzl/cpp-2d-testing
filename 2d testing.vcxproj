@@ -72,6 +72,7 @@
     <ClCompile Include="src\world\camera.ixx" />
     <ClCompile Include="src\world\collision\aabb.ixx" />
     <ClCompile Include="src\world\collision\collision.ixx" />
+    <ClCompile Include="src\world\collision\sat.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
     <ClCompile Include="src\world\object.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
