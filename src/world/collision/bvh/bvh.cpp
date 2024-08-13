@@ -22,7 +22,7 @@ tree_t::obj_list::iterator tree_t::getEnd(const node_t &node) {
 //   return objs.begin() + node.end;
 // }
 
-tree_t::tree_t(const std::vector<aabb_t> &o) : objs{o} {
+tree_t::tree_t(const std::vector<BoundingBox> &o) : objs{o} {
   // const std::size_t nodeCount = o.size() / MAX_OBJECTS_PER_LEAF;
   // const std::size_t upperLeafSize = std::bit_ceil(nodeCount);
   // const std::size_t upperNodeCount = 2 * upperLeafSize - 1;
@@ -32,10 +32,10 @@ tree_t::tree_t(const std::vector<aabb_t> &o) : objs{o} {
   nodes.resize(2 * o.size() - 1);
 }
 
-aabb_t tree_t::computeBounds(const obj_list::iterator begin,
+BoundingBox tree_t::computeBounds(const obj_list::iterator begin,
                              const obj_list::iterator end) const {
-  aabb_t out{};
-  for (const aabb_t &obj : std::ranges::subrange{begin, end})
+  BoundingBox out{};
+  for (const BoundingBox &obj : std::ranges::subrange{begin, end})
     out.expand(obj);
   return out;
 }
@@ -51,7 +51,7 @@ tree_t::obj_list::iterator tree_t::partitionNode(node_t &node) {
   const float middle = node.box.median()[axis];
   debug("\t\tmiddle: {:d} {}", static_cast<bool>(axis), middle);
   return std::partition(getBegin(node), getEnd(node),
-                        [axis, middle](const aabb_t &obj) {
+                        [axis, middle](const BoundingBox &obj) {
                           // debug("\t\t\tmed: {:+.2f}",
                           // obj.median()[axis]);
                           return obj.median()[axis] < middle;
@@ -114,7 +114,7 @@ void tree_t::topDownRecurse(const std::size_t nodeIndex,
   }
 }
 
-tree_t::obj_t *tree_t::queryFirst(const aabb_t &query,
+tree_t::obj_t *tree_t::queryFirst(const BoundingBox &query,
                                   const std::size_t nodeIndex) {
   const node_t &node = nodes[nodeIndex];
   if (!query.intersects(node.box))
@@ -135,13 +135,13 @@ tree_t::obj_t *tree_t::queryFirst(const aabb_t &query,
     return right;
   return nullptr;
 }
-std::vector<tree_t::obj_t *> tree_t::queryAll(const aabb_t &query) {
+std::vector<tree_t::obj_t *> tree_t::queryAll(const BoundingBox &query) {
   std::vector<tree_t::obj_t *> list{};
   queryAllRecurse(list, query, 0);
   return list;
 }
 void tree_t::queryAllRecurse(std::vector<tree_t::obj_t *> &list,
-                             const aabb_t &query, const std::size_t nodeIndex) {
+                             const BoundingBox &query, const std::size_t nodeIndex) {
   const node_t &node = nodes[nodeIndex];
 
   if (node.isLeaf()) {

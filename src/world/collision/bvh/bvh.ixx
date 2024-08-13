@@ -13,14 +13,14 @@ import color;
 
 export namespace bvh {
 struct tree_t {
-  using obj_t = aabb_t;
+  using obj_t = BoundingBox;
   using obj_list = std::vector<obj_t>;
 
   obj_list objs;
 
   static constexpr unsigned int MAX_OBJECTS_PER_LEAF = 2;
   struct node_t {
-    aabb_t box{};
+    BoundingBox box{};
     int left = -1, right = -1;
     unsigned int begin = 0, end = 0;
 
@@ -53,9 +53,9 @@ struct tree_t {
   template <typename T> void debug(const T &s) { debug("{}", s); }
 
   tree_t() = default;
-  tree_t(const std::vector<aabb_t> &o);
+  tree_t(const std::vector<BoundingBox> &o);
 
-  aabb_t computeBounds(const obj_list::iterator begin,
+  BoundingBox computeBounds(const obj_list::iterator begin,
                        const obj_list::iterator end) const;
 
   obj_list::iterator partitionNode(node_t &node);
@@ -66,9 +66,9 @@ struct tree_t {
                       const obj_list::iterator end, std::size_t &nodeCount,
                       const unsigned int depth);
 
-  obj_t *queryFirst(const aabb_t &query, const std::size_t nodeIndex = 0);
-  std::vector<obj_t *> queryAll(const aabb_t &query);
-  void queryAllRecurse(std::vector<obj_t *> &list, const aabb_t &query,
+  obj_t *queryFirst(const BoundingBox &query, const std::size_t nodeIndex = 0);
+  std::vector<obj_t *> queryAll(const BoundingBox &query);
+  void queryAllRecurse(std::vector<obj_t *> &list, const BoundingBox &query,
                        const std::size_t nodeIndex);
 
   void removeNode();

@@ -1,15 +1,21 @@
 module collision;
 
 import glm;
+import <stdexcept>;
 
 using namespace collision;
 
-Polygon::Polygon(geometry::Polygon &&polygon)
-    : geometry::Polygon(std::move(polygon)) {}
-Polygon Polygon::from(geometry::Polygon &&polygon) {
+Polygon::Edge::Edge(const Polygon *parent, const unsigned int tail,
+                    const unsigned int head)
+    : parent{parent}, tail{tail}, head{head} {}
+Polygon::Edge::operator glm::vec2() const { return {}; }
+glm::vec2 Polygon::Edge::normal() { return {}; }
+
+Polygon::Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices)
+    : Collider(std::move(parent)), vertices{std::move(vertices)} {}
+Polygon Polygon::from(Collider &&parent, std::vector<glm::vec2> &&vertices) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 
-  const auto &vertices = polygon.getVertices();
   const auto size = vertices.size();
 
   for (auto i = 0; i < size; i++) {
@@ -21,10 +27,11 @@ Polygon Polygon::from(geometry::Polygon &&polygon) {
     if (z < 0)
       throw std::runtime_error{"POLYGON IS NOT CONVEX"};
   }
-  return fromUnchecked(std::move(polygon));
+  return fromUnchecked(std::move(parent), std::move(vertices));
 }
-Polygon Polygon::fromUnchecked(geometry::Polygon &&polygon) {
-  return {std::move(polygon)};
+Polygon Polygon::fromUnchecked(Collider &&parent,
+                               std::vector<glm::vec2> &&vertices) {
+  return {std::move(parent), std::move(vertices)};
 }
 
 namespace collision {
@@ -34,6 +41,7 @@ template <> bool colliding<Circle>(const Circle &a, const Circle &b) {
   return glm::distance2(a.getPos(), b.getPos()) <= r2;
 }
 template <> bool colliding<Polygon>(const Polygon &a, const Polygon &b) {
+
   return false;
 }
 

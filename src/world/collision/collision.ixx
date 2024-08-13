@@ -1,32 +1,60 @@
 export module collision;
 
-import world.geometry;
-
+import glm;
+import aabb;
 import <vector>;
 
 export namespace collision {
-struct Circle : geometry::Circle {};
+struct Collider {
+protected:
+  glm::vec2 position;
+  float rotation;
+
+public:
+  Collider(const glm::vec2 position = {}, const float rotation = 0)
+      : position{position}, rotation{rotation} {};
+
+  glm::vec2 getPos() const { return position; }
+  void translate(const glm::vec2 v) { position += v; }
+  void setPos(const glm::vec2 v) { position = v; }
+  float getRotation() const { return rotation; }
+  void rotate(const float r) { rotation += r; }
+  void setRot(const float r) { rotation = r; }
+};
+
+struct Circle : Collider {
+private:
+  float radius = 1;
+
+public:
+  Circle(Collider &&parent, const float radius)
+      : Collider(std::move(parent)), radius{radius} {}
+
+  float getRadius() const { return radius; }
+};
 
 // CCW and convex
-struct Polygon : geometry::Polygon {
+struct Polygon : Collider {
   struct Edge {
-    Polygon *parent;
+    const Polygon *parent;
     unsigned int tail, head;
 
-    Edge(const unsigned int tail, const unsigned int head)
-        : tail{tail}, head{head} {}
-
-    operator glm::vec2() const {
-      return parent->vertices[head] - parent->vertices[tail];
-    }
-
+    Edge(const Polygon *parent, const unsigned int tail,
+         const unsigned int head);
+    operator glm::vec2() const;
     glm::vec2 normal();
   };
 
-  Polygon(geometry::Polygon &&polygon);
+protected:
+  std::vector<glm::vec2> vertices;
+  std::vector<Edge> edges;
 
-  static Polygon from(geometry::Polygon &&polygon);
-  static Polygon fromUnchecked(geometry::Polygon &&polygon);
+  Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices);
+
+public:
+  static Polygon from(Collider &&parent, std::vector<glm::vec2> &&vertices);
+  static Polygon fromUnchecked(Collider &&parent,
+                               std::vector<glm::vec2> &&vertices);
 };
 
 template <typename T> bool colliding(const T &a, const T &b);

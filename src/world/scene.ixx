@@ -14,7 +14,7 @@ import bvh;
 import color;
 
 export struct base_obj_t;
-export struct aabb_t;
+export struct BoundingBox;
 
 export struct Scene {
   Camera camera{{0, 0}};
