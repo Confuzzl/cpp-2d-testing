@@ -3,6 +3,7 @@ export module sat;
 import collision;
 import math;
 import glm;
+import <vector>;
 
 export namespace collision {
 namespace SAT {
@@ -33,5 +34,28 @@ struct DepthInfo {
 
   float depth() const { return axis.depth(); }
 };
+
+struct QueryInfo {
+  glm::vec2 a, b;
+};
+
+// template <typename A, typename B> QueryInfo query(const A &a, const B &b);
+
+enum struct PROJECTION_STATE : bool { NONE, INTERSECTION };
+PROJECTION_STATE projectToDepths(const Polygon &a, const Polygon &b,
+                                 std::vector<DepthInfo> &depths) {
+  for (const auto &edge : a.getEdges()) {
+    Axis axis{edge.normal()};
+    for (const auto v : a.getVertices()) {
+    }
+  }
+  return PROJECTION_STATE::INTERSECTION;
+}
+QueryInfo query(const Polygon &a, const Polygon &b) {
+  std::vector<DepthInfo> depths;
+  depths.reserve(a.getEdges().size() + b.getEdges().size());
+  return {};
+}
+std::vector<DepthInfo> depths;
 } // namespace SAT
 } // namespace collision

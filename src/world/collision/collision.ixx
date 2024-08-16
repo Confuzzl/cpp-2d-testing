@@ -1,25 +1,38 @@
+module;
+
+#include <ranges>
+
 export module collision;
 
 import glm;
 import aabb;
 import <vector>;
+import <algorithm>;
 
 export namespace collision {
 struct Collider {
 protected:
   glm::vec2 position;
   float rotation;
+  BoundingBox aabb;
+
+  virtual void handleRotation() = 0;
 
 public:
   Collider(const glm::vec2 position = {}, const float rotation = 0)
       : position{position}, rotation{rotation} {};
 
   glm::vec2 getPos() const { return position; }
-  void translate(const glm::vec2 v) { position += v; }
   void setPos(const glm::vec2 v) { position = v; }
+  void translate(const glm::vec2 v) { setPos(position + v); }
   float getRotation() const { return rotation; }
-  void rotate(const float r) { rotation += r; }
-  void setRot(const float r) { rotation = r; }
+  void setRot(const float r) {
+    rotation = r;
+    handleRotation();
+  }
+  void rotate(const float r) { setRot(rotation + r); }
+
+  BoundingBox getAABB() const { return aabb + position; }
 };
 
 struct Circle : Collider {
@@ -42,7 +55,7 @@ struct Polygon : Collider {
     Edge(const Polygon *parent, const unsigned int tail,
          const unsigned int head);
     operator glm::vec2() const;
-    glm::vec2 normal();
+    glm::vec2 normal() const;
   };
 
 protected:
@@ -51,10 +64,32 @@ protected:
 
   Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices);
 
+private:
+  void handleRotation() override;
+
+  // auto newVertexView() {
+  //   return vertices |
+  //          std::views::transform(
+  //              [position = this->position, rotation = this->rotation](
+  //                  const glm::vec2 v) { return position + v; });
+  // }
+
 public:
   static Polygon from(Collider &&parent, std::vector<glm::vec2> &&vertices);
   static Polygon fromUnchecked(Collider &&parent,
                                std::vector<glm::vec2> &&vertices);
+
+  auto getVertices() const {
+    // return vertices | std::ranges::transform([]);
+    return vertices | std::views::transform([position = this->position,
+                                             rotation = this->rotation](
+                                                const glm::vec2 v) {
+             const float sin = std::sinf(rotation), cos = std::cosf(rotation);
+             return glm::vec2{v.x * cos - v.y * sin, v.x * sin + v.y * cos} +
+                    position;
+           });
+  }
+  const auto &getEdges() const { return edges; }
 };
 
 template <typename T> bool colliding(const T &a, const T &b);

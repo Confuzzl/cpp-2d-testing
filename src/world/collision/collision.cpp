@@ -1,7 +1,10 @@
+module;
+
+#include <stdexcept>
+
 module collision;
 
 import glm;
-import <stdexcept>;
 
 using namespace collision;
 
@@ -9,7 +12,7 @@ Polygon::Edge::Edge(const Polygon *parent, const unsigned int tail,
                     const unsigned int head)
     : parent{parent}, tail{tail}, head{head} {}
 Polygon::Edge::operator glm::vec2() const { return {}; }
-glm::vec2 Polygon::Edge::normal() { return {}; }
+glm::vec2 Polygon::Edge::normal() const { return {}; }
 
 Polygon::Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices)
     : Collider(std::move(parent)), vertices{std::move(vertices)} {}

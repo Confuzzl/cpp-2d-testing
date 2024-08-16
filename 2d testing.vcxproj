@@ -77,7 +77,6 @@
     <ClCompile Include="src\world\object.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
     <ClCompile Include="src\world\scene.ixx" />
-    <ClCompile Include="src\world\shapes\geometry.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Libraries\include\glad\glad.h" />
