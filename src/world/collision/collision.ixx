@@ -11,6 +11,7 @@ import <algorithm>;
 
 export namespace collision {
 struct Collider {
+
 protected:
   glm::vec2 position;
   float rotation;
@@ -40,8 +41,8 @@ private:
   float radius = 1;
 
 public:
-  Circle(Collider &&parent, const float radius)
-      : Collider(std::move(parent)), radius{radius} {}
+  Circle(Collider &&view, const float radius)
+      : Collider(std::move(view)), radius{radius} {}
 
   float getRadius() const { return radius; }
 };
@@ -49,47 +50,70 @@ public:
 // CCW and convex
 struct Polygon : Collider {
   struct Edge {
-    const Polygon *parent;
-    unsigned int tail, head;
+    const Polygon *view = nullptr;
+    unsigned int tail = 0, head = 0;
 
-    Edge(const Polygon *parent, const unsigned int tail,
-         const unsigned int head);
+    Edge() = default;
+    Edge(const Polygon *view, const unsigned int tail, const unsigned int head);
+
+    glm::vec2 getTail() const;
+    glm::vec2 getHead() const;
+
     operator glm::vec2() const;
     glm::vec2 normal() const;
   };
 
-protected:
-  std::vector<glm::vec2> vertices;
-  std::vector<Edge> edges;
-
-  Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices);
-
 private:
+  unsigned int count;
+  std::unique_ptr<glm::vec2[]> vertices;
+  std::span<glm::vec2> verticesSpan() const { return {vertices.get(), count}; }
+  std::unique_ptr<Edge[]> edges;
+
+  Polygon(Collider &&view, std::vector<glm::vec2> &&vertices);
+
   void handleRotation() override;
 
-  // auto newVertexView() {
-  //   return vertices |
-  //          std::views::transform(
-  //              [position = this->position, rotation = this->rotation](
-  //                  const glm::vec2 v) { return position + v; });
-  // }
+  glm::vec2 transform(const glm::vec2 v) const {
+    const float sin = std::sinf(rotation), cos = std::cosf(rotation);
+    return glm::vec2{v.x * cos - v.y * sin, v.x * sin + v.y * cos} + position;
+  }
+
+  struct VertexView {
+    const Polygon *parent;
+    std::span<glm::vec2> span;
+
+    VertexView(const Polygon *parent)
+        : parent{parent}, span{parent->vertices.get(), parent->count} {}
+
+    struct iterator {
+      const VertexView *view;
+      unsigned int index;
+
+      glm::vec2 operator*() const {
+        return view->parent->transform(view->span[index]);
+      }
+      constexpr bool operator==(const iterator &o) const {
+        return index == o.index;
+      }
+      iterator operator++() const { return {view, index + 1}; }
+    };
+
+    iterator begin() const { return {this, 0}; }
+    iterator end() const {
+      return {this, static_cast<unsigned int>(span.size())};
+    }
+    glm::vec2 operator[](const unsigned int i) const {
+      return *iterator{this, i};
+    }
+  } vertexView;
 
 public:
-  static Polygon from(Collider &&parent, std::vector<glm::vec2> &&vertices);
-  static Polygon fromUnchecked(Collider &&parent,
+  static Polygon from(Collider &&view, std::vector<glm::vec2> &&vertices);
+  static Polygon fromUnchecked(Collider &&view,
                                std::vector<glm::vec2> &&vertices);
 
-  auto getVertices() const {
-    // return vertices | std::ranges::transform([]);
-    return vertices | std::views::transform([position = this->position,
-                                             rotation = this->rotation](
-                                                const glm::vec2 v) {
-             const float sin = std::sinf(rotation), cos = std::cosf(rotation);
-             return glm::vec2{v.x * cos - v.y * sin, v.x * sin + v.y * cos} +
-                    position;
-           });
-  }
-  const auto &getEdges() const { return edges; }
+  const VertexView &getVertices() const { return vertexView; }
+  std::span<Edge> getEdges() const { return {edges.get(), count}; }
 };
 
 template <typename T> bool colliding(const T &a, const T &b);

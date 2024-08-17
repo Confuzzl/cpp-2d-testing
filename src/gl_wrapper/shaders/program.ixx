@@ -76,12 +76,12 @@ private:
   void bind(const VBOHandle &vbo) const {
     glUseProgram(ID);
     glBindVertexArray(vao.ID);
-    glVertexArrayVertexBuffer(vao.ID, 0, vbo->parent->ID, vbo->offset,
+    glVertexArrayVertexBuffer(vao.ID, 0, vbo->view->ID, vbo->offset,
                               static_cast<GLsizei>(vbo->vertexSize));
   }
   void bind(const VBOHandle &vbo, const EBOHandle &ebo) const {
     bind(vbo);
-    glVertexArrayElementBuffer(vao.ID, ebo->parent->ID);
+    glVertexArrayElementBuffer(vao.ID, ebo->view->ID);
   }
 
 public:

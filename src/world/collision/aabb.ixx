@@ -20,16 +20,16 @@ export struct BoundingBox {
     return in_range(point.x, min.x, max.x) && in_range(point.y, min.y, max.y);
   }
 
-  // void expand(const glm::vec2 p) {
-  //   min.x = std::min(min.x, p.x);
-  //   max.x = std::max(max.x, p.x);
-  //   min.y = std::min(min.y, p.y);
-  //   max.y = std::max(max.y, p.y);
-  // }
-  // void expand(const BoundingBox &other) {
-  //   expand(other.min);
-  //   expand(other.max);
-  // }
+  void expand(const glm::vec2 p) {
+    min.x = std::min(min.x, p.x);
+    max.x = std::max(max.x, p.x);
+    min.y = std::min(min.y, p.y);
+    max.y = std::max(max.y, p.y);
+  }
+  void expand(const BoundingBox &other) {
+    expand(other.min);
+    expand(other.max);
+  }
 
   BoundingBox operator+(const glm::vec2 v) const { return {min + v, max + v}; }
   BoundingBox &operator+=(const glm::vec2 v) {
@@ -49,6 +49,11 @@ export struct BoundingBox {
   glm::vec2 size() const { return {width(), height()}; }
   float area() const { return width() * height(); }
   glm::vec2 median() const { return min + size() / 2.0f; }
+
+  void reset() {
+    min = {+F_INF, +F_INF};
+    max = {-F_INF, -F_INF};
+  }
 };
 
 import <format>;

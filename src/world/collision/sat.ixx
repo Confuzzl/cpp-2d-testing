@@ -37,6 +37,8 @@ struct DepthInfo {
 
 struct QueryInfo {
   glm::vec2 a, b;
+
+  operator bool() const { return false; }
 };
 
 // template <typename A, typename B> QueryInfo query(const A &a, const B &b);
@@ -56,6 +58,5 @@ QueryInfo query(const Polygon &a, const Polygon &b) {
   depths.reserve(a.getEdges().size() + b.getEdges().size());
   return {};
 }
-std::vector<DepthInfo> depths;
 } // namespace SAT
 } // namespace collision
