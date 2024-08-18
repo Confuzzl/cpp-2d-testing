@@ -6,32 +6,32 @@ module bo_heap;
 
 import debug;
 
-BufferObjectHeapHandle::BufferObjectHeapHandle(GL::BufferObject *view,
+BufferObjectHeapHandle::BufferObjectHeapHandle(GL::BufferObject *parent,
                                                const GLuint offset,
                                                const GLuint size)
-    : view{view}, offset{offset}, size{size} {}
+    : parent{parent}, offset{offset}, size{size} {}
 BufferObjectHeapHandle::~BufferObjectHeapHandle() {
-  if (view)
-    view->free(this);
+  if (parent)
+    parent->free(this);
 }
 
-VBOHeapHandle::VBOHeapHandle(GL::BufferObject *view, const GLuint offset,
+VBOHeapHandle::VBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                              const GLuint size, const GLuint vertexSize)
-    : BufferObjectHeapHandle(view, offset, size), vertexSize{vertexSize} {}
+    : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
 void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
-  glNamedBufferSubData(view->ID, offset + count * vertexSize, size, data);
+  glNamedBufferSubData(parent->ID, offset + count * vertexSize, size, data);
   if (++count * vertexSize > this->size)
     throw std::runtime_error{
-        std::format("Overwrite at VBO handle at VBO {}", view->ID)};
+        std::format("Overwrite at VBO handle at VBO {}", parent->ID)};
 }
 void VBOHeapHandle::reset() { count = 0; }
 
-EBOHeapHandle::EBOHeapHandle(GL::BufferObject *view, const GLuint offset,
+EBOHeapHandle::EBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                              const GLuint size,
                              const std::initializer_list<GLuint> &indices)
-    : BufferObjectHeapHandle(view, offset, size),
+    : BufferObjectHeapHandle(parent, offset, size),
       length{static_cast<GLuint>(indices.size())} {
-  glNamedBufferSubData(view->ID, offset, size, indices.begin());
+  glNamedBufferSubData(parent->ID, offset, size, indices.begin());
 }
 
 GL::BufferObject::BufferObject() {

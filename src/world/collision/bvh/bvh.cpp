@@ -7,40 +7,28 @@ module bvh;
 
 using namespace bvh;
 
-bool tree_t::node_t::isLeaf() const { return begin != end; }
+bool Tree::Node::isLeaf() const { return begin != end; }
 
-tree_t::obj_list::iterator tree_t::getBegin(const node_t &node) {
+Tree::obj_list::iterator Tree::getBegin(const Node &node) {
   return objs.begin() + node.begin;
 }
-tree_t::obj_list::iterator tree_t::getEnd(const node_t &node) {
+Tree::obj_list::iterator Tree::getEnd(const Node &node) {
   return objs.begin() + node.end;
 }
-// tree_t::obj_list::const_iterator tree_t::getBegin(const node_t &node) const {
-//   return objs.begin() + node.begin;
-// }
-// tree_t::obj_list::const_iterator tree_t::getEnd(const node_t &node) const {
-//   return objs.begin() + node.end;
-// }
 
-tree_t::tree_t(const std::vector<BoundingBox> &o) : objs{o} {
-  // const std::size_t nodeCount = o.size() / MAX_OBJECTS_PER_LEAF;
-  // const std::size_t upperLeafSize = std::bit_ceil(nodeCount);
-  // const std::size_t upperNodeCount = 2 * upperLeafSize - 1;
-  // debug(upperNodeCount);
-  //// upper bound of tree size = size of perfect tree
-  // nodes.resize(upperNodeCount);
+Tree::Tree(const std::vector<BoundingBox> &o) : objs{o} {
   nodes.resize(2 * o.size() - 1);
 }
 
-BoundingBox tree_t::computeBounds(const obj_list::iterator begin,
-                             const obj_list::iterator end) const {
+BoundingBox Tree::computeBounds(const obj_list::iterator begin,
+                                const obj_list::iterator end) const {
   BoundingBox out{};
   for (const BoundingBox &obj : std::ranges::subrange{begin, end})
     out.expand(obj);
   return out;
 }
 
-tree_t::obj_list::iterator tree_t::partitionNode(node_t &node) {
+Tree::obj_list::iterator Tree::partitionNode(Node &node) {
   enum Axis : bool { X = false, Y = true };
 
   debug("\tpartitioning");
@@ -58,19 +46,19 @@ tree_t::obj_list::iterator tree_t::partitionNode(node_t &node) {
                         });
 }
 
-void tree_t::topDown() {
+void Tree::topDown() {
   std::size_t nodeCount = 1;
   topDownRecurse(0, objs.begin(), objs.end(), nodeCount, 0);
   nodes.resize(nodeCount);
 
   std::sort(nodes.begin(), nodes.end(),
-            [](const node_t &a, const node_t &b) { return a.depth < b.depth; });
+            [](const Node &a, const Node &b) { return a.depth < b.depth; });
   maxDepth = nodes.back().depth;
 }
-void tree_t::topDownRecurse(const std::size_t nodeIndex,
-                            const obj_list::iterator begin,
-                            const obj_list::iterator end,
-                            std::size_t &nodeCount, const unsigned int depth) {
+void Tree::topDownRecurse(const std::size_t nodeIndex,
+                          const obj_list::iterator begin,
+                          const obj_list::iterator end, std::size_t &nodeCount,
+                          const unsigned int depth) {
   debug("working node: {}", nodeIndex);
   debug("\tit: {} {}", std::distance(objs.begin(), begin),
         std::distance(objs.begin(), end));
@@ -78,7 +66,7 @@ void tree_t::topDownRecurse(const std::size_t nodeIndex,
   const std::size_t count = end - begin;
   debug("\tcount: {}", count);
 
-  node_t &working_node = nodes[nodeIndex];
+  Node &working_node = nodes[nodeIndex];
 
   working_node.depth = depth;
 
@@ -114,9 +102,9 @@ void tree_t::topDownRecurse(const std::size_t nodeIndex,
   }
 }
 
-tree_t::obj_t *tree_t::queryFirst(const BoundingBox &query,
-                                  const std::size_t nodeIndex) {
-  const node_t &node = nodes[nodeIndex];
+Tree::obj_t *Tree::queryFirst(const BoundingBox &query,
+                              const std::size_t nodeIndex) {
+  const Node &node = nodes[nodeIndex];
   if (!query.intersects(node.box))
     return nullptr;
 
@@ -127,39 +115,37 @@ tree_t::obj_t *tree_t::queryFirst(const BoundingBox &query,
     return nullptr;
   }
 
-  obj_t *left = queryFirst(query, node.left);
-  if (left)
+  if (obj_t *left = queryFirst(query, node.left); left)
     return left;
-  obj_t *right = queryFirst(query, node.right);
-  if (right)
+  if (obj_t *right = queryFirst(query, node.right); right)
     return right;
   return nullptr;
 }
-std::vector<tree_t::obj_t *> tree_t::queryAll(const BoundingBox &query) {
-  std::vector<tree_t::obj_t *> list{};
+std::vector<Tree::obj_t *> Tree::queryAll(const BoundingBox &query) {
+  std::vector<Tree::obj_t *> list{};
   queryAllRecurse(list, query, 0);
   return list;
 }
-void tree_t::queryAllRecurse(std::vector<tree_t::obj_t *> &list,
-                             const BoundingBox &query, const std::size_t nodeIndex) {
-  const node_t &node = nodes[nodeIndex];
+void Tree::queryAllRecurse(std::vector<Tree::obj_t *> &list,
+                           const BoundingBox &query,
+                           const std::size_t nodeIndex) {
+  const Node &node = nodes[nodeIndex];
 
   if (node.isLeaf()) {
     for (obj_t &obj : getObjects(node))
       if (obj.intersects(query))
         list.emplace_back(&obj);
-    return;
+  } else {
+    queryAllRecurse(list, query, node.left);
+    queryAllRecurse(list, query, node.right);
   }
-
-  queryAllRecurse(list, query, node.left);
-  queryAllRecurse(list, query, node.right);
 }
 
-void tree_t::print() const {
+void Tree::print() const {
   println(nodes.size());
 
-  for (int i = 0; i < nodes.size(); i++) {
-    const node_t &node = nodes[i];
+  for (auto i = 0u; i < nodes.size(); i++) {
+    const Node &node = nodes[i];
     println("[{}] {}: [{},{}] [{},{}] {}", i, node.isLeaf() ? "leaf" : "branch",
             node.left, node.right, node.begin, node.end, node.depth);
   }

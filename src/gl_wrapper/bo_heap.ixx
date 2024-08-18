@@ -18,11 +18,11 @@ struct BufferObject;
 }
 
 export struct BufferObjectHeapHandle {
-  GL::BufferObject *view = nullptr;
+  GL::BufferObject *parent = nullptr;
   GLuint offset = 0, size = 0;
 
   BufferObjectHeapHandle() = default;
-  BufferObjectHeapHandle(GL::BufferObject *view, const GLuint offset,
+  BufferObjectHeapHandle(GL::BufferObject *parent, const GLuint offset,
                          const GLuint size);
   ~BufferObjectHeapHandle();
 };
@@ -31,7 +31,7 @@ export struct VBOHeapHandle : BufferObjectHeapHandle {
   GLuint count = 0, vertexSize = 0;
 
   VBOHeapHandle() = default;
-  VBOHeapHandle(GL::BufferObject *view, const GLuint offset,
+  VBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                 const GLuint size, const GLuint vertexSize);
 
   void writeRaw(const void *data, const GLuint size);
@@ -52,7 +52,7 @@ export struct EBOHeapHandle : BufferObjectHeapHandle {
   GLuint length = 0;
 
   EBOHeapHandle() = default;
-  EBOHeapHandle(GL::BufferObject *view, const GLuint offset,
+  EBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
                 const GLuint size,
                 const std::initializer_list<GLuint> &indices);
 };

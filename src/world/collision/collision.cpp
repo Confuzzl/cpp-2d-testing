@@ -8,11 +8,11 @@ import glm;
 
 using namespace collision;
 
-Polygon::Edge::Edge(const Polygon *view, const unsigned int tail,
+Polygon::Edge::Edge(const Polygon *parent, const unsigned int tail,
                     const unsigned int head)
-    : view{view}, tail{tail}, head{head} {}
-glm::vec2 Polygon::Edge::getTail() const { return view->getVertices()[tail]; }
-glm::vec2 Polygon::Edge::getHead() const { return view->getVertices()[head]; }
+    : parent{parent}, tail{tail}, head{head} {}
+glm::vec2 Polygon::Edge::getTail() const { return parent->getVertices()[tail]; }
+glm::vec2 Polygon::Edge::getHead() const { return parent->getVertices()[head]; }
 Polygon::Edge::operator glm::vec2() const { return getHead() - getTail(); }
 glm::vec2 Polygon::Edge::normal() const { return ccw_perp(*this); }
 
@@ -29,12 +29,12 @@ static std::unique_ptr<Polygon::Edge[]> edgesHelper(const Polygon *polygon,
     out.get()[i] = Polygon::Edge{polygon, i, (i + 1) % count};
   return out;
 }
-Polygon::Polygon(Collider &&view, std::vector<glm::vec2> &&vertices)
-    : Collider(std::move(view)),
+Polygon::Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices)
+    : Collider(std::move(parent)),
       count{static_cast<unsigned int>(vertices.size())},
       vertices{verticesHelper(std::move(vertices))},
       edges{edgesHelper(this, count)}, vertexView{this} {}
-Polygon Polygon::from(Collider &&view, std::vector<glm::vec2> &&vertices) {
+Polygon Polygon::from(Collider &&parent, std::vector<glm::vec2> &&vertices) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 
   const auto size = vertices.size();
@@ -48,11 +48,11 @@ Polygon Polygon::from(Collider &&view, std::vector<glm::vec2> &&vertices) {
     if (z < 0)
       throw std::runtime_error{"POLYGON IS NOT CONVEX"};
   }
-  return fromUnchecked(std::move(view), std::move(vertices));
+  return fromUnchecked(std::move(parent), std::move(vertices));
 }
-Polygon Polygon::fromUnchecked(Collider &&view,
+Polygon Polygon::fromUnchecked(Collider &&parent,
                                std::vector<glm::vec2> &&vertices) {
-  return {std::move(view), std::move(vertices)};
+  return {std::move(parent), std::move(vertices)};
 }
 
 void Polygon::handleRotation() {

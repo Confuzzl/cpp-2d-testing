@@ -140,7 +140,7 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
   SHADERS.trans.setView(matrix).setParentPos(pos).setRotation(rot).setFragColor(
       mesh.color);
 
-  if (mesh.ebo->view) {
+  if (mesh.ebo->parent) {
     SHADERS.trans.draw(mesh.primitive, VBO, mesh.ebo);
   } else {
     SHADERS.trans.draw(mesh.primitive, VBO);

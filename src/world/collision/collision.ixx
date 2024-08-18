@@ -11,7 +11,6 @@ import <algorithm>;
 
 export namespace collision {
 struct Collider {
-
 protected:
   glm::vec2 position;
   float rotation;
@@ -41,8 +40,8 @@ private:
   float radius = 1;
 
 public:
-  Circle(Collider &&view, const float radius)
-      : Collider(std::move(view)), radius{radius} {}
+  Circle(Collider &&parent, const float radius)
+      : Collider(std::move(parent)), radius{radius} {}
 
   float getRadius() const { return radius; }
 };
@@ -50,11 +49,12 @@ public:
 // CCW and convex
 struct Polygon : Collider {
   struct Edge {
-    const Polygon *view = nullptr;
+    const Polygon *parent = nullptr;
     unsigned int tail = 0, head = 0;
 
     Edge() = default;
-    Edge(const Polygon *view, const unsigned int tail, const unsigned int head);
+    Edge(const Polygon *parent, const unsigned int tail,
+         const unsigned int head);
 
     glm::vec2 getTail() const;
     glm::vec2 getHead() const;
@@ -66,10 +66,9 @@ struct Polygon : Collider {
 private:
   unsigned int count;
   std::unique_ptr<glm::vec2[]> vertices;
-  std::span<glm::vec2> verticesSpan() const { return {vertices.get(), count}; }
   std::unique_ptr<Edge[]> edges;
 
-  Polygon(Collider &&view, std::vector<glm::vec2> &&vertices);
+  Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices);
 
   void handleRotation() override;
 
@@ -108,8 +107,8 @@ private:
   } vertexView;
 
 public:
-  static Polygon from(Collider &&view, std::vector<glm::vec2> &&vertices);
-  static Polygon fromUnchecked(Collider &&view,
+  static Polygon from(Collider &&parent, std::vector<glm::vec2> &&vertices);
+  static Polygon fromUnchecked(Collider &&parent,
                                std::vector<glm::vec2> &&vertices);
 
   const VertexView &getVertices() const { return vertexView; }
