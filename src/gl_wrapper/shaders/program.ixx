@@ -22,7 +22,7 @@ module;
 
 export module shaders:program;
 
-import vector;
+import <vector>;
 import texture;
 import glm;
 import color;
@@ -109,13 +109,13 @@ struct SimpleProgram : BaseProgram<V, F> {
 
 struct TexCol : SimpleProgram<vert::tex, frag::texcol> {
   TexCol &setView(const glm::mat4 &view);
-  TexCol &setFragColor(const color_t &frag_color);
+  TexCol &setFragColor(const Color &frag_color);
   TexCol &bindTexture(const GL::Texture &texture);
 };
 
 struct Sdf : SimpleProgram<vert::tex, frag::sdf_font> {
   Sdf &setView(const glm::mat4 &view);
-  Sdf &setFragColor(const color_t &frag_color);
+  Sdf &setFragColor(const Color &frag_color);
   Sdf &setThreshold(const float threshold);
   Sdf &setFontSize(const float font_size);
   Sdf &setAntiAlias(const bool anti_alias);
@@ -123,13 +123,13 @@ struct Sdf : SimpleProgram<vert::tex, frag::sdf_font> {
 };
 struct Basic : SimpleProgram<vert::basic, frag::basic> {
   Basic &setView(const glm::mat4 &view);
-  Basic &setFragColor(const color_t &frag_color);
+  Basic &setFragColor(const Color &frag_color);
 };
 struct Transform : SimpleProgram<vert::trans, frag::basic> {
   Transform &setParentPos(const glm::vec2 parent_pos);
   Transform &setRotation(const float rotation);
   Transform &setView(const glm::mat4 &view);
-  Transform &setFragColor(const color_t &frag_color);
+  Transform &setFragColor(const Color &frag_color);
 };
 struct Striped : SimpleProgram<vert::basic, frag::striped> {
   Striped &setView(const glm::mat4 &view);
@@ -137,7 +137,7 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
   Striped &setSpacing(const unsigned int spacing);
   enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
   Striped &setPattern(const Pattern pattern = Pattern::FORWARD);
-  Striped &setFragColor(const color_t &frag_color);
+  Striped &setFragColor(const Color &frag_color);
 };
 
 template <vert::format V, frag::format F, geom::format G>
@@ -154,7 +154,7 @@ struct GeometryProgram : BaseProgram<V, F> {
 struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {
   Line &setView(const glm::mat4 &view);
   Line &setThickness(const float thickness);
-  Line &setFragColor(const color_t &frag_color);
+  Line &setFragColor(const Color &frag_color);
 };
 
 struct Circle : GeometryProgram<vert::identity, frag::circle, geom::circle> {
@@ -162,6 +162,6 @@ struct Circle : GeometryProgram<vert::identity, frag::circle, geom::circle> {
   Circle &setRadius(const float radius);
   Circle &setCenter(const glm::vec2 center);
   Circle &setScreenDimensions(const glm::uvec2 screen_dimensions);
-  Circle &setFragColor(const color_t &frag_color);
+  Circle &setFragColor(const Color &frag_color);
 };
 } // namespace shaders

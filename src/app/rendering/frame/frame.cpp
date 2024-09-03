@@ -12,13 +12,13 @@ import bo_heap;
 
 import debug;
 
-void BaseFrame::drawPoint(const glm::vec2 &point, const float size,
-                          const color_t &color) const {
+void BaseFrame::drawPoint(const glm::vec2 point, const float size,
+                          const Color &color) const {
   static constexpr float SCALE = 0.002f;
   drawCircle(point, SCALE * size, color);
 }
-void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
-                               const color_t &color) const {
+void BaseFrame::drawPointFixed(const glm::vec2 point, const float size,
+                               const Color &color) const {
   VBO_1->write(point);
 
   SHADERS.basic.setView(matrix).setFragColor(color);
@@ -26,8 +26,8 @@ void BaseFrame::drawPointFixed(const glm::vec2 &point, const float size,
   SHADERS.basic.draw(GL_POINTS, VBO_1);
 }
 
-void BaseFrame::drawLine(const dimension_t &dimensions, const float size,
-                         const color_t &color) const {
+void BaseFrame::drawLine(const Dimension &dimensions, const float size,
+                         const Color &color) const {
   const auto [from, to] = dimensions;
 
   VBO_2->write(from);
@@ -36,8 +36,8 @@ void BaseFrame::drawLine(const dimension_t &dimensions, const float size,
   SHADERS.line.setView(matrix).setFragColor(color).setThickness(size);
   SHADERS.line.draw(GL_LINES, VBO_2);
 }
-void BaseFrame::drawLineFixed(const dimension_t &dimensions,
-                              const color_t &color) const {
+void BaseFrame::drawLineFixed(const Dimension &dimensions,
+                              const Color &color) const {
   const auto [from, to] = dimensions;
 
   VBO_2->write(from);
@@ -47,8 +47,8 @@ void BaseFrame::drawLineFixed(const dimension_t &dimensions,
   SHADERS.basic.draw(GL_LINES, VBO_2);
 }
 
-void BaseFrame::drawArrow(const dimension_t &dimensions,
-                          const color_t &color) const {
+void BaseFrame::drawArrow(const Dimension &dimensions,
+                          const Color &color) const {
   const auto &[from, to] = dimensions;
   //   1
   //  /|\
@@ -79,8 +79,8 @@ void BaseFrame::drawArrow(const dimension_t &dimensions,
   SHADERS.basic.draw(GL_LINES, VBO_4, INDICES);
 }
 
-void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
-                           const color_t &color) const {
+void BaseFrame::drawCircle(const glm::vec2 center, const float radius,
+                           const Color &color) const {
   VBO_1->write(center);
 
   SHADERS.circ.setView(matrix)
@@ -91,8 +91,8 @@ void BaseFrame::drawCircle(const glm::vec2 &center, const float radius,
   SHADERS.circ.draw(GL_POINTS, VBO_1);
 }
 
-void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,
-                        const color_t &color) const {
+void BaseFrame::drawBox(const Dimension &dimensions, const float lineSize,
+                        const Color &color) const {
   const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
@@ -102,8 +102,8 @@ void BaseFrame::drawBox(const dimension_t &dimensions, const float lineSize,
   drawLine({corners[3], corners[0]}, lineSize, color);
 }
 
-void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
-                             const float lineSize, const color_t &color) const {
+void BaseFrame::drawBoxFixed(const Dimension &dimensions, const float lineSize,
+                             const Color &color) const {
   const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
@@ -113,8 +113,8 @@ void BaseFrame::drawBoxFixed(const dimension_t &dimensions,
   SHADERS.basic.setView(matrix).setFragColor(color);
   SHADERS.basic.draw(GL_LINE_LOOP, VBO_4);
 }
-void BaseFrame::drawQuad(const dimension_t &dimensions,
-                         const color_t &color) const {
+void BaseFrame::drawQuad(const Dimension &dimensions,
+                         const Color &color) const {
   const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {
@@ -145,4 +145,17 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
   } else {
     SHADERS.trans.draw(mesh.primitive, VBO);
   }
+}
+
+void BaseFrame::drawPolygon(const collision::Polygon &polygon,
+                            const Color &color) const {
+  VBOHandle vbo =
+      VBO_HOLDER.get<>(static_cast<GLuint>(polygon.getVertices().size()));
+  vbo->write(polygon.getVertices());
+  SHADERS.basic.setView(matrix).setFragColor(color);
+  SHADERS.basic.draw(GL_TRIANGLE_FAN, vbo);
+}
+void BaseFrame::drawCircle(const collision::Circle &circle,
+                           const Color &color) const {
+  drawCircle(circle.getPos(), circle.getRadius(), color);
 }

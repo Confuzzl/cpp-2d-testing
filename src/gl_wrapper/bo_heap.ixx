@@ -57,7 +57,9 @@ export struct EBOHeapHandle : BufferObjectHeapHandle {
                 const std::initializer_list<GLuint> &indices);
 };
 
+// owning VBO handle
 export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
+// owning EBO handle
 export using EBOHandle = std::unique_ptr<EBOHeapHandle>;
 
 namespace GL {

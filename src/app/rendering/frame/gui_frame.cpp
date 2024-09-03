@@ -35,7 +35,7 @@ static constexpr unsigned short charHeightConvert(const unsigned char h) {
   return static_cast<unsigned short>(static_cast<float>(h) * font::CHAR_HEIGHT /
                                      font::IMG_HEIGHT * font::TEXEL_RANGE);
 }
-void GUIFrame::text(const std::string &str, const color_t &color,
+void GUIFrame::text(const std::string &str, const Color &color,
                     const unsigned short x, const unsigned short y,
                     const float scale) const {
   static constexpr auto MAX_LENGTH = 0x100u;

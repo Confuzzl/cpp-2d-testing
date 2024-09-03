@@ -84,9 +84,6 @@
     <ClCompile Include="src\util\screen.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\vector.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\world\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -187,6 +184,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\world\collision\sat.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\runtime_array.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\polycirc.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\generic.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

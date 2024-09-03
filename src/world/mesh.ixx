@@ -4,7 +4,7 @@ module;
 
 export module mesh;
 
-import vector;
+import <vector>;
 
 import poly;
 import vertex_layout;
@@ -16,10 +16,10 @@ export struct Mesh {
 
   EBOHandle ebo;
 
-  color_t color;
+  Color color;
   GLenum primitive;
 
   Mesh(std::vector<vertex_layout::pos> &&data, const GLenum primitive,
-       const color_t &color = colors::WHITE)
+       const Color &color = colors::WHITE)
       : data{std::move(data)}, primitive{primitive}, color{color} {}
 };

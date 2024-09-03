@@ -1,6 +1,6 @@
 export module func;
 
-import vector;
+import <vector>;
 import <functional>;
 
 export namespace func {

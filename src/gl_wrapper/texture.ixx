@@ -6,7 +6,7 @@ export module texture;
 
 import <string>;
 
-import vector;
+import <vector>;
 
 export namespace GL {
 struct Texture {

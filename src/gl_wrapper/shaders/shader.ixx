@@ -5,7 +5,7 @@ module;
 
 export module shaders:shader;
 
-import vector;
+import <vector>;
 
 import color;
 import debug;

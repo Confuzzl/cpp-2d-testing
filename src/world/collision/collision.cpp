@@ -14,30 +14,35 @@ Polygon::Edge::Edge(const Polygon *parent, const unsigned int tail,
 glm::vec2 Polygon::Edge::getTail() const { return parent->getVertices()[tail]; }
 glm::vec2 Polygon::Edge::getHead() const { return parent->getVertices()[head]; }
 Polygon::Edge::operator glm::vec2() const { return getHead() - getTail(); }
-glm::vec2 Polygon::Edge::normal() const { return ccw_perp(*this); }
+glm::vec2 Polygon::Edge::normal() const { return cw_perp(*this); }
 
-static std::unique_ptr<glm::vec2[]>
-verticesHelper(std::vector<glm::vec2> &&vertices) {
-  auto out = std::make_unique<glm::vec2[]>(vertices.size());
-  std::move(vertices.begin(), vertices.end(), out.get());
-  return out;
-}
-static std::unique_ptr<Polygon::Edge[]> edgesHelper(const Polygon *polygon,
-                                                    const unsigned int count) {
+static Polygon::EdgeArray edgesHelper(const Polygon *polygon,
+                                      const std::size_t count) {
   auto out = std::make_unique<Polygon::Edge[]>(count);
   for (auto i = 0u; i < count; i++)
-    out.get()[i] = Polygon::Edge{polygon, i, (i + 1) % count};
+    out.get()[i] =
+        Polygon::Edge{polygon, i, static_cast<unsigned int>((i + 1) % count)};
+  return {std::move(out), count};
+}
+static BoundingBox aabbHelper(const std::vector<glm::vec2> &vertices) {
+  BoundingBox out;
+  for (const auto v : vertices)
+    out.expand(v);
   return out;
 }
-Polygon::Polygon(Collider &&parent, std::vector<glm::vec2> &&vertices)
-    : Collider(std::move(parent)),
-      count{static_cast<unsigned int>(vertices.size())},
-      vertices{verticesHelper(std::move(vertices))},
-      edges{edgesHelper(this, count)}, vertexView{this} {}
-Polygon Polygon::from(Collider &&parent, std::vector<glm::vec2> &&vertices) {
+
+Polygon::Polygon(Transformable &&t, std::vector<glm::vec2> &&vertices)
+    : Collider(std::move(t), aabbHelper(vertices)), count{vertices.size()},
+      vertices{make_runtime_array<glm::vec2>(std::move(vertices))},
+      edges{std::move(edgesHelper(this, count))},
+      vertexView{this, &this->vertices} {}
+Polygon Polygon::from(Transformable &&t, std::vector<glm::vec2> &&vertices) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 
   const auto size = vertices.size();
+
+  if (size < 3)
+    throw std::runtime_error("POLYGON HAS LESS THAN 3 VERTICES");
 
   for (auto i = 0u; i < size; i++) {
     const glm::vec2 a = vertices[i];
@@ -48,11 +53,11 @@ Polygon Polygon::from(Collider &&parent, std::vector<glm::vec2> &&vertices) {
     if (z < 0)
       throw std::runtime_error{"POLYGON IS NOT CONVEX"};
   }
-  return fromUnchecked(std::move(parent), std::move(vertices));
+  return fromUnchecked(std::move(t), std::move(vertices));
 }
-Polygon Polygon::fromUnchecked(Collider &&parent,
+Polygon Polygon::fromUnchecked(Transformable &&t,
                                std::vector<glm::vec2> &&vertices) {
-  return {std::move(parent), std::move(vertices)};
+  return {std::move(t), std::move(vertices)};
 }
 
 void Polygon::handleRotation() {
@@ -62,18 +67,39 @@ void Polygon::handleRotation() {
 }
 
 import sat;
+import polycirc;
 
 namespace collision {
-template <> bool colliding<Circle>(const Circle &a, const Circle &b) {
+template <> bool query(const Circle &a, const Circle &b) {
   const float r = a.getRadius() + b.getRadius();
   return glm::distance2(a.getPos(), b.getPos()) <= r * r;
 }
-template <> bool colliding<Polygon>(const Polygon &a, const Polygon &b) {
+template <> bool query(const Polygon &a, const Polygon &b) {
   using namespace SAT;
   return query(a, b);
 }
+template <> bool query(const Polygon &a, const Circle &b, const bool reverse) {
+  using namespace poly_circ;
+  return query(a, b);
+}
 
-template <> bool colliding<Circle, Polygon>(const Circle &a, const Polygon &b) {
-  return false;
+template <> Resolution resolve(const Circle &a, const Circle &b) {
+  const float r = a.getRadius() + b.getRadius();
+  const float r2 = r * r;
+  const float d2 = glm::distance2(a.getPos(), b.getPos());
+  if (d2 >= r2)
+    return {};
+  // d2 < r2
+  // d < r
+  const float m = r - std::sqrt(d2);
+  return {glm::normalize(a.getPos() - b.getPos()) * m, {}};
+}
+template <> Resolution resolve(const Polygon &a, const Polygon &b) {
+  using namespace SAT;
+  return {resolve(a, b)};
+}
+template <>
+Resolution resolve(const Polygon &a, const Circle &b, const bool reverse) {
+  return {};
 }
 } // namespace collision

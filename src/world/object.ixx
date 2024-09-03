@@ -4,99 +4,72 @@ module;
 
 export module object;
 
-import <variant>;
+import glm;
+import collision;
+import mesh;
 
-// import vertex_layout;
-// import collider;
-// import circle;
-// import polygon;
-// import mesh;
-//
-// export struct Object {
-//   Collider &collider;
-//
-//   struct PolyMesh {
-//     Polygon poly;
-//     Mesh mesh;
-//   };
-//   struct CircMesh {
-//     Circle circ;
-//   };
-//   std::variant<CircMesh, PolyMesh> colliderVariant;
-//
-//   Object(Circle &&circle)
-//       : colliderVariant{CircMesh{.circ = std::move(circle)}},
-//         collider{std::get<CircMesh>(colliderVariant).circ} {}
-//   Object(Polygon &&polygon, Mesh &&mesh)
-//       : colliderVariant{PolyMesh{.poly = std::move(polygon),
-//                                  .mesh = std::move(mesh)}},
-//         collider{std::get<PolyMesh>(colliderVariant).poly} {}
-//
-//   Collider &operator->() { return collider; }
-//   const Collider &operator->() const { return collider; }
-// };
+export namespace world {
+struct BaseObject {
+  enum ColliderType { CIRCLE, POLYGON };
 
-// import glm;
-// import <memory>;
-//
-// import mesh;
-// import poly;
-// import circle;
-// import polygon;
-// import app;
-// import scene;
-// import color;
-// import func;
-// import rendering;
-// import world_frame;
-// import camera;
-// import shaders;
-//
-// export struct base_obj_t {
-//   color_t color;
-//
-//   base_obj_t(const color_t &color) : color{color} {};
-//
-//   struct render_opts_t {
-//     GLenum primitive = GL_TRIANGLES;
-//   };
-//   virtual void draw(const render_opts_t &opts = {}) const = 0;
-// };
-//
-// export template <typename colltype> struct Object;
-//
-// export template <> struct Object<Polygon> : base_obj_t, Polygon {
-//   Mesh mesh;
-//
-//   Object(Polygon &&poly, Mesh &&mesh, const color_t &color)
-//       : base_obj_t(color), Polygon(poly), mesh{std::move(mesh)} {}
-//
-//   static std::unique_ptr<Object<Polygon>>
-//   from(Polygon &&poly, const color_t color = colors::random()) {
-//     Mesh mesh{func::map<glm::vec2, versimple>(
-//         poly.getVertices(), [](const glm::vec2 &v) {
-//           return versimple{v.x, v.y};
-//         })};
-//     return std::make_unique<Object<Polygon>>(std::move(poly),
-//     std::move(mesh),
-//                                              color);
-//   }
-//
-//   void draw(const render_opts_t &opts = {}) const override {
-//     MAIN_RENDERER.worldFrame.drawMesh(mesh, pos(), rot(), color,
-//                                       opts.primitive);
-//   }
-// };
-// export template <> struct Object<Circle> : base_obj_t, Circle {
-//   Object(Circle &&circ, const color_t &color)
-//       : base_obj_t(color), Circle(circ) {}
-//
-//   static std::unique_ptr<Object<Circle>>
-//   from(Circle &&circ, const color_t color = colors::random()) {
-//     return std::make_unique<Object<Circle>>(std::move(circ), color);
-//   }
-//
-//   void draw(const render_opts_t &opts = {}) const override {
-//     MAIN_RENDERER.worldFrame.drawCircle(pos(), radius, color);
-//   }
-// };
+private:
+  collision::Collider *collider;
+  ColliderType type;
+
+  float mass;
+  glm::vec2 velocity, acceleration;
+
+  float angMass;
+  float angVelocity, angAcceleration;
+
+  float friction = 0;
+
+  Mesh mesh;
+
+public:
+  BaseObject(collision::Collider *collider, const ColliderType type,
+             Mesh &&mesh)
+      : collider{collider}, type{type}, mesh{std::move(mesh)} {}
+
+  void remove() {}
+
+  virtual collision::Collider *operator->() { return collider; }
+  virtual const collision::Collider *operator->() const { return collider; }
+
+  ColliderType getType() const { return type; }
+  Mesh &getMesh() { return mesh; }
+  const Mesh &getMesh() const { return mesh; }
+};
+template <typename T> struct Object : BaseObject {
+  std::unique_ptr<T> collider;
+
+  T *operator->() override { return collider.get(); }
+  const T *operator->() const override { return collider.get(); }
+};
+struct Circle : Object<collision::Circle> {};
+struct Polygon : Object<collision::Polygon> {};
+
+} // namespace world
+
+namespace collision {
+template <typename A> bool checkSecond(const A &a, const world::BaseObject &b) {
+  switch (b.getType()) {
+  case world::BaseObject::ColliderType::CIRCLE:
+    return query(a, *static_cast<const world::Circle &>(b).collider);
+  case world::BaseObject::ColliderType::POLYGON:
+    return query(a, *static_cast<const world::Polygon &>(b).collider);
+  }
+  throw std::runtime_error{"INVALID OBJECT COLLISION QUERY"};
+}
+} // namespace collision
+export namespace collision {
+bool query(const world::BaseObject &a, const world::BaseObject &b) {
+  switch (a.getType()) {
+  case world::BaseObject::ColliderType::CIRCLE:
+    return checkSecond(*static_cast<const world::Circle &>(a).collider, b);
+  case world::BaseObject::ColliderType::POLYGON:
+    return checkSecond(*static_cast<const world::Polygon &>(a).collider, b);
+  }
+  throw std::runtime_error{"INVALID OBJECT COLLISION QUERY"};
+}
+} // namespace collision

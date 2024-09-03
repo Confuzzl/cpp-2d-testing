@@ -15,7 +15,7 @@ constexpr unsigned char COLUMNS = 16, ROWS = 8;
 export struct GUIFrame : BaseFrame {
   void render() override;
 
-  void text(const std::string &str, const color_t &color = colors::WHITE,
+  void text(const std::string &str, const Color &color = colors::WHITE,
             const unsigned short x = 0, const unsigned short y = 0,
             const float scale = 0.25) const;
 };

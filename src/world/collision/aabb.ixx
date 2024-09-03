@@ -5,6 +5,7 @@ import math;
 import poly;
 
 import <vector>;
+import debug;
 
 export struct BoundingBox {
   glm::vec2 min{+F_INF, +F_INF}, max{-F_INF, -F_INF};

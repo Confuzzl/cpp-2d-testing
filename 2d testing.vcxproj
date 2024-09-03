@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\util\runtime_array.ixx" />
     <ClCompile Include="src\world\collision\collision.cpp" />
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\app\app.cpp" />
@@ -65,13 +66,14 @@
     <ClCompile Include="src\util\math.ixx" />
     <ClCompile Include="src\util\poly.ixx" />
     <ClCompile Include="src\util\screen.ixx" />
-    <ClCompile Include="src\util\vector.ixx" />
     <ClCompile Include="src\world\collision\bvh\bvh.cpp" />
     <ClCompile Include="src\world\collision\bvh\bvh.ixx" />
     <ClCompile Include="src\world\camera.cpp" />
     <ClCompile Include="src\world\camera.ixx" />
     <ClCompile Include="src\world\collision\aabb.ixx" />
     <ClCompile Include="src\world\collision\collision.ixx" />
+    <ClCompile Include="src\world\collision\generic.ixx" />
+    <ClCompile Include="src\world\collision\polycirc.ixx" />
     <ClCompile Include="src\world\collision\sat.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
     <ClCompile Include="src\world\object.ixx" />
@@ -588,6 +590,10 @@
     <IncludePath>$(SolutionDir)Libraries\include;$(SolutionDir)src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)Libraries\include;$(SolutionDir)src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Libraries\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -638,6 +644,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

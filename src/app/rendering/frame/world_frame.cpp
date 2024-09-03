@@ -20,6 +20,12 @@ void WorldFrame::render() {
 
   drawGrid();
 
+  auto c = collision::Circle{{}, 1.0f};
+  drawCircle(c, colors::RED);
+  auto p = collision::Polygon::from(
+      {{}}, {{-0.5, -0.5}, {0.5, -0.5}, {0, 0.5}, {-0.5, 0.5}});
+  drawPolygon(p, colors::BLUE);
+
   // Mesh mesh{{{-1, -1}, {+1, -1}, {+2, +1}, {+0, +2}, {-2, +1}},
   //                  GL_TRIANGLE_FAN};
   // drawMesh(mesh);
