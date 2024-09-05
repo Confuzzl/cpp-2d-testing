@@ -35,7 +35,7 @@ Tree::obj_list::iterator Tree::partitionNode(Node &node) {
   const glm::vec2 size = node.box.size();
   debug("\t\tsize: {}", vec_string(size));
 
-  const Axis axis = size.x > size.y ? Axis::X : Axis::Y;
+  const Axis axis = size.x > size.y ? X : Y;
   const float middle = node.box.median()[axis];
   debug("\t\tmiddle: {:d} {}", static_cast<bool>(axis), middle);
   return std::partition(getBegin(node), getEnd(node),

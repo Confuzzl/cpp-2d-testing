@@ -27,7 +27,7 @@ protected:
   virtual void handleRotation() = 0;
 
 public:
-  Collider(Transformable &&t, BoundingBox &&aabb)
+  Collider(const Transformable &t, BoundingBox &&aabb)
       : position{t.position}, rotation{t.rotation}, aabb{std::move(aabb)} {};
 
   glm::vec2 getPos() const { return position; }
@@ -50,8 +50,8 @@ private:
   void handleRotation() override {}
 
 public:
-  Circle(Transformable &&parent, const float radius)
-      : Collider(std::move(parent),
+  Circle(const Transformable &parent, const float radius)
+      : Collider(parent,
                  {{parent.position - radius}, {parent.position + radius}}),
         radius{radius} {}
 
@@ -83,7 +83,7 @@ private:
   VertexArray vertices;
   EdgeArray edges;
 
-  Polygon(Transformable &&t, std::vector<glm::vec2> &&vertices);
+  Polygon(const Transformable &t, std::vector<glm::vec2> &&vertices);
 
   void handleRotation() override;
 
@@ -125,8 +125,8 @@ private:
   } vertexView;
 
 public:
-  static Polygon from(Transformable &&t, std::vector<glm::vec2> &&vertices);
-  static Polygon fromUnchecked(Transformable &&t,
+  static Polygon from(const Transformable &t, std::vector<glm::vec2> &&vertices);
+  static Polygon fromUnchecked(const Transformable &t,
                                std::vector<glm::vec2> &&vertices);
 
   const VertexView &getVertices() const { return vertexView; }
@@ -134,7 +134,6 @@ public:
 };
 
 template <typename T> bool query(const T &a, const T &b);
-// reversed
 template <typename A, typename B>
 bool query(const A &a, const B &b, const bool reverse = false) {
   return query(b, a, true);
@@ -154,14 +153,20 @@ struct Resolution {
   // true if collision
   operator bool() const { return a.x * a.y * b.x * b.y; }
 };
-template <typename T> Resolution resolve(const T &a, const T &b);
-template <typename A, typename B>
+
+enum AABB_CHECK : bool { FALSE, TRUE };
+
+template <AABB_CHECK check = TRUE, typename T>
+Resolution resolve(const T &a, const T &b);
+template <AABB_CHECK check = TRUE, typename A, typename B>
 Resolution resolve(const A &a, const B &b, const bool reverse = false) {
-  resolve(b, a, true);
+  resolve<check>(b, a, true);
 }
-template <> Resolution resolve(const Circle &a, const Circle &b);
-template <> Resolution resolve(const Polygon &a, const Polygon &b);
-template <>
+template <AABB_CHECK check = TRUE>
+Resolution resolve(const Circle &a, const Circle &b);
+template <AABB_CHECK check = TRUE>
+Resolution resolve(const Polygon &a, const Polygon &b);
+template <AABB_CHECK check = TRUE>
 Resolution resolve(const Polygon &a, const Circle &b, const bool reverse);
 
 } // namespace collision

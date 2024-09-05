@@ -41,8 +41,9 @@ struct DepthInfo {
 
 enum PROJECTION_STATE : bool { NONE, INTERSECTION };
 
+template <AABB_CHECK check = TRUE>
 bool query(const Polygon &a, const Polygon &b) {
-  const auto project = [](const Polygon &a, const Polygon &b) {
+  static constexpr auto project = [](const Polygon &a, const Polygon &b) {
     for (const auto &edge : a.getEdges()) {
       Axis axis{edge.normal()};
       for (const auto v : a.getVertices())
@@ -55,17 +56,19 @@ bool query(const Polygon &a, const Polygon &b) {
     return PROJECTION_STATE::INTERSECTION;
   };
 
-  if (!a.getAABB().intersects(b.getAABB()))
-    return false;
+  if constexpr (check)
+    if (!a.getAABB().intersects(b.getAABB()))
+      return false;
   if (const PROJECTION_STATE ab = project(a, b); !ab)
     return false;
   if (const PROJECTION_STATE ba = project(b, a); !ba)
     return false;
   return true;
 }
+template <AABB_CHECK check = TRUE>
 std::pair<glm::vec2, glm::vec2> resolve(const Polygon &a, const Polygon &b) {
-  const auto projectToDepths = [](const Polygon &a, const Polygon &b,
-                                  std::vector<DepthInfo> &depths) {
+  static constexpr auto projectToDepths = [](const Polygon &a, const Polygon &b,
+                                             std::vector<DepthInfo> &depths) {
     for (const auto &edge : a.getEdges()) {
       Axis axis{edge.normal()};
       for (const auto v : a.getVertices())
@@ -79,8 +82,9 @@ std::pair<glm::vec2, glm::vec2> resolve(const Polygon &a, const Polygon &b) {
     return PROJECTION_STATE::INTERSECTION;
   };
 
-  if (!a.getAABB().intersects(b.getAABB()))
-    return {};
+  if constexpr (check)
+    if (!a.getAABB().intersects(b.getAABB()))
+      return {};
 
   std::vector<DepthInfo> depths;
   depths.reserve(a.getEdges().size() + b.getEdges().size());

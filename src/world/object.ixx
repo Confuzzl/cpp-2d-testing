@@ -52,23 +52,27 @@ struct Polygon : Object<collision::Polygon> {};
 } // namespace world
 
 namespace collision {
-template <typename A> bool checkSecond(const A &a, const world::BaseObject &b) {
+template <AABB_CHECK check = TRUE, typename A>
+bool checkSecond(const A &a, const world::BaseObject &b) {
   switch (b.getType()) {
   case world::BaseObject::ColliderType::CIRCLE:
-    return query(a, *static_cast<const world::Circle &>(b).collider);
+    return query<check>(a, *static_cast<const world::Circle &>(b).collider);
   case world::BaseObject::ColliderType::POLYGON:
-    return query(a, *static_cast<const world::Polygon &>(b).collider);
+    return query<check>(a, *static_cast<const world::Polygon &>(b).collider);
   }
   throw std::runtime_error{"INVALID OBJECT COLLISION QUERY"};
 }
 } // namespace collision
 export namespace collision {
+template <AABB_CHECK check = TRUE>
 bool query(const world::BaseObject &a, const world::BaseObject &b) {
   switch (a.getType()) {
   case world::BaseObject::ColliderType::CIRCLE:
-    return checkSecond(*static_cast<const world::Circle &>(a).collider, b);
+    return checkSecond<check>(*static_cast<const world::Circle &>(a).collider,
+                              b);
   case world::BaseObject::ColliderType::POLYGON:
-    return checkSecond(*static_cast<const world::Polygon &>(a).collider, b);
+    return checkSecond<check>(*static_cast<const world::Polygon &>(a).collider,
+                              b);
   }
   throw std::runtime_error{"INVALID OBJECT COLLISION QUERY"};
 }

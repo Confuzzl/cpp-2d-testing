@@ -7,9 +7,11 @@ import <algorithm>;
 
 export namespace collision {
 namespace poly_circ {
+template <AABB_CHECK check = TRUE>
 bool query(const Polygon &a, const Circle &b) {
-  if (!a.getAABB().intersects(b.getAABB()))
-    return false;
+  if constexpr (check)
+    if (!a.getAABB().intersects(b.getAABB()))
+      return false;
   if (pointInCircle(a.getPos(), b))
     return true;
   for (const auto &e : a.getEdges())
@@ -19,11 +21,14 @@ bool query(const Polygon &a, const Circle &b) {
     return true;
   return false;
 }
+template <AABB_CHECK check = TRUE>
 std::pair<glm::vec2, glm::vec2> resolve(const Polygon &a, const Circle &b,
                                         const bool reverse) {
-  const auto aBox = a.getAABB(), bBox = b.getAABB();
-  if (!aBox.intersects(bBox))
-    return {};
+  if constexpr (check) {
+    const auto aBox = a.getAABB(), bBox = b.getAABB();
+    if (!aBox.intersects(bBox))
+      return {};
+  }
 
   if (pointInCircle(a.getPos(), b)) {
 

@@ -195,6 +195,9 @@
     <ClCompile Include="src\world\collision\generic.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\gl.h">

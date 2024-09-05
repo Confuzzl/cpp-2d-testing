@@ -135,8 +135,8 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
   Striped &setView(const glm::mat4 &view);
   Striped &setWidth(const unsigned int width);
   Striped &setSpacing(const unsigned int spacing);
-  enum struct Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
-  Striped &setPattern(const Pattern pattern = Pattern::FORWARD);
+  enum Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
+  Striped &setPattern(const Pattern pattern = FORWARD);
   Striped &setFragColor(const Color &frag_color);
 };
 
