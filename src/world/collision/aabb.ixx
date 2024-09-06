@@ -57,6 +57,11 @@ export struct BoundingBox {
   }
 };
 
+export template <typename T>
+concept has_aabb = requires(T t) {
+  { t.getAABB() } -> std::same_as<BoundingBox>;
+};
+
 import <format>;
 
 export template <> struct std::formatter<BoundingBox> {
