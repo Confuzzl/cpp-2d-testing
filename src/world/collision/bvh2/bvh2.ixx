@@ -3,6 +3,7 @@ export module bvh2;
 import <vector>;
 import <list>;
 // import <optional>;
+import <variant>;
 import <array>;
 import aabb;
 
@@ -15,17 +16,18 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
   struct Node {
     Node *parent = nullptr;
     BoundingBox box;
-    union {
-      struct {
-        Node *left = nullptr, *right = nullptr;
-      } children;
-      std::array<T *, MAX_OBJECTS_PER_LEAF> boxes;
+
+    struct Children {
+      std::unique_ptr<Node> left, right;
     };
-    bool isLeaf = false;
+    std::variant<Children, std::array<T *, MAX_OBJECTS_PER_LEAF>> data;
 
     bool isRoot() const { return !parent; }
+    bool isLeaf() const { return !std::holds_alternative<Children>(data); }
+
+    ~Node() {}
   };
-  Node *root = nullptr;
+  std::unique_ptr<Node> root;
 
   struct Handle {
     Node *node;
@@ -39,7 +41,6 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
 
   BoundingVolumeHierarchy() = default;
   BoundingVolumeHierarchy(Node *root);
-  ~BoundingVolumeHierarchy();
 
   Handle query(const BoundingBox &b) const;
   std::vector<Handle> queryAll(const BoundingBox &b) const;
@@ -56,26 +57,25 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
       remove(h);
   }
 
-  template <typename L> static Node *topDown(const L &list) { return nullptr; }
-  template <typename L> static Node *bottomUp(const L &list) { return nullptr; }
-  template <typename L> static Node *incremental(const L &list) {
-    return nullptr;
+  template <typename L> static BoundingVolumeHierarchy topDown(const L &list) {
+    return {};
+  }
+  template <typename L> static BoundingVolumeHierarchy bottomUp(const L &list) {
+    return {};
+  }
+  template <typename L>
+  static BoundingVolumeHierarchy incremental(const L &list) {
+    return {};
   }
 
   template <typename L> static BoundingVolumeHierarchy from(const L &list) {
-    static constexpr auto sswitch = []() constexpr {
-      switch (BoundingVolumeHierarchy::SCHEME) {
-      case TOP_DOWN:
-        return &BoundingVolumeHierarchy::topDown<L>;
-      case BOTTOM_UP:
-        return &BoundingVolumeHierarchy::bottomUp<L>;
-      case INCREMENTAL:
-        return &BoundingVolumeHierarchy::incremental<L>;
-      }
-      return nullptr;
-    };
-
-    return {sswitch()(list)};
+    if constexpr (SCHEME == TOP_DOWN)
+      return topDown(list);
+    if constexpr (SCHEME == BOTTOM_UP)
+      return bottomUp(list);
+    if constexpr (SCHEME == INCREMENTAL)
+      return incremental(list);
+    return {};
   }
 
   // std::optional<Handle> query(const BoundingBox& b);
