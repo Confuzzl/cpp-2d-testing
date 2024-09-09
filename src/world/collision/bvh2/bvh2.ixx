@@ -24,8 +24,11 @@ export namespace collision {
     };
     std::variant<Children, std::array<T *, MAX_OBJECTS_PER_LEAF>> data;
 
+    Node() = default;
+
     bool isRoot() const { return !parent; }
     bool isLeaf() const { return !std::holds_alternative<Children>(data); }
+    bool isBranch() const { return !isRoot() && !isLeaf(); }
 
     Children &getChildren() { return std::get<0>(data); }
     const Children &getChildren() const { return std::get<0>(data); }
@@ -45,7 +48,7 @@ export namespace collision {
   };
 
   BoundingVolumeHierarchy() = default;
-  BoundingVolumeHierarchy(Node *root);
+  // BoundingVolumeHierarchy(std::unique_ptr<Node> &&root);
 
   Handle query(const BoundingBox &b) const;
   std::vector<Handle> queryAll(const BoundingBox &b) const;
@@ -63,6 +66,7 @@ export namespace collision {
   }
 
   template <typename L> static BoundingVolumeHierarchy topDown(const L &list) {
+    BoundingVolumeHierarchy out;
     return {};
   }
   template <typename L> static BoundingVolumeHierarchy bottomUp(const L &list) {

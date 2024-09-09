@@ -29,7 +29,7 @@ BoundingBox Tree::computeBounds(const obj_list::iterator begin,
 }
 
 Tree::obj_list::iterator Tree::partitionNode(Node &node) {
-  enum Axis : bool { X = false, Y = true };
+  enum Axis : bool { X, Y };
 
   debug("\tpartitioning");
   const glm::vec2 size = node.box.size();
