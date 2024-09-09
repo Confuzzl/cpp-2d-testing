@@ -2,13 +2,15 @@ export module bvh2;
 
 import <vector>;
 import <list>;
-// import <optional>;
 import <variant>;
 import <array>;
 import aabb;
+import object;
 
 export namespace collision {
-template <has_aabb T> struct BoundingVolumeHierarchy {
+/*template <has_aabb T> */ struct BoundingVolumeHierarchy {
+  using T = world::BaseObject;
+
   enum CONSTRUCTION_SCHEME { TOP_DOWN, BOTTOM_UP, INCREMENTAL };
   static constexpr CONSTRUCTION_SCHEME SCHEME = INCREMENTAL;
   static constexpr std::size_t MAX_OBJECTS_PER_LEAF = 2;
@@ -25,9 +27,12 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
     bool isRoot() const { return !parent; }
     bool isLeaf() const { return !std::holds_alternative<Children>(data); }
 
-    ~Node() {}
+    Children &getChildren() { return std::get<0>(data); }
+    const Children &getChildren() const { return std::get<0>(data); }
+    auto &getArray() { return std::get<1>(data); }
+    const auto &getArray() const { return std::get<1>(data); }
   };
-  std::unique_ptr<Node> root;
+  std::unique_ptr<Node> root = std::make_unique<Node>();
 
   struct Handle {
     Node *node;
@@ -65,7 +70,9 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
   }
   template <typename L>
   static BoundingVolumeHierarchy incremental(const L &list) {
-    return {};
+    BoundingVolumeHierarchy out;
+    out.add(list);
+    return out;
   }
 
   template <typename L> static BoundingVolumeHierarchy from(const L &list) {
@@ -77,10 +84,5 @@ template <has_aabb T> struct BoundingVolumeHierarchy {
       return incremental(list);
     return {};
   }
-
-  // std::optional<Handle> query(const BoundingBox& b);
-  // std::vector<Handle> queryAll(const BoundingBox& b);
-
-  // void remove(const Handle& b);
 };
 } // namespace collision
