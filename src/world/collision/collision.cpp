@@ -36,7 +36,8 @@ Polygon::Polygon(const Transformable &t, std::vector<glm::vec2> &&vertices)
       vertices{make_runtime_array<glm::vec2>(std::move(vertices))},
       edges{std::move(edgesHelper(this, count))},
       vertexView{this, &this->vertices} {}
-Polygon Polygon::from(const Transformable &t, std::vector<glm::vec2> &&vertices) {
+Polygon Polygon::from(const Transformable &t,
+                      std::vector<glm::vec2> &&vertices) {
   // https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex
 
   const auto size = vertices.size();
@@ -70,22 +71,21 @@ import sat;
 import polycirc;
 
 namespace collision {
-template <AABB_CHECK check> bool query(const Circle &a, const Circle &b) {
+template <bool check> bool query(const Circle &a, const Circle &b) {
   const float r = a.getRadius() + b.getRadius();
   return glm::distance2(a.getPos(), b.getPos()) <= r * r;
 }
-template <AABB_CHECK check> bool query(const Polygon &a, const Polygon &b) {
+template <bool check> bool query(const Polygon &a, const Polygon &b) {
   // using namespace SAT;
   return SAT::query<check>(a, b);
 }
-template <AABB_CHECK check>
+template <bool check>
 bool query(const Polygon &a, const Circle &b, const bool reverse) {
   // using namespace poly_circ;
   return poly_circ::query<check>(a, b);
 }
 
-template <AABB_CHECK check>
-Resolution resolve(const Circle &a, const Circle &b) {
+template <bool check> Resolution resolve(const Circle &a, const Circle &b) {
   const float r = a.getRadius() + b.getRadius();
   const float r2 = r * r;
   const float d2 = glm::distance2(a.getPos(), b.getPos());
@@ -96,12 +96,11 @@ Resolution resolve(const Circle &a, const Circle &b) {
   const float m = r - std::sqrt(d2);
   return {glm::normalize(a.getPos() - b.getPos()) * m, {}};
 }
-template <AABB_CHECK check>
-Resolution resolve(const Polygon &a, const Polygon &b) {
+template <bool check> Resolution resolve(const Polygon &a, const Polygon &b) {
   // using namespace SAT;
   return {SAT::resolve<check>(a, b)};
 }
-template <AABB_CHECK check>
+template <bool check>
 Resolution resolve(const Polygon &a, const Circle &b, const bool reverse) {
   return {poly_circ::resolve<check>(a, b, reverse)};
 }

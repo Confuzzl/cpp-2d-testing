@@ -125,7 +125,8 @@ private:
   } vertexView;
 
 public:
-  static Polygon from(const Transformable &t, std::vector<glm::vec2> &&vertices);
+  static Polygon from(const Transformable &t,
+                      std::vector<glm::vec2> &&vertices);
   static Polygon fromUnchecked(const Transformable &t,
                                std::vector<glm::vec2> &&vertices);
 
@@ -154,19 +155,19 @@ struct Resolution {
   operator bool() const { return a.x * a.y * b.x * b.y; }
 };
 
-enum AABB_CHECK : bool { FALSE, TRUE };
+// enum AABB_CHECK : bool { FALSE, TRUE };
 
-template <AABB_CHECK check = TRUE, typename T>
+template <bool check = true, typename T>
 Resolution resolve(const T &a, const T &b);
-template <AABB_CHECK check = TRUE, typename A, typename B>
+template <bool check = true, typename A, typename B>
 Resolution resolve(const A &a, const B &b, const bool reverse = false) {
   resolve<check>(b, a, true);
 }
-template <AABB_CHECK check = TRUE>
+template <bool check = true>
 Resolution resolve(const Circle &a, const Circle &b);
-template <AABB_CHECK check = TRUE>
+template <bool check = true>
 Resolution resolve(const Polygon &a, const Polygon &b);
-template <AABB_CHECK check = TRUE>
+template <bool check = true>
 Resolution resolve(const Polygon &a, const Circle &b, const bool reverse);
 
 } // namespace collision

@@ -65,7 +65,7 @@ struct Polygon : Object<collision::Polygon> {
 } // namespace world
 
 namespace collision {
-template <AABB_CHECK check = TRUE, typename A>
+template <bool check = true, typename A>
 bool checkSecond(const A &a, const world::BaseObject &b) {
   switch (b.getType()) {
   case world::BaseObject::COLLIDER_TYPE::CIRCLE:
@@ -77,7 +77,7 @@ bool checkSecond(const A &a, const world::BaseObject &b) {
 }
 } // namespace collision
 export namespace collision {
-template <AABB_CHECK check = TRUE>
+template <bool check = true>
 bool query(const world::BaseObject &a, const world::BaseObject &b) {
   switch (a.getType()) {
   case world::BaseObject::COLLIDER_TYPE::CIRCLE:

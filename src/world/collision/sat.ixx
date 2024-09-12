@@ -41,8 +41,7 @@ struct DepthInfo {
 
 enum PROJECTION_STATE : bool { NONE, INTERSECTION };
 
-template <AABB_CHECK check = TRUE>
-bool query(const Polygon &a, const Polygon &b) {
+template <bool check = true> bool query(const Polygon &a, const Polygon &b) {
   static constexpr auto project = [](const Polygon &a, const Polygon &b) {
     for (const auto &edge : a.getEdges()) {
       Axis axis{edge.normal()};
@@ -59,13 +58,11 @@ bool query(const Polygon &a, const Polygon &b) {
   if constexpr (check)
     if (!a.getAABB().intersects(b.getAABB()))
       return false;
-  if (const PROJECTION_STATE ab = project(a, b); !ab)
-    return false;
-  if (const PROJECTION_STATE ba = project(b, a); !ba)
+  if (!project(a, b) || !project(b, a))
     return false;
   return true;
 }
-template <AABB_CHECK check = TRUE>
+template <bool check = true>
 std::pair<glm::vec2, glm::vec2> resolve(const Polygon &a, const Polygon &b) {
   static constexpr auto projectToDepths = [](const Polygon &a, const Polygon &b,
                                              std::vector<DepthInfo> &depths) {
@@ -89,9 +86,7 @@ std::pair<glm::vec2, glm::vec2> resolve(const Polygon &a, const Polygon &b) {
   std::vector<DepthInfo> depths;
   depths.reserve(a.getEdges().size() + b.getEdges().size());
 
-  if (const PROJECTION_STATE ab = projectToDepths(a, b, depths); !ab)
-    return {};
-  if (const PROJECTION_STATE ba = projectToDepths(b, a, depths); !ba)
+  if (!projectToDepths(a, b, depths) || !projectToDepths(b, a, depths))
     return {};
 
   // infos have negative depth so compare negative or reverse comparison

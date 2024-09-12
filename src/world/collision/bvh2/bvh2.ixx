@@ -28,8 +28,11 @@ struct BoundingVolumeHierarchy {
     };
     std::variant<Array, Children> data;
 
+    Node() = default;
+
     bool isRoot() const { return !parent; }
     bool isLeaf() const { return !std::holds_alternative<Children>(data); }
+    bool isBranch() const { return !isRoot() && !isLeaf(); }
 
     auto &getArray() { return std::get<0>(data); }
     const auto &getArray() const { return std::get<0>(data); }
