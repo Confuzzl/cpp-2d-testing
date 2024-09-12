@@ -36,6 +36,9 @@ public:
   virtual collision::Collider *operator->() { return collider; }
   virtual const collision::Collider *operator->() const { return collider; }
 
+  collision::Collider *getCollider() { return collider; }
+  const collision::Collider *getCollider() const { return collider; }
+
   COLLIDER_TYPE getType() const { return type; }
   Mesh &getMesh() { return mesh; }
   const Mesh &getMesh() const { return mesh; }

@@ -7,7 +7,7 @@ import <set>;
 import <memory>;
 import <vector>;
 
-import bvh;
+import bvh2;
 
 // import polygon;
 // import circle;
@@ -35,6 +35,8 @@ export struct Scene {
 
   // std::vector<aabb_t> objs2;
   // bvh::tree_t tree;
+
+  collision::BoundingVolumeHierarchy tree;
 
   // Scene();
   //~Scene();

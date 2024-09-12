@@ -4,33 +4,43 @@ import <vector>;
 import <list>;
 import <variant>;
 import <array>;
+import <algorithm>;
+// import runtime_array;
+import <span>;
 import aabb;
 import object;
 
 export namespace collision {
-/*template <has_aabb T> */ struct BoundingVolumeHierarchy {
+struct BoundingVolumeHierarchy {
   using T = world::BaseObject;
 
   enum CONSTRUCTION_SCHEME { TOP_DOWN, BOTTOM_UP, INCREMENTAL };
-  static constexpr CONSTRUCTION_SCHEME SCHEME = INCREMENTAL;
+  static constexpr CONSTRUCTION_SCHEME SCHEME = TOP_DOWN;
   static constexpr std::size_t MAX_OBJECTS_PER_LEAF = 2;
 
   struct Node {
     Node *parent = nullptr;
     BoundingBox box;
 
+    using Array = std::vector<T *>;
     struct Children {
       std::unique_ptr<Node> left, right;
     };
-    std::variant<Children, std::array<T *, MAX_OBJECTS_PER_LEAF>> data;
+    std::variant<Array, Children> data;
 
     bool isRoot() const { return !parent; }
     bool isLeaf() const { return !std::holds_alternative<Children>(data); }
 
-    Children &getChildren() { return std::get<0>(data); }
-    const Children &getChildren() const { return std::get<0>(data); }
-    auto &getArray() { return std::get<1>(data); }
-    const auto &getArray() const { return std::get<1>(data); }
+    auto &getArray() { return std::get<0>(data); }
+    const auto &getArray() const { return std::get<0>(data); }
+    Children &getChildren() { return std::get<1>(data); }
+    const Children &getChildren() const { return std::get<1>(data); }
+
+    void setArray(std::span<T *> objects) {
+      Array d{};
+      d.assign(objects.begin(), objects.end());
+      data = std::move(d);
+    }
   };
   std::unique_ptr<Node> root = std::make_unique<Node>();
 
@@ -45,14 +55,15 @@ export namespace collision {
   };
 
   BoundingVolumeHierarchy() = default;
-  BoundingVolumeHierarchy(Node *root);
+  BoundingVolumeHierarchy(std::unique_ptr<Node> &&root)
+      : root{std::move(root)} {}
 
   Handle query(const BoundingBox &b) const;
   std::vector<Handle> queryAll(const BoundingBox &b) const;
 
-  void add(const T &o);
-  template <typename L> void add(const L &list) {
-    for (const T &o : list)
+  void add(const T *const o) {}
+  void add(const std::vector<T *> &list) {
+    for (const T *o : list)
       add(o);
   }
 
@@ -62,20 +73,21 @@ export namespace collision {
       remove(h);
   }
 
-  template <typename L> static BoundingVolumeHierarchy topDown(const L &list) {
+private:
+  static BoundingVolumeHierarchy topDown(const std::vector<T *> &list);
+  static void topDownRecurse(Node *const node, std::span<T *> objects);
+
+  static BoundingVolumeHierarchy bottomUp(const std::vector<T *> &list) {
     return {};
   }
-  template <typename L> static BoundingVolumeHierarchy bottomUp(const L &list) {
-    return {};
-  }
-  template <typename L>
-  static BoundingVolumeHierarchy incremental(const L &list) {
+  static BoundingVolumeHierarchy incremental(const std::vector<T *> &list) {
     BoundingVolumeHierarchy out;
     out.add(list);
     return out;
   }
 
-  template <typename L> static BoundingVolumeHierarchy from(const L &list) {
+public:
+  static BoundingVolumeHierarchy from(const std::vector<T *> &list) {
     if constexpr (SCHEME == TOP_DOWN)
       return topDown(list);
     if constexpr (SCHEME == BOTTOM_UP)
