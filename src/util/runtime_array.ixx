@@ -17,6 +17,9 @@ private:
 public:
   runtime_array(std::unique_ptr<T[]> &&parent, const std::size_t size)
       : array(std::move(parent)), _size{size} {}
+  // runtime_array(const runtime_array)
+  runtime_array(runtime_array &&) = default;
+  runtime_array &operator=(runtime_array &&) = default;
 
   T &operator[](const std::size_t i) { return *(array.get() + i); }
   const T &operator[](const std::size_t i) const { return *(array.get() + i); }

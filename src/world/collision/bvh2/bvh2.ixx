@@ -5,7 +5,7 @@ import <list>;
 import <variant>;
 import <array>;
 import <algorithm>;
-// import runtime_array;
+import runtime_array;
 import <span>;
 import aabb;
 import object;
@@ -43,6 +43,12 @@ struct BoundingVolumeHierarchy {
       Array d{};
       d.assign(objects.begin(), objects.end());
       data = std::move(d);
+    }
+    void setChildren(std::unique_ptr<Node> &&left,
+                     std::unique_ptr<Node> &&right) {
+      left->parent = this;
+      right->parent = this;
+      data = Children{.left{std::move(left)}, .right{std::move(right)}};
     }
   };
   std::unique_ptr<Node> root = std::make_unique<Node>();

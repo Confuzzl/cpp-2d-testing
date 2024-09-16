@@ -7,22 +7,13 @@ module bvh2;
 using namespace collision;
 
 import <algorithm>;
-import runtime_array;
+
+static BoundingBox toBox(const BoundingVolumeHierarchy::T *const o) {
+  return o->getCollider()->getAABB();
+}
 
 BoundingVolumeHierarchy
 BoundingVolumeHierarchy::topDown(const std::vector<T *> &list) {
-  static constexpr auto toBox = [](const T *o) {
-    return o->getCollider()->getAABB();
-  };
-  auto sortedX =
-      make_runtime_array<BoundingBox>(list | std::views::transform(toBox));
-  std::ranges::sort(sortedX, std::less{},
-                    [](const BoundingBox &b) { return b.median().x; });
-  auto sortedY =
-      make_runtime_array<BoundingBox>(list | std::views::transform(toBox));
-  std::ranges::sort(sortedY, std::less{},
-                    [](const BoundingBox &b) { return b.median().y; });
-
   auto arr = make_runtime_array<T *>(list);
   auto root = std::make_unique<Node>();
   topDownRecurse(root.get(), {arr});
@@ -30,19 +21,38 @@ BoundingVolumeHierarchy::topDown(const std::vector<T *> &list) {
 }
 void BoundingVolumeHierarchy::topDownRecurse(Node *const node,
                                              std::span<T *> objects) {
-  for (const auto o : objects)
-    node->box.expand(o->getCollider()->getAABB());
+  static constexpr auto partition = [](const std::span<BoundingBox> sorted,
+                                       const bool axis, const float m) {
+    auto it = sorted.begin();
+    while (it != sorted.end()) {
+      if (m < it->median()[axis])
+        return it;
+      it++;
+    }
+    return it;
+  };
+
+  for (const T *const o : objects)
+    node->box.expand(toBox(o));
+
   if (objects.size() > MAX_OBJECTS_PER_LEAF) {
-    auto left = std::make_unique<Node>(), right = std::make_unique<Node>();
-    left->parent = node;
-    right->parent = node;
-    auto split =
-        std::partition(objects.begin(), objects.end(), [](const T *const o) {
-          return o->getCollider()->getAABB().median().x < 0;
-        });
-    topDownRecurse(left.get(), {objects.begin(), split});
-    topDownRecurse(right.get(), {split, objects.end()});
+    const bool axis = node->box.width() < node->box.height();
+    const float median = node->box.median()[axis];
+    auto split = std::partition(objects.begin(), objects.end(),
+                                [axis, median](const T *const o) {
+                                  return toBox(o).median()[axis] < median;
+                                });
+
+    if (split - objects.begin() == 0 || objects.end() - split == 0)
+      return;
+
+    node->setChildren(std::make_unique<Node>(), std::make_unique<Node>());
+    auto left = node->getChildren().left.get(),
+         right = node->getChildren().right.get();
+
+    topDownRecurse(left, {objects.begin(), split});
+    topDownRecurse(right, {split, objects.end()});
   } else {
-    node->setArray(objects);
+    node->setArray({objects});
   }
 }
