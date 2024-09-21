@@ -10,7 +10,7 @@ import mesh;
 
 export namespace world {
 struct BaseObject {
-  enum COLLIDER_TYPE { CIRCLE, POLYGON };
+  enum COLLIDER_TYPE : bool { CIRCLE, POLYGON };
 
 private:
   collision::Collider *collider;

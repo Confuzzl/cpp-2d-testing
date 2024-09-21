@@ -9,11 +9,8 @@ import <vector>;
 
 import bvh2;
 
-// import polygon;
-// import circle;
 import color;
 
-export struct base_obj_t;
 export struct BoundingBox;
 
 export struct Scene {

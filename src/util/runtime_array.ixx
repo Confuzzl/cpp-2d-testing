@@ -17,7 +17,15 @@ private:
 public:
   runtime_array(std::unique_ptr<T[]> &&parent, const std::size_t size)
       : array(std::move(parent)), _size{size} {}
-  // runtime_array(const runtime_array)
+  runtime_array(const runtime_array &that)
+      : array{std::make_unique<T[]>(that._size)}, _size{that._size} {
+    std::copy(that.array.get(), that.array.get() + _size, array.get());
+  }
+  runtime_array &operator=(const runtime_array &that) {
+    array = std::make_unique<T[]>(that._size);
+    std::copy(that.array.get(), that.array.get() + _size, array.get());
+    return *this;
+  }
   runtime_array(runtime_array &&) = default;
   runtime_array &operator=(runtime_array &&) = default;
 
@@ -38,5 +46,10 @@ runtime_array<T> make_runtime_array(L &&list) {
   auto size = list.size();
   auto out = std::make_unique<T[]>(size);
   write(std::forward<L>(list), out.get());
+  return {std::move(out), size};
+}
+export template <typename T>
+runtime_array<T> make_runtime_array(const std::size_t size) {
+  auto out = std::make_unique<T[]>(size);
   return {std::move(out), size};
 }

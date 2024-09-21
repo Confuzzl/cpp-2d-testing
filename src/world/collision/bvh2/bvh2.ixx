@@ -26,29 +26,58 @@ struct BoundingVolumeHierarchy {
     struct Children {
       std::unique_ptr<Node> left, right;
     };
-    std::variant<Array, Children> data;
+    union {
+      Array array;
+      Children children{};
+    };
+    bool _isLeaf = false;
+    unsigned int depth = 0;
 
     Node() = default;
+    ~Node() {
+      if (_isLeaf)
+        std::destroy_at(&array);
+      else
+        std::destroy_at(&children);
+    }
 
     bool isRoot() const { return !parent; }
-    bool isLeaf() const { return !std::holds_alternative<Children>(data); }
+    bool isLeaf() const { return _isLeaf; }
     bool isBranch() const { return !isRoot() && !isLeaf(); }
 
-    auto &getArray() { return std::get<0>(data); }
-    const auto &getArray() const { return std::get<0>(data); }
-    Children &getChildren() { return std::get<1>(data); }
-    const Children &getChildren() const { return std::get<1>(data); }
+    Array &getArray() {
+      if (!_isLeaf)
+        throw std::runtime_error{"NODE IS NOT A LEAF"};
+      return array;
+    }
+    const Array &getArray() const {
+      if (!_isLeaf)
+        throw std::runtime_error{"NODE IS NOT A LEAF"};
+      return array;
+    }
+    Children &getChildren() {
+      if (_isLeaf)
+        throw std::runtime_error{"NODE IS A LEAF"};
+      return children;
+    }
+    const Children &getChildren() const {
+      if (_isLeaf)
+        throw std::runtime_error{"NODE IS A LEAF"};
+      return children;
+    }
 
     void setArray(std::span<T *> objects) {
-      Array d{};
-      d.assign(objects.begin(), objects.end());
-      data = std::move(d);
+      _isLeaf = true;
+      array = {};
+      array.reserve(MAX_OBJECTS_PER_LEAF);
+      array.assign(objects.begin(), objects.end());
     }
     void setChildren(std::unique_ptr<Node> &&left,
                      std::unique_ptr<Node> &&right) {
+      _isLeaf = false;
       left->parent = this;
       right->parent = this;
-      data = Children{.left{std::move(left)}, .right{std::move(right)}};
+      children = Children{.left{std::move(left)}, .right{std::move(right)}};
     }
   };
   std::unique_ptr<Node> root = std::make_unique<Node>();
@@ -84,7 +113,8 @@ struct BoundingVolumeHierarchy {
 
 private:
   static BoundingVolumeHierarchy topDown(const std::vector<T *> &list);
-  static void topDownRecurse(Node *const node, std::span<T *> objects);
+  static void topDownRecurse(Node *const node, std::span<T *> objects,
+                             const int depth);
 
   static BoundingVolumeHierarchy bottomUp(const std::vector<T *> &list) {
     return {};
