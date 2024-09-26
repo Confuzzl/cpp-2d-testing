@@ -8,6 +8,7 @@ import debug;
 
 import glm;
 import math;
+import <random>;
 
 export using Color = glm::uvec3;
 // export using rgb_t = glm::u8vec3;
@@ -24,13 +25,17 @@ Color random() {
 }
 
 Color random_i(const unsigned int i) {
-  // https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
-  static const auto offset =
-      random_int(1u, std::numeric_limits<unsigned int>::max());
-  auto num = i + offset;
-  num = ((num >> 16) ^ num) * 0x45d9f3b;
-  num = ((num >> 16) ^ num) * 0x45d9f3b;
-  num = (num >> 16) ^ num;
+  ////
+  /// https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
+  // static const auto offset =
+  //     random_int(1u, std::numeric_limits<unsigned int>::max());
+  // auto num = i + offset;
+  // num = ((num >> 16) ^ num) * 0x45d9f3b;
+  // num = ((num >> 16) ^ num) * 0x45d9f3b;
+  // num = (num >> 16) ^ num;
+  static std::mt19937 gen;
+  gen.seed(i);
+  const auto num = gen();
 
   return {(0xff'00'00'00 & num) >> 24, (0x00'ff'00'00 & num) >> 16,
           (0x00'00'ff'00 & num) >> 8};

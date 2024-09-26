@@ -7,6 +7,7 @@ export module object;
 import glm;
 import collision;
 import mesh;
+import <memory>;
 
 export namespace world {
 struct BaseObject {
@@ -24,12 +25,13 @@ private:
 
   float friction = 0;
 
-  Mesh mesh;
+  std::unique_ptr<Mesh> mesh;
 
 public:
   BaseObject(collision::Collider *collider, const COLLIDER_TYPE type,
              Mesh &&mesh)
-      : collider{collider}, type{type}, mesh{std::move(mesh)} {}
+      : collider{collider}, type{type},
+        mesh{std::make_unique<Mesh>(std::move(mesh))} {}
 
   void remove() {}
 
@@ -40,8 +42,8 @@ public:
   const collision::Collider *getCollider() const { return collider; }
 
   COLLIDER_TYPE getType() const { return type; }
-  Mesh &getMesh() { return mesh; }
-  const Mesh &getMesh() const { return mesh; }
+  Mesh &getMesh() { return *mesh; }
+  const Mesh &getMesh() const { return *mesh; }
 };
 template <typename T> struct Object : BaseObject {
   std::unique_ptr<T> collider;

@@ -34,51 +34,20 @@ struct BoundingVolumeHierarchy {
     unsigned int depth = 0;
 
     Node() = default;
-    ~Node() {
-      if (_isLeaf)
-        std::destroy_at(&array);
-      else
-        std::destroy_at(&children);
-    }
+    ~Node();
 
-    bool isRoot() const { return !parent; }
-    bool isLeaf() const { return _isLeaf; }
-    bool isBranch() const { return !isRoot() && !isLeaf(); }
+    bool isRoot() const;
+    bool isLeaf() const;
+    bool isBranch() const;
 
-    Array &getArray() {
-      if (!_isLeaf)
-        throw std::runtime_error{"NODE IS NOT A LEAF"};
-      return array;
-    }
-    const Array &getArray() const {
-      if (!_isLeaf)
-        throw std::runtime_error{"NODE IS NOT A LEAF"};
-      return array;
-    }
-    Children &getChildren() {
-      if (_isLeaf)
-        throw std::runtime_error{"NODE IS A LEAF"};
-      return children;
-    }
-    const Children &getChildren() const {
-      if (_isLeaf)
-        throw std::runtime_error{"NODE IS A LEAF"};
-      return children;
-    }
+    Array &getArray();
+    const Array &getArray() const;
+    Children &getChildren();
+    const Children &getChildren() const;
 
-    void setArray(std::span<T *> objects) {
-      _isLeaf = true;
-      array = {};
-      array.reserve(MAX_OBJECTS_PER_LEAF);
-      array.assign(objects.begin(), objects.end());
-    }
+    void setArray(std::span<T *> objects);
     void setChildren(std::unique_ptr<Node> &&left,
-                     std::unique_ptr<Node> &&right) {
-      _isLeaf = false;
-      left->parent = this;
-      right->parent = this;
-      children = Children{.left{std::move(left)}, .right{std::move(right)}};
-    }
+                     std::unique_ptr<Node> &&right);
   };
   std::unique_ptr<Node> root = std::make_unique<Node>();
 

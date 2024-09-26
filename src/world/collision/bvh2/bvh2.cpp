@@ -8,6 +8,58 @@ using namespace collision;
 
 import <algorithm>;
 
+BoundingVolumeHierarchy::Node::~Node() {
+  if (_isLeaf)
+    std::destroy_at(&array);
+  else
+    std::destroy_at(&children);
+}
+
+bool BoundingVolumeHierarchy::Node::isRoot() const { return !parent; }
+bool BoundingVolumeHierarchy::Node::isLeaf() const { return _isLeaf; }
+bool BoundingVolumeHierarchy::Node::isBranch() const {
+  return !isRoot() && !isLeaf();
+}
+
+BoundingVolumeHierarchy::Node::Array &
+BoundingVolumeHierarchy::Node::getArray() {
+  if (!_isLeaf)
+    throw std::runtime_error{"NODE IS NOT A LEAF"};
+  return array;
+}
+const BoundingVolumeHierarchy::Node::Array &
+BoundingVolumeHierarchy::Node::getArray() const {
+  if (!_isLeaf)
+    throw std::runtime_error{"NODE IS NOT A LEAF"};
+  return array;
+}
+BoundingVolumeHierarchy::Node::Children &
+BoundingVolumeHierarchy::Node::getChildren() {
+  if (_isLeaf)
+    throw std::runtime_error{"NODE IS A LEAF"};
+  return children;
+}
+const BoundingVolumeHierarchy::Node::Children &
+BoundingVolumeHierarchy::Node::getChildren() const {
+  if (_isLeaf)
+    throw std::runtime_error{"NODE IS A LEAF"};
+  return children;
+}
+
+void BoundingVolumeHierarchy::Node::setArray(std::span<T *> objects) {
+  _isLeaf = true;
+  array = {};
+  array.reserve(MAX_OBJECTS_PER_LEAF);
+  array.assign(objects.begin(), objects.end());
+}
+void BoundingVolumeHierarchy::Node::setChildren(std::unique_ptr<Node> &&left,
+                                                std::unique_ptr<Node> &&right) {
+  _isLeaf = false;
+  left->parent = this;
+  right->parent = this;
+  children = Children{.left{std::move(left)}, .right{std::move(right)}};
+}
+
 static BoundingBox toBox(const BoundingVolumeHierarchy::T *const o) {
   return o->getCollider()->getAABB();
 }
