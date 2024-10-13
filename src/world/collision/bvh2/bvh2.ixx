@@ -12,7 +12,8 @@ import object;
 
 export namespace collision {
 struct BoundingVolumeHierarchy {
-  using T = world::BaseObject;
+  // using T = world::BaseObject;
+  using T = int;
 
   enum CONSTRUCTION_SCHEME { TOP_DOWN, BOTTOM_UP, INCREMENTAL };
   static constexpr CONSTRUCTION_SCHEME SCHEME = TOP_DOWN;

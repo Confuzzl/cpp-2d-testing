@@ -8,6 +8,15 @@ import glm;
 
 using namespace collision;
 
+Circle Circle::from(const Transformable &parent, const float radius) {
+  if (radius <= 0)
+    throw std::runtime_error{"RADIUS MUST BE POSITIVE"};
+  return fromUnchecked(parent, radius);
+}
+Circle Circle::fromUnchecked(const Transformable &parent, const float radius) {
+  return {parent, radius};
+}
+
 Polygon::Edge::Edge(const Polygon *parent, const unsigned int tail,
                     const unsigned int head)
     : parent{parent}, tail{tail}, head{head} {}

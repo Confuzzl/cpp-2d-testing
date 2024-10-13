@@ -29,6 +29,7 @@ protected:
 public:
   Collider(const Transformable &t, BoundingBox &&aabb)
       : position{t.position}, rotation{t.rotation}, aabb{std::move(aabb)} {};
+  virtual ~Collider() = default;
 
   glm::vec2 getPos() const { return position; }
   void setPos(const glm::vec2 v) { position = v; }
@@ -49,13 +50,18 @@ private:
 
   void handleRotation() override {}
 
-public:
   Circle(const Transformable &parent, const float radius)
       : Collider(parent,
                  {{parent.position - radius}, {parent.position + radius}}),
         radius{radius} {}
 
+public:
+  ~Circle() override = default;
+
   float getRadius() const { return radius; }
+
+  static Circle from(const Transformable &parent, const float radius);
+  static Circle fromUnchecked(const Transformable &parent, const float radius);
 };
 
 // CCW and convex
@@ -77,6 +83,8 @@ struct Polygon : Collider {
 
   using VertexArray = runtime_array<glm::vec2>;
   using EdgeArray = runtime_array<Edge>;
+
+  ~Polygon() override = default;
 
 private:
   std::size_t count;
@@ -154,8 +162,6 @@ struct Resolution {
   // true if collision
   operator bool() const { return a.x * a.y * b.x * b.y; }
 };
-
-// enum AABB_CHECK : bool { FALSE, TRUE };
 
 template <bool check = true, typename T>
 Resolution resolve(const T &a, const T &b);

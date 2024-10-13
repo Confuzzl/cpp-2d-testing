@@ -108,13 +108,7 @@
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\collision\bvh\bvh.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\world\collision\aabb.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\collision\bvh\bvh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\shaders\program.cpp">
@@ -195,10 +189,13 @@
     <ClCompile Include="src\world\collision\generic.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx">
+    <ClCompile Include="src\world\ecs\components.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\collision\bvh2\bvh2.cpp">
+    <ClCompile Include="src\world\ecs\entity.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\ecs\system.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

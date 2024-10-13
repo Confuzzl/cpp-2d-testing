@@ -1,6 +1,8 @@
 export module runtime_array;
 
 import <memory>;
+import <stdexcept>;
+import <format>;
 
 template <typename L, typename T> static void write(L &&list, T *dest) {
   std::move(list.begin(), list.end(), dest);
