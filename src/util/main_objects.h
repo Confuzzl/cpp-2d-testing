@@ -4,7 +4,7 @@
 #define MAIN_RENDERER MAIN_APP.renderer
 #define MAIN_CAMERA MAIN_SCENE.camera
 
-#define COMPONENT_MANAGER MAIN_SCENE.compManager
+// #define COMPONENT_MANAGER MAIN_SCENE.compManager
 
 #define SHADERS MAIN_RENDERER.shaders
 

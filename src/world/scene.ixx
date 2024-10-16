@@ -5,14 +5,14 @@ import <map>;
 import <memory>;
 // import bvh2;
 import object;
-import components;
+// import components;
 
-export struct BoundingBox;
+// export struct BoundingBox;
 
 export struct Scene {
   Camera camera{{0, 0}};
 
-  ecs::comp::Manager compManager;
+  // ecs::Manager ecsManager;
 
   // std::map<unsigned int, std::unique_ptr<world::BaseObject>> objectList;
 
