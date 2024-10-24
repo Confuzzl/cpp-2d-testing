@@ -3,12 +3,9 @@ module scene;
 import debug;
 import object;
 
-void Scene::init() {
+import ecs_component;
 
-  // compManager.addComponent(0, "abc"s);
-  //  std::vector<world::BaseObject *> a{};
-  //// a.emplace_back(world::Circle{})
-  // tree = collision::BoundingVolumeHierarchy::from(a);
-  //  tree.topDown();
-  //   tree.print();
+void Scene::init() {
+  for (auto i = 0; i < 5; i++)
+    ecs.newEntity(ecs::Positionable{.position{i, i}});
 }

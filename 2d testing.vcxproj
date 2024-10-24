@@ -73,8 +73,9 @@
     <ClCompile Include="src\world\collision\generic.ixx" />
     <ClCompile Include="src\world\collision\polycirc.ixx" />
     <ClCompile Include="src\world\collision\sat.ixx" />
-    <ClCompile Include="src\world\ecs\components.ixx" />
-    <ClCompile Include="src\world\ecs\entity.ixx" />
+    <ClCompile Include="src\world\ecs\component.ixx" />
+    <ClCompile Include="src\world\ecs\manager.cpp" />
+    <ClCompile Include="src\world\ecs\manager.ixx" />
     <ClCompile Include="src\world\ecs\system.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
     <ClCompile Include="src\world\object.ixx" />

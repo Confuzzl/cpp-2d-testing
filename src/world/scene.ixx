@@ -4,15 +4,14 @@ import camera;
 import <map>;
 import <memory>;
 // import bvh2;
-import object;
-// import components;
+import ecs_manager;
 
 // export struct BoundingBox;
 
 export struct Scene {
   Camera camera{{0, 0}};
 
-  // ecs::Manager ecsManager;
+  ecs::Manager ecs;
 
   // std::map<unsigned int, std::unique_ptr<world::BaseObject>> objectList;
 

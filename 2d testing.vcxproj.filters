@@ -189,13 +189,16 @@
     <ClCompile Include="src\world\collision\generic.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\ecs\components.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\ecs\entity.ixx">
+    <ClCompile Include="src\world\ecs\manager.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\world\ecs\system.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\ecs\component.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\ecs\manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
