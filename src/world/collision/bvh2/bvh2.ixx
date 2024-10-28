@@ -1,19 +1,15 @@
 export module bvh2;
 
 import <vector>;
-import <list>;
-import <variant>;
 import <array>;
 import <algorithm>;
 import runtime_array;
 import <span>;
 import aabb;
-import object;
 
 export namespace collision {
 struct BoundingVolumeHierarchy {
-  // using T = world::BaseObject;
-  using T = int;
+  using T = BoundingBox;
 
   enum CONSTRUCTION_SCHEME { TOP_DOWN, BOTTOM_UP, INCREMENTAL };
   static constexpr CONSTRUCTION_SCHEME SCHEME = TOP_DOWN;
@@ -23,61 +19,64 @@ struct BoundingVolumeHierarchy {
     Node *parent = nullptr;
     BoundingBox box;
 
-    using Array = std::vector<T *>;
-    struct Children {
-      std::unique_ptr<Node> left, right;
-    };
     union {
-      Array array;
-      Children children{};
+      std::vector<T *> array{};
+      struct {
+        std::unique_ptr<Node> left, right;
+      };
     };
     bool _isLeaf = false;
     unsigned int depth = 0;
 
     Node() = default;
     ~Node();
+    Node(const Node &) = delete;
+    Node(Node &&that)
+        : parent{that.parent}, box{that.box}, _isLeaf{that._isLeaf},
+          depth{that.depth} {
+      if (_isLeaf)
+        array = std::move(that.array);
+      else {
+        left = std::move(that.left);
+        right = std::move(that.right);
+      }
+    }
+    Node &operator=(const Node &) = delete;
+    Node &operator=(Node &&that) {
+      parent = std::move(that.parent);
+      box = std::move(that.box);
+      _isLeaf = std::move(that._isLeaf);
+      depth = std::move(that.depth);
+      if (_isLeaf)
+        array = std::move(that.array);
+      else {
+        left = std::move(that.left);
+        right = std::move(that.right);
+      }
+      return *this;
+    }
 
     bool isRoot() const;
     bool isLeaf() const;
     bool isBranch() const;
 
-    Array &getArray();
-    const Array &getArray() const;
-    Children &getChildren();
-    const Children &getChildren() const;
-
     void setArray(std::span<T *> objects);
     void setChildren(std::unique_ptr<Node> &&left,
                      std::unique_ptr<Node> &&right);
-  };
-  std::unique_ptr<Node> root = std::make_unique<Node>();
+  } root;
 
-  struct Handle {
-    Node *node;
-    T *obj;
+  bool query(const BoundingBox &box) const;
+  std::vector<T *> queryAll(const BoundingBox &box);
 
-    T &operator->() { return *obj; }
-    const T &operator->() const { return *obj; }
-
-    operator bool() const { return obj; }
-  };
-
-  BoundingVolumeHierarchy() = default;
-  BoundingVolumeHierarchy(std::unique_ptr<Node> &&root)
-      : root{std::move(root)} {}
-
-  Handle query(const BoundingBox &b) const;
-  std::vector<Handle> queryAll(const BoundingBox &b) const;
-
-  void add(const T *const o) {}
+  void add(const T *const o);
   void add(const std::vector<T *> &list) {
-    for (const T *o : list)
+    for (const T *const o : list)
       add(o);
   }
 
-  void remove(const Handle &h);
+  void remove(const T &h);
   template <typename L> void remove(const L &list) {
-    for (const Handle &h : list)
+    for (const T &h : list)
       remove(h);
   }
 
@@ -95,15 +94,27 @@ private:
     return out;
   }
 
+  template <CONSTRUCTION_SCHEME>
+  static BoundingVolumeHierarchy specializeFrom(const std::vector<T *> &list);
+  template <>
+  static BoundingVolumeHierarchy
+  specializeFrom<TOP_DOWN>(const std::vector<T *> &list) {
+    return topDown(list);
+  }
+  template <>
+  static BoundingVolumeHierarchy
+  specializeFrom<BOTTOM_UP>(const std::vector<T *> &list) {
+    return bottomUp(list);
+  }
+  template <>
+  static BoundingVolumeHierarchy
+  specializeFrom<INCREMENTAL>(const std::vector<T *> &list) {
+    return incremental(list);
+  }
+
 public:
   static BoundingVolumeHierarchy from(const std::vector<T *> &list) {
-    if constexpr (SCHEME == TOP_DOWN)
-      return topDown(list);
-    if constexpr (SCHEME == BOTTOM_UP)
-      return bottomUp(list);
-    if constexpr (SCHEME == INCREMENTAL)
-      return incremental(list);
-    return {};
+    return specializeFrom<SCHEME>(list);
   }
 };
 } // namespace collision

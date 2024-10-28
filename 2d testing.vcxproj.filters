@@ -93,9 +93,6 @@
     <ClCompile Include="src\world\mesh.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\object.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\world\scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,6 +196,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\world\ecs\manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\bvh2\bvh2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

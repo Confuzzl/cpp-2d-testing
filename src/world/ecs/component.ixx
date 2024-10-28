@@ -3,6 +3,9 @@ export module ecs_component;
 import aabb;
 import glm;
 import mesh;
+import <functional>;
+
+export struct BaseFrame;
 
 export namespace ecs {
 inline namespace comp {
@@ -29,6 +32,9 @@ struct Boundable {
 };
 struct Renderable {
   Mesh mesh;
+};
+struct DirectRenderable {
+  std::function<void(BaseFrame *)> func;
 };
 } // namespace comp
 } // namespace ecs

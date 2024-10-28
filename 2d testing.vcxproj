@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\util\runtime_array.ixx" />
+    <ClCompile Include="src\world\collision\bvh2\bvh2.cpp" />
+    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx" />
     <ClCompile Include="src\world\collision\collision.cpp" />
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\app\app.cpp" />
@@ -78,7 +80,6 @@
     <ClCompile Include="src\world\ecs\manager.ixx" />
     <ClCompile Include="src\world\ecs\system.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
-    <ClCompile Include="src\world\object.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
     <ClCompile Include="src\world\scene.ixx" />
   </ItemGroup>

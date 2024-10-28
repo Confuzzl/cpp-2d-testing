@@ -6,14 +6,13 @@ import <bitset>;
 import <stack>;
 import <utility>;
 import <typeinfo>;
+import <format>;
 
 import glm;
 import aabb;
 import debug;
 
 import ecs_component;
-
-static std::size_t counter = 0u;
 
 // https://github.com/chrischristakis/seecs
 export namespace ecs {
@@ -22,8 +21,6 @@ using EntID = std::size_t;
 struct GenSparseSet {
   virtual ~GenSparseSet() = default;
   virtual void remove(const EntID) = 0;
-  // virtual void clear() = 0;
-  // virtual std::size_t size() const = 0;
 };
 template <typename T> struct SparseSet : GenSparseSet {
 private:
@@ -133,14 +130,15 @@ public:
   }
 };
 
-template <typename T> void specializeAdd(T &comp) {}
-template <typename T> void specializeRemove(T &comp) {}
+template <typename T> void onAdd(T &comp) {}
+template <typename T> void onRemove(T &comp) {}
 
 struct Manager {
 private:
   static constexpr std::size_t SIGNATURE_RESERVE = 20;
   static constexpr std::size_t COMPONENT_POOL_RESERVE = 20;
   static constexpr std::size_t GROUP_RESERVE = 50;
+  static constexpr std::size_t VIEW_RESERVE = 10;
 
   static constexpr EntID NULL_ENT = -1;
   static constexpr std::size_t MAX_COMPONENTS = 64u;
@@ -151,11 +149,7 @@ private:
   std::unordered_map<Signature, SparseSet<EntID>> groups;
   std::stack<EntID> entityStack;
 
-  auto registerID() {
-    if (counter + 1 == MAX_COMPONENTS)
-      throw std::runtime_error{"REGISTERING TOO MANY COMPONENTS"};
-    return counter++;
-  }
+  std::size_t registerID();
   template <typename T> SparseSet<T> &registerPool() {
     auto pool = std::make_unique<SparseSet<T>>();
     pool->reserve(COMPONENT_POOL_RESERVE);
@@ -193,44 +187,25 @@ private:
         std::format("{} NOT A COMPONENT OF {}", typeid(T).name(), ent)};
   }
 
-  Signature *getSignature(const EntID ent) { return entitySignatures.get(ent); }
+  Signature *signaturePointerFrom(const EntID ent);
   template <typename... Ts> Signature getSignature() {
     Signature out;
     (setComponentBit<Ts>(out, true), ...);
     return out;
   }
 
-  SparseSet<EntID> &getGroup(const Signature sig) {
-    if (auto it = groups.find(sig); it != groups.end())
-      return it->second;
-    throw std::runtime_error{
-        std::format("NO GROUP MATCHING SIGNATURE {}", sig.to_ullong())};
-  }
+  SparseSet<EntID> &getGroup(const Signature sig);
 
-  void removeFromGroup(const Signature signature, const EntID ent) {
-    if (signature.none() || ent == NULL_ENT)
-      return;
-    getGroup(signature).remove(ent);
-  }
-  void addToGroup(const Signature signature, const EntID ent) {
-    if (signature.none() || ent == NULL_ENT)
-      return;
-    auto [it, inserted] = groups.try_emplace(signature, SparseSet<EntID>{});
-    if (inserted)
-      it->second.reserve(GROUP_RESERVE);
-    it->second.set(ent, ent);
-  }
+  void removeFromGroup(const Signature signature, const EntID ent);
+  void addToGroup(const Signature signature, const EntID ent);
 
 public:
-  Manager() {
-    entitySignatures.reserve(SIGNATURE_RESERVE);
-    componentPools.reserve(MAX_COMPONENTS);
-  }
+  Manager();
 
   template <typename T> void add(const EntID ent, T &&comp) {
     if (ent == NULL_ENT)
       return;
-    const auto sig = getSignature(ent);
+    const auto sig = signaturePointerFrom(ent);
     if (!sig)
       return;
     auto &pool = getComponentPool<T>();
@@ -240,16 +215,7 @@ public:
       setComponentBit<T>(signature, true);
       addToGroup(signature, ent);
     }
-    specializeAdd<T>(pool.set(ent, std::move(comp)));
-    // if (pool.contains(ent)) {
-    //   pool.set(ent, std::move(comp));
-    //   return;
-    // }
-    // auto &signature = *sig;
-    // removeFromGroup(signature, ent);
-    // setComponentBit<T>(signature, true);
-    // addToGroup(signature, ent);
-    // pool.set(ent, std::move(comp));
+    onAdd<T>(pool.set(ent, std::move(comp)));
   }
   template <typename... Ts> void add(const EntID ent, Ts &&...comps) {
     (add<Ts>(ent, std::move(comps)), ...);
@@ -257,14 +223,14 @@ public:
   template <typename T> void remove(const EntID ent) {
     if (ent == NULL_ENT)
       return;
-    const auto sig = getSignature(ent);
+    const auto sig = signaturePointerFrom(ent);
     if (!sig)
       return;
     auto &pool = getComponentPool<T>();
-    auto comp = pool.get(ent);
+    T *comp = pool.get(ent);
     if (!comp)
       return;
-    specializeRemove<T>(*comp);
+    onRemove<T>(*comp);
     auto &signature = *sig;
     removeFromGroup(signature, ent);
     setComponentBit<T>(signature, false);
@@ -275,46 +241,19 @@ public:
     (remove<Ts>(ent), ...);
   }
 
-  EntID newEntity() {
-    static EntID counter = 0;
-    EntID out = NULL_ENT;
-    if (entityStack.empty()) {
-      out = counter++;
-    } else {
-      out = entityStack.top();
-      entityStack.pop();
-    }
-    entitySignatures.set(out, Signature{});
-    return out;
-  }
+  EntID newEntity();
   template <typename... Ts> EntID newEntity(Ts &&...comps) {
     const auto out = newEntity();
     add<Ts...>(out, std::forward<Ts>(comps)...);
     return out;
   }
 
-  void deleteEntity(EntID &ent) {
-    if (ent == NULL_ENT)
-      return;
-    const auto sig = getSignature(ent);
-    if (!sig)
-      return;
-    const auto signature = *sig;
-    removeFromGroup(signature, ent);
-    for (auto i = 0u; i < MAX_COMPONENTS; i++) {
-      if (!signature[i])
-        continue;
-      componentPools[i]->remove(ent);
-    }
-    entitySignatures.remove(ent);
-    entityStack.emplace(ent);
-    ent = 0;
-  }
+  void deleteEntity(EntID &ent);
 
-  template <typename... Ts> auto getViewIDs() {
+  template <typename... Ts> auto viewIDs() {
     std::vector<EntID> out;
-    out.reserve(10);
-    const auto sig = getSignature<Ts>();
+    out.reserve(VIEW_RESERVE);
+    const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
       if ((signature & sig) != sig)
         continue;
@@ -322,9 +261,31 @@ public:
     }
     return out;
   }
-  template <typename... Ts> auto getViewComponents() {
+
+private:
+  template <bool exact, typename... Ts> auto viewComponentsGeneric() {
     std::vector<std::tuple<EntID, Ts...>> out;
-    out.reserve(10);
+    out.reserve(VIEW_RESERVE);
+    const auto sig = getSignature<Ts...>();
+    for (const auto &[signature, group] : groups) {
+      if constexpr (exact) {
+        if (signature != sig)
+          continue;
+      } else {
+        if ((signature & sig) != sig)
+          continue;
+      }
+      for (const EntID ent : group.data())
+        out.emplace_back(ent, getComponent<Ts>(ent)...);
+    }
+    return out;
+  }
+
+public:
+  template <typename... Ts> auto viewComponents() {
+    // return viewComponentsGeneric<false, Ts...>();
+    std::vector<std::tuple<EntID, Ts...>> out;
+    out.reserve(VIEW_RESERVE);
     const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
       if ((signature & sig) != sig)

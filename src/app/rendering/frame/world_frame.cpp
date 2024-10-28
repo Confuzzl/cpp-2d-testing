@@ -14,11 +14,18 @@ import vertex_layout;
 import bo_heap;
 import shaders;
 import math;
+import ecs_component;
 
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
   drawGrid();
+  for (const auto &[id, foo] : ECS.viewComponents<ecs::DirectRenderable>()) {
+    foo.func(this);
+  }
+  for (const auto &[id, mesh] : ECS.viewComponents<ecs::Renderable>()) {
+    drawMesh(mesh.mesh);
+  }
 
   // auto c = collision::Circle::from,{{}, 1.0f};
   // drawCircle(c, colors::RED);
