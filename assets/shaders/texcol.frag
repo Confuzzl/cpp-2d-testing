@@ -3,12 +3,20 @@
 in vec2 vertex_uv_out;
 
 layout (binding = 0) uniform sampler2D sampler;
-uniform uvec3 frag_color = uvec3(255, 255, 255);
+uniform uint frag_color = 0xff;
 
 out vec4 color;
 
+vec4 rgba() {
+	const uint r = frag_color >> 24 & 0xff;
+	const uint g = frag_color >> 16 & 0xff;
+	const uint b = frag_color >> 8 & 0xff;
+	const uint a = frag_color & 0xff;
+	return vec4(r, g, b, a) / 255.0;
+}
+
 void main() {
-	const vec4 col = texture(sampler, vertex_uv_out) * vec4(frag_color / 255.0, 1.0);
+	const vec4 col = texture(sampler, vertex_uv_out) * rgba();
 	if (col.a == 0)
 		discard;
 	color = col;

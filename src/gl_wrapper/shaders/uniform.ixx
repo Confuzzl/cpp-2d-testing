@@ -1,16 +1,12 @@
-#pragma once
+module;
 
 #include "util/gl.h"
-#include <format>
-#include <iostream>
-#include <stdexcept>
 
-#define NEW_UNIFORM(type, name)                                                \
-  Uniform<type> name { programID, #name }
+export module uniform;
 
 import debug;
 
-namespace shaders {
+export namespace shaders {
 template <typename T>
 concept has_uniform = requires(const GLuint ID) {
   { T::name } -> std::convertible_to<const char *>;
@@ -27,7 +23,7 @@ struct UniformHolder {
   UniformHolder(const GLuint programID) : programID{programID} {}
 };
 
-template <typename T = void> struct Uniform {
+template <typename T> struct Uniform {
   GLint location;
 
   Uniform(const GLuint programID, const char *name)

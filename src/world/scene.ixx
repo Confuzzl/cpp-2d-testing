@@ -17,4 +17,5 @@ export struct Scene {
   //~Scene();
 
   void init();
+  void update(const double dt);
 };

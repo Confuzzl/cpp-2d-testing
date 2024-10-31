@@ -1,0 +1,12 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define SET_UNIFORM_V(type, func_name, param_t, param_name) SET_UNIFORM(type, func_name, param_t, param_name, vertex)
+#define SET_UNIFORM_F(type, func_name, param_t, param_name) SET_UNIFORM(type, func_name, param_t, param_name, fragment)
+#define BIND_TEXTURE(type, sampler_name) type &type::bindTexture(const GL::Texture &texture) { glBindTextureUnit(fragment.sampler_name.binding, texture.ID); return *this; }
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define SET_SCALAR(type, scalar_type) SET_UNIFORM_TEMPLATE( type, glProgramUniform1##scalar_type(ID, uniform.location, value))
+#define SET_VECTOR(type, vector_type) SET_UNIFORM_TEMPLATE( type, glProgramUniform##vector_type##v(ID, uniform.location, 1, glm::value_ptr(value)))
+#define SET_MATRIX(type, matrix_type) SET_UNIFORM_TEMPLATE( type, glProgramUniformMatrix##matrix_type##fv( ID, uniform.location, 1, GL_FALSE, glm::value_ptr(value)))

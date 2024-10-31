@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx" />
     <ClCompile Include="src\util\runtime_array.ixx" />
     <ClCompile Include="src\world\collision\bvh2\bvh2.cpp" />
     <ClCompile Include="src\world\collision\bvh2\bvh2.ixx" />
@@ -78,7 +79,6 @@
     <ClCompile Include="src\world\ecs\component.ixx" />
     <ClCompile Include="src\world\ecs\manager.cpp" />
     <ClCompile Include="src\world\ecs\manager.ixx" />
-    <ClCompile Include="src\world\ecs\system.ixx" />
     <ClCompile Include="src\world\mesh.ixx" />
     <ClCompile Include="src\world\scene.cpp" />
     <ClCompile Include="src\world\scene.ixx" />
@@ -371,7 +371,7 @@
     <ClInclude Include="Libraries\include\glm\vector_relational.hpp" />
     <ClInclude Include="Libraries\include\KHR\khrplatform.h" />
     <ClInclude Include="Libraries\include\stb_image.h" />
-    <ClInclude Include="src\gl_wrapper\shaders\uniform.h" />
+    <ClInclude Include="src\gl_wrapper\shaders\uniform_macro.h" />
     <ClInclude Include="src\util\gl.h" />
     <ClInclude Include="src\util\main_objects.h" />
   </ItemGroup>
@@ -388,6 +388,7 @@
     <None Include="assets\shaders\striped.frag" />
     <None Include="assets\shaders\tex.vert" />
     <None Include="assets\shaders\texcol.frag" />
+    <None Include="cpp.hint" />
     <None Include="Libraries\include\glm\detail\func_common.inl" />
     <None Include="Libraries\include\glm\detail\func_common_simd.inl" />
     <None Include="Libraries\include\glm\detail\func_exponential.inl" />
@@ -531,9 +532,11 @@
     <Library Include="Libraries\lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="assets\shaders\bezier_gui.frag" />
     <Text Include="assets\shaders\line.geom" />
     <Text Include="assets\shaders\identity.vert" />
     <Text Include="assets\shaders\circle.geom" />
+    <Text Include="assets\shaders\bezier_world.frag" />
     <Text Include="assets\Text.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

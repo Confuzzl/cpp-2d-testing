@@ -180,12 +180,6 @@ private:
   template <typename T> SparseSet<T> &getComponentPool() {
     return *registerInfo<T>().second;
   }
-  template <typename T> T &getComponent(const EntID ent) {
-    if (auto comp = getComponentPool<T>().get(ent); comp)
-      return *comp;
-    throw std::runtime_error{
-        std::format("{} NOT A COMPONENT OF {}", typeid(T).name(), ent)};
-  }
 
   Signature *signaturePointerFrom(const EntID ent);
   template <typename... Ts> Signature getSignature() {
@@ -202,12 +196,22 @@ private:
 public:
   Manager();
 
-  template <typename T> void add(const EntID ent, T &&comp) {
+  template <typename T> T &getComponentUnchecked(const EntID ent) {
+    return *getComponentPool<T>().get(ent);
+  }
+  template <typename T> T &getComponent(const EntID ent) {
+    if (auto comp = getComponentPool<T>().get(ent); comp)
+      return *comp;
+    throw std::runtime_error{
+        std::format("{} NOT A COMPONENT OF {}", typeid(T).name(), ent)};
+  }
+
+  template <typename T> T *add(const EntID ent, T &&comp) {
     if (ent == NULL_ENT)
-      return;
+      return nullptr;
     const auto sig = signaturePointerFrom(ent);
     if (!sig)
-      return;
+      return nullptr;
     auto &pool = getComponentPool<T>();
     if (!pool.contains(ent)) {
       auto &signature = *sig;
@@ -215,10 +219,13 @@ public:
       setComponentBit<T>(signature, true);
       addToGroup(signature, ent);
     }
-    onAdd<T>(pool.set(ent, std::move(comp)));
+    T &c = pool.set(ent, std::move(comp));
+    onAdd<T>(c);
+    return &c;
   }
-  template <typename... Ts> void add(const EntID ent, Ts &&...comps) {
-    (add<Ts>(ent, std::move(comps)), ...);
+  template <typename... Ts>
+  std::tuple<Ts *...> add(const EntID ent, Ts &&...comps) {
+    return {add<Ts>(ent, std::move(comps))...};
   }
   template <typename T> void remove(const EntID ent) {
     if (ent == NULL_ENT)
@@ -242,29 +249,39 @@ public:
   }
 
   EntID newEntity();
-  template <typename... Ts> EntID newEntity(Ts &&...comps) {
-    const auto out = newEntity();
-    add<Ts...>(out, std::forward<Ts>(comps)...);
-    return out;
+  template <typename... Ts>
+  std::tuple<EntID, Ts *...> newEntity(Ts &&...comps) {
+    const auto id = newEntity();
+    return {id, add<Ts>(id, std::forward<Ts>(comps))...};
   }
 
   void deleteEntity(EntID &ent);
 
-  template <typename... Ts> auto viewIDs() {
+private:
+  template <bool exact, typename... Ts> auto viewIDs() {
     std::vector<EntID> out;
     out.reserve(VIEW_RESERVE);
     const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
-      if ((signature & sig) != sig)
-        continue;
+      if constexpr (exact) {
+        if (signature != sig)
+          continue;
+      } else {
+        if ((signature & sig) != sig)
+          continue;
+      }
       out.insert(out.end(), group.data().begin(), group.data().end());
     }
     return out;
   }
 
+public:
+  template <typename... Ts> auto viewIDs() { return viewIDs<false, Ts...>; }
+  template <typename... Ts> auto viewExactIDs() { return viewIDs<true, Ts...>; }
+
 private:
-  template <bool exact, typename... Ts> auto viewComponentsGeneric() {
-    std::vector<std::tuple<EntID, Ts...>> out;
+  template <bool exact, typename... Ts> auto viewComponents() {
+    std::vector<std::tuple<EntID, Ts *...>> out;
     out.reserve(VIEW_RESERVE);
     const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
@@ -276,24 +293,17 @@ private:
           continue;
       }
       for (const EntID ent : group.data())
-        out.emplace_back(ent, getComponent<Ts>(ent)...);
+        out.emplace_back(ent, &getComponent<Ts>(ent)...);
     }
     return out;
   }
 
 public:
   template <typename... Ts> auto viewComponents() {
-    // return viewComponentsGeneric<false, Ts...>();
-    std::vector<std::tuple<EntID, Ts...>> out;
-    out.reserve(VIEW_RESERVE);
-    const auto sig = getSignature<Ts...>();
-    for (const auto &[signature, group] : groups) {
-      if ((signature & sig) != sig)
-        continue;
-      for (const EntID ent : group.data())
-        out.emplace_back(ent, getComponent<Ts>(ent)...);
-    }
-    return out;
+    return viewComponents<false, Ts...>();
+  }
+  template <typename... Ts> auto viewExactComponents() {
+    return viewComponents<true, Ts...>();
   }
 };
 } // namespace ecs

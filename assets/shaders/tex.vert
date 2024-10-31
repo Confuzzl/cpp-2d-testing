@@ -8,13 +8,7 @@ uniform mat4 view;
 
 const int TEXEL_RANGE = 1 << 15;
 
-vec2 normalizeUV() {
-	vec2 copy = vertex_uv_in;
-	copy /= vec2(TEXEL_RANGE, TEXEL_RANGE);
-	return copy;
-}
-
 void main() {
 	gl_Position = view * vec4(pos, 0.0, 1.0);
-	vertex_uv_out = normalizeUV();
+	vertex_uv_out = vertex_uv_in / TEXEL_RANGE;
 }

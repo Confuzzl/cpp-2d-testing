@@ -8,5 +8,4 @@ export template <typename... Args>
 void println(std::format_string<Args...> str, Args &&...args) {
   println(std::format(str, std::forward<Args>(args)...));
 }
-export template<typename T>
-void println(const T &s) { println("{}", s); }
+export template <typename T> void println(const T &s) { println("{}", s); }

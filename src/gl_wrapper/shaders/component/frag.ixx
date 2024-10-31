@@ -1,10 +1,13 @@
 module;
 
-#include "gl_wrapper/shaders/uniform.h"
+#include "gl_wrapper/shaders/uniform_macro.h"
+#include "util/gl.h"
 
 export module shaders:fragment;
 
 import glm;
+import color;
+import uniform;
 
 export namespace shaders {
 namespace frag {
@@ -14,7 +17,7 @@ concept format = has_uniform<T> && has_extension<T>("frag");
 struct basic : UniformHolder {
   static constexpr char name[] = "basic.frag";
 
-  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_COLOR;
 
   using UniformHolder::UniformHolder;
 };
@@ -24,8 +27,8 @@ struct circle : UniformHolder {
   NEW_UNIFORM(glm::vec2, center);
   NEW_UNIFORM(float, radius);
   NEW_UNIFORM(glm::uvec2, screen_dimensions);
-  NEW_UNIFORM(glm::mat4, view);
-  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_VIEW;
+  NEW_COLOR;
 
   using UniformHolder::UniformHolder;
 };
@@ -35,28 +38,54 @@ struct striped : UniformHolder {
   NEW_UNIFORM(unsigned int, width);
   NEW_UNIFORM(unsigned int, spacing);
   NEW_UNIFORM(unsigned int, pattern);
-  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_COLOR;
 
   using UniformHolder::UniformHolder;
 };
 struct texcol : UniformHolder {
   static constexpr char name[] = "texcol.frag";
 
-  Sampler sampler{programID, "sampler"};
-  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_SAMPLER;
+  NEW_COLOR;
 
   using UniformHolder::UniformHolder;
 };
 struct sdf_font : UniformHolder {
   static constexpr char name[] = "sdf_font.frag";
 
-  Sampler sampler{programID, "sampler"};
-  NEW_UNIFORM(glm::uvec3, frag_color);
+  NEW_SAMPLER;
+  NEW_COLOR;
   NEW_UNIFORM(float, threshold);
   NEW_UNIFORM(float, font_size);
   NEW_UNIFORM(bool, anti_alias);
 
   using UniformHolder::UniformHolder;
+};
+struct bezier_world : UniformHolder {
+  static constexpr char name[] = "bezier_world.frag";
+
+  NEW_UNIFORM(glm::vec2, p0);
+  NEW_UNIFORM(glm::vec2, p1);
+  NEW_UNIFORM(glm::vec2, p2);
+  NEW_UNIFORM(glm::vec2, p3);
+  NEW_UNIFORM(Color, color0);
+  NEW_UNIFORM(Color, color1);
+  NEW_UNIFORM(float, thickness);
+  NEW_UNIFORM(unsigned int, step_count);
+  NEW_UNIFORM(glm::uvec2, screen_dimensions);
+  NEW_VIEW;
+};
+struct bezier_gui : UniformHolder {
+  static constexpr char name[] = "bezier_gui.frag";
+
+  NEW_UNIFORM(glm::vec2, p0);
+  NEW_UNIFORM(glm::vec2, p1);
+  NEW_UNIFORM(glm::vec2, p2);
+  NEW_UNIFORM(glm::vec2, p3);
+  NEW_UNIFORM(Color, color0);
+  NEW_UNIFORM(Color, color1);
+  NEW_UNIFORM(float, thickness);
+  NEW_UNIFORM(unsigned int, step_count);
 };
 } // namespace frag
 } // namespace shaders

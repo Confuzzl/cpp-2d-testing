@@ -1,6 +1,6 @@
 module;
 
-#include "gl_wrapper/shaders/uniform.h"
+#include "util/gl.h"
 
 #define SET_UNIFORM(type, func_name, param_t, param_name, shader)              \
   type &type::set##func_name(const param_t param_name) {                       \
@@ -74,6 +74,49 @@ Striped &Striped::setPattern(const Pattern pattern) {
   return *this;
 }
 SET_UNIFORM_F(Striped, FragColor, Color &, frag_color)
+
+SET_UNIFORM_V(WorldBezier, View, glm::mat4 &, view)
+WorldBezier &WorldBezier::setPoints(const glm::vec2 p0, const glm::vec2 p1,
+                                    const glm::vec2 p2, const glm::vec2 p3) {
+  setUniform(fragment.p0, p0);
+  setUniform(fragment.p1, p1);
+  setUniform(fragment.p2, p2);
+  setUniform(fragment.p3, p3);
+  return *this;
+}
+WorldBezier &WorldBezier::setColor(const Color color) {
+  setColor(color, color);
+  return *this;
+}
+WorldBezier &WorldBezier::setColor(const Color color0, const Color color1) {
+  setUniform(fragment.color0, color0);
+  setUniform(fragment.color1, color1);
+  return *this;
+}
+SET_UNIFORM_F(WorldBezier, Thickness, float, thickness);
+SET_UNIFORM_F(WorldBezier, StepCount, unsigned int, step_count);
+SET_UNIFORM_F(WorldBezier, ScreenDimensions, glm::uvec2, screen_dimensions)
+
+SET_UNIFORM_V(GUIBezier, View, glm::mat4 &, view)
+GUIBezier &GUIBezier::setPoints(const glm::vec2 p0, const glm::vec2 p1,
+                                const glm::vec2 p2, const glm::vec2 p3) {
+  setUniform(fragment.p0, p0);
+  setUniform(fragment.p1, p1);
+  setUniform(fragment.p2, p2);
+  setUniform(fragment.p3, p3);
+  return *this;
+}
+GUIBezier &GUIBezier::setColor(const Color color) {
+  setColor(color, color);
+  return *this;
+}
+GUIBezier &GUIBezier::setColor(const Color color0, const Color color1) {
+  setUniform(fragment.color0, color0);
+  setUniform(fragment.color1, color1);
+  return *this;
+}
+SET_UNIFORM_F(GUIBezier, Thickness, float, thickness);
+SET_UNIFORM_F(GUIBezier, StepCount, unsigned int, step_count);
 
 SET_UNIFORM_G(Line, View, glm::mat4 &, view)
 SET_UNIFORM_G(Line, Thickness, float, thickness)

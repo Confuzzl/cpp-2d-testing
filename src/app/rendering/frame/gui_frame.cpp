@@ -19,12 +19,42 @@ import <format>;
 import debug;
 import bo_heap;
 
+import math;
+
+static glm::vec4 offsets() {
+  return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
+          random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f)};
+}
+static glm::vec2 point(const unsigned int i) {
+  static glm::vec4 o[]{offsets(), offsets(), offsets(), offsets()};
+  const float t = glfwGetTime();
+  return {(sin(o[i][0] * t + o[i][1]) + 1) * App::WIDTH * 0.5,
+          (sin(o[i][2] * t + o[i][3]) + 1) * App::HEIGHT * 0.5};
+}
+
 void GUIFrame::render() {
   matrix = Renderer::UI_MATRIX;
 
   text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
        colors::BLACK);
   text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 30);
+
+  glm::vec2 P0 = point(0);
+  glm::vec2 P1 = point(1);
+  glm::vec2 P2 = point(2);
+  glm::vec2 P3 = point(3);
+  // glm::vec2 P0{50, 50};
+  // glm::vec2 P1{150, 250};
+  // glm::vec2 P2{500, 300};
+  // glm::vec2 P3{600, 100};
+
+  static const glm::vec2 quad[] = {
+      {0, 0}, {App::WIDTH, 0}, {0, App::HEIGHT}, {App::WIDTH, App::HEIGHT}};
+  VBO_4->write(quad);
+  SHADERS.guiBezier.setView(matrix)
+      .setColor(colors::BLUE, colors::GREEN)
+      .setPoints(P0, P1, P2, P3)
+      .draw(GL_TRIANGLE_STRIP, VBO_4);
 }
 
 static constexpr unsigned short charWidthConvert(const unsigned char w) {
@@ -41,8 +71,6 @@ void GUIFrame::text(const std::string &str, const Color &color,
   static constexpr auto MAX_LENGTH = 0x100u;
   static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                 {{0, 0}, {1, 1}, {0, 1}}};
-  // static VBOHandle CHAR_VBO =
-  // VBOHolder::get<vertex_layout::postex>(MAX_LENGTH);
   static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
@@ -88,9 +116,16 @@ void GUIFrame::text(const std::string &str, const Color &color,
 
   CHAR_VBO->write(vertices);
 
-  SHADERS.sdf.setView(matrix)
-      .setFragColor(color)
-      .setFontSize(scale)
-      .bindTexture(TEXTURE.sdfFont);
-  SHADERS.sdf.draw(GL_TRIANGLES, CHAR_VBO);
+  if (scale < 1) {
+    SHADERS.texcol.setView(matrix)
+        .setFragColor(color)
+        .bindTexture(TEXTURE.font)
+        .draw(GL_TRIANGLES, CHAR_VBO);
+  } else {
+    SHADERS.sdf.setView(matrix)
+        .setFragColor(color)
+        .setFontSize(scale)
+        .bindTexture(TEXTURE.sdfFont)
+        .draw(GL_TRIANGLES, CHAR_VBO);
+  }
 }

@@ -4,6 +4,7 @@ import aabb;
 import glm;
 import mesh;
 import <functional>;
+import runtime_array;
 
 export struct BaseFrame;
 
@@ -17,7 +18,7 @@ struct Rotatable {
 };
 struct LinearPhysical {
   glm::vec2 velocity;
-  float acceleration;
+  glm::vec2 acceleration;
   float mass;
 };
 struct RotationalPhysical {
@@ -25,8 +26,12 @@ struct RotationalPhysical {
   float angularAcceleration;
   float angularMass;
 };
-struct Polygonal {};
-struct Circular {};
+struct Polygonal {
+  runtime_array<glm::vec2> vertices;
+};
+struct Circular {
+  float radius;
+};
 struct Boundable {
   BoundingBox bounds;
 };

@@ -189,9 +189,6 @@
     <ClCompile Include="src\world\ecs\manager.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\ecs\system.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\world\ecs\component.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -202,6 +199,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\world\collision\bvh2\bvh2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1070,10 +1070,10 @@
     <ClInclude Include="Libraries\include\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\gl_wrapper\shaders\uniform.h">
+    <ClInclude Include="src\util\main_objects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\main_objects.h">
+    <ClInclude Include="src\gl_wrapper\shaders\uniform_macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1502,6 +1502,7 @@
     <None Include="assets\shaders\striped.frag" />
     <None Include="assets\shaders\polygon.geom" />
     <None Include="assets\shaders\sdf_font.frag" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\lib\glfw3.lib" />
@@ -1511,5 +1512,7 @@
     <Text Include="assets\shaders\identity.vert" />
     <Text Include="assets\shaders\circle.geom" />
     <Text Include="assets\Text.txt" />
+    <Text Include="assets\shaders\bezier_world.frag" />
+    <Text Include="assets\shaders\bezier_gui.frag" />
   </ItemGroup>
 </Project>

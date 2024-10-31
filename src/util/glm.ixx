@@ -17,7 +17,7 @@ export glm::vec2 random_vec(const glm::vec2 min, const glm::vec2 max) {
 
 import <format>;
 export std::string vec_string(const glm::vec2 vec) {
-  return std::format("({:+.2f} {:+.2f})", vec.x, vec.y);
+  return std::format("({:+.1f} {:+.1f})", vec.x, vec.y);
 }
 
 export namespace glm {

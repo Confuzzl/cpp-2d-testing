@@ -36,7 +36,7 @@ export struct BaseFrame {
 
   void drawBox(const Dimension &dimensions, const float lineSize = 5,
                const Color &color = colors::WHITE) const;
-  void drawBoxFixed(const Dimension &dimensions, const float lineSize = 5,
+  void drawBoxFixed(const Dimension &dimensions,
                     const Color &color = colors::WHITE) const;
   void drawQuad(const Dimension &dimensions,
                 const Color &color = colors::WHITE) const;

@@ -1,6 +1,6 @@
 module;
 
-#include "gl_wrapper/shaders/uniform.h"
+#include "util/gl.h"
 #include <fstream>
 #include <stdexcept>
 
@@ -27,8 +27,15 @@ Shader::Shader(const GLenum type, const char *name)
 
   GLint success = 0;
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
-  if (!success)
-    throw std::runtime_error{std::format("COMPILATION ERROR {}", name)};
+  if (!success) {
+    GLint size = 0;
+    glGetShaderiv(ID, GL_INFO_LOG_LENGTH, &size);
+    std::string log;
+    log.resize(size);
+    glGetShaderInfoLog(ID, size, &size, &log[0]);
+    throw std::runtime_error{
+        std::format("COMPILATION ERROR {}\n{}", name, log)};
+  }
   println("Successfully compiled {}", name);
 }
 Shader::~Shader() {

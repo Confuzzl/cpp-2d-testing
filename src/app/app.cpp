@@ -55,6 +55,7 @@ void App::start() {
 void App::startUpdate(const double t) {
   updateCycle.pushNewTime(t);
   InputHandler::processInput(updateCycle.dt);
+  MAIN_SCENE.update(updateCycle.dt);
 }
 void App::startFrame(const double t) {
   frameCycle.pushNewTime(t);

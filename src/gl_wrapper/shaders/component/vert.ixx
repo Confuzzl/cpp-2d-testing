@@ -1,12 +1,13 @@
 module;
 
-#include "gl_wrapper/shaders/uniform.h"
+#include "gl_wrapper/shaders/uniform_macro.h"
+#include "util/gl.h"
 
 export module shaders:vertex;
 
 import glm;
 import vertex_layout;
-import <concepts>;
+import uniform;
 
 import debug;
 
@@ -14,7 +15,10 @@ export namespace shaders {
 namespace vert {
 template <typename T>
 concept format = has_uniform<T> && has_extension<T>("vert") &&
-                 requires(T t, GLuint &vao) { typename T::layout_t; };
+                   requires()
+{
+  typename T::layout_t;
+};
 
 template <typename T> struct Base : UniformHolder {
   using layout_t = T;
@@ -31,7 +35,7 @@ struct identity : Base<vertex_layout::pos> {
 struct basic : Base<vertex_layout::pos> {
   static constexpr char name[] = "basic.vert";
 
-  NEW_UNIFORM(glm::mat4, view);
+  NEW_VIEW;
 
   using Base::Base;
 };
@@ -41,14 +45,14 @@ struct trans : Base<vertex_layout::pos> {
 
   NEW_UNIFORM(glm::vec2, parent_pos);
   NEW_UNIFORM(float, rotation);
-  NEW_UNIFORM(glm::mat4, view);
+  NEW_VIEW;
 
   using Base::Base;
 };
 struct tex : Base<vertex_layout::postex> {
   static constexpr char name[] = "tex.vert";
 
-  NEW_UNIFORM(glm::mat4, view);
+  NEW_VIEW;
 
   using Base::Base;
 };

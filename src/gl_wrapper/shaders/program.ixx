@@ -1,6 +1,7 @@
 module;
 
-#include "gl_wrapper/shaders/uniform.h"
+// #include "gl_wrapper/shaders/uniform_macro.h"
+#include "util/gl.h"
 
 #define SET_UNIFORM_TEMPLATE(type, call)                                       \
   template <>                                                                  \
@@ -53,6 +54,7 @@ struct ProgramObject {
 
   SET_SCALAR(bool, i)
   SET_SCALAR(unsigned int, ui)
+  SET_SCALAR(Color, ui)
   SET_SCALAR(float, f)
   SET_MATRIX(glm::mat4, 4)
   SET_VECTOR(glm::vec2, 2f)
@@ -138,6 +140,25 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
   enum Pattern { FORWARD = 1, BACKWARD = 2, CROSS = 3 };
   Striped &setPattern(const Pattern pattern = FORWARD);
   Striped &setFragColor(const Color &frag_color);
+};
+struct WorldBezier : SimpleProgram<vert::basic, frag::bezier_world> {
+  WorldBezier &setView(const glm::mat4 &view);
+  WorldBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
+                         const glm::vec2 p2, const glm::vec2 p3);
+  WorldBezier &setColor(const Color color);
+  WorldBezier &setColor(const Color color0, const Color color1);
+  WorldBezier &setThickness(const float thickness);
+  WorldBezier &setStepCount(const unsigned int step_count);
+  WorldBezier &setScreenDimensions(const glm::uvec2 screen_dimensions);
+};
+struct GUIBezier : SimpleProgram<vert::basic, frag::bezier_gui> {
+  GUIBezier &setView(const glm::mat4 &view);
+  GUIBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
+                       const glm::vec2 p2, const glm::vec2 p3);
+  GUIBezier &setColor(const Color color);
+  GUIBezier &setColor(const Color color0, const Color color1);
+  GUIBezier &setThickness(const float thickness);
+  GUIBezier &setStepCount(const unsigned int step_count);
 };
 
 template <vert::format V, frag::format F, geom::format G>

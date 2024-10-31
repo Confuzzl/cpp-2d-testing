@@ -28,6 +28,8 @@ export struct Renderer {
     shaders::Basic basic;
     shaders::Transform trans;
     shaders::Striped striped;
+    shaders::WorldBezier worldBezier;
+    shaders::GUIBezier guiBezier;
     shaders::Line line;
     shaders::Circle circ;
   } shaders;

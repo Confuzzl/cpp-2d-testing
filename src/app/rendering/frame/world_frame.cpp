@@ -15,41 +15,42 @@ import bo_heap;
 import shaders;
 import math;
 import ecs_component;
+import <random>;
+
+static glm::vec4 offsets() {
+  return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
+          random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f)};
+}
+static glm::vec2 point(const unsigned int i) {
+  static glm::vec4 o[]{offsets(), offsets(), offsets(), offsets()};
+  const float t = glfwGetTime();
+  return {sin(o[i][0] * t + o[i][1]), sin(o[i][2] * t + o[i][3])};
+}
 
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
   drawGrid();
-  for (const auto &[id, foo] : ECS.viewComponents<ecs::DirectRenderable>()) {
-    foo.func(this);
+
+  for (const auto [id, foo] : ECS.viewComponents<ecs::DirectRenderable>()) {
+    foo->func(this);
   }
-  for (const auto &[id, mesh] : ECS.viewComponents<ecs::Renderable>()) {
-    drawMesh(mesh.mesh);
+  for (const auto [id, rend] : ECS.viewComponents<ecs::Renderable>()) {
+    drawMesh(rend->mesh);
   }
 
-  // auto c = collision::Circle::from,{{}, 1.0f};
-  // drawCircle(c, colors::RED);
-  // auto p = collision::Polygon::from(
-  //     {{}}, {{-0.5, -0.5}, {0.5, -0.5}, {0, 0.5}, {-0.5, 0.5}});
-  // drawPolygon(p, colors::BLUE);
+  glm::vec2 P0 = point(0);
+  glm::vec2 P1 = point(1);
+  glm::vec2 P2 = point(2);
+  glm::vec2 P3 = point(3);
 
-  // Mesh mesh{{{-1, -1}, {+1, -1}, {+2, +1}, {+0, +2}, {-2, +1}},
-  //                  GL_TRIANGLE_FAN};
-  // drawMesh(mesh);
-
-  // for (const std::unique_ptr<base_obj_t> &obj : MAIN_SCENE.objs) {
-  //   obj->draw();
-  // }
-
-  // for (const auto &o : MAIN_SCENE.objs2) {
-  //   drawQuad({o.min, o.max}, colors::CYAN);
-  // }
-
-  // for (const auto &n : MAIN_SCENE.tree.nodes) {
-  //   drawBox({n.box.min, n.box.max},
-  //           static_cast<float>((MAIN_SCENE.tree.maxDepth - n.depth + 1) * 2),
-  //           colors::random_i(n.depth));
-  // }
+  static const glm::vec2 quad[] = {{-10, -10}, {10, -10}, {-10, 10}, {10, 10}};
+  VBO_4->write(quad);
+  SHADERS.worldBezier.setView(matrix)
+      .setScreenDimensions({App::WIDTH, App::HEIGHT})
+      .setColor(colors::RED, colors::YELLOW)
+      .setPoints(P0, P1, P2, P3)
+      .draw(GL_TRIANGLE_STRIP, VBO_4);
 }
 
 void WorldFrame::drawGrid() const {
@@ -70,6 +71,5 @@ void WorldFrame::drawGrid() const {
     }
   }
 
-  SHADERS.basic.setView(matrix).setFragColor(colors::GRAY);
-  SHADERS.basic.draw(GL_LINES, VBO);
+  SHADERS.basic.setView(matrix).setFragColor(colors::GRAY).draw(GL_LINES, VBO);
 }
