@@ -18,7 +18,7 @@ import <vector>;
 import <format>;
 import debug;
 import bo_heap;
-
+import uniform;
 import math;
 
 static glm::vec4 offsets() {
@@ -27,35 +27,28 @@ static glm::vec4 offsets() {
 }
 static glm::vec2 point(const unsigned int i) {
   static glm::vec4 o[]{offsets(), offsets(), offsets(), offsets()};
-  const float t = glfwGetTime();
+  const double t = glfwGetTime();
   return {(sin(o[i][0] * t + o[i][1]) + 1) * App::WIDTH * 0.5,
           (sin(o[i][2] * t + o[i][3]) + 1) * App::HEIGHT * 0.5};
 }
 
+GUIFrame::GUIFrame() { matrix = Renderer::UI_MATRIX(); }
+
 void GUIFrame::render() {
-  matrix = Renderer::UI_MATRIX;
+  // drawBezier({point(0), point(1), point(2), point(3)}, colors::GREEN,
+  //            colors::YELLOW, 5.0f, true);
 
   text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
        colors::BLACK);
   text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 30);
-
-  glm::vec2 P0 = point(0);
-  glm::vec2 P1 = point(1);
-  glm::vec2 P2 = point(2);
-  glm::vec2 P3 = point(3);
-  // glm::vec2 P0{50, 50};
-  // glm::vec2 P1{150, 250};
-  // glm::vec2 P2{500, 300};
-  // glm::vec2 P3{600, 100};
-
-  static const glm::vec2 quad[] = {
-      {0, 0}, {App::WIDTH, 0}, {0, App::HEIGHT}, {App::WIDTH, App::HEIGHT}};
-  VBO_4->write(quad);
-  SHADERS.guiBezier.setView(matrix)
-      .setColor(colors::BLUE, colors::GREEN)
-      .setPoints(P0, P1, P2, P3)
-      .draw(GL_TRIANGLE_STRIP, VBO_4);
 }
+
+namespace font {
+constexpr unsigned short TEXEL_RANGE = 1 << 15;
+constexpr unsigned short IMG_WIDTH = 1024, IMG_HEIGHT = 1024;
+constexpr unsigned char CHAR_WIDTH = 64, CHAR_HEIGHT = 128;
+constexpr unsigned char COLUMNS = 16, ROWS = 8;
+} // namespace font
 
 static constexpr unsigned short charWidthConvert(const unsigned char w) {
   return static_cast<unsigned short>(static_cast<float>(w) * font::CHAR_WIDTH /
@@ -76,7 +69,7 @@ void GUIFrame::text(const std::string &str, const Color &color,
   if (str.size() > MAX_LENGTH)
     return;
 
-  const unsigned int vertexCount = 6 * static_cast<unsigned int>(str.size());
+  const auto vertexCount = 6 * str.size();
 
   std::vector<vertex_layout::postex> vertices{};
   vertices.reserve(vertexCount);
@@ -128,4 +121,17 @@ void GUIFrame::text(const std::string &str, const Color &color,
         .bindTexture(TEXTURE.sdfFont)
         .draw(GL_TRIANGLES, CHAR_VBO);
   }
+}
+
+void GUIFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
+                          const float thickness, const bool debug) {
+  static constexpr auto step = [](const float, const glm::vec2 size) {
+    const float s = std::max(size.x, size.y);
+    return static_cast<unsigned int>(std::sqrt(s));
+  };
+  BaseFrame::drawBezier(curve, c0, c1, thickness, step, false, debug);
+}
+void GUIFrame::drawBezier(const Bezier &curve, const Color color,
+                          const float thickness, const bool debug) {
+  drawBezier(curve, color, color, thickness, debug);
 }

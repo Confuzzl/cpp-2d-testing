@@ -61,8 +61,8 @@ struct sdf_font : UniformHolder {
 
   using UniformHolder::UniformHolder;
 };
-struct bezier_world : UniformHolder {
-  static constexpr char name[] = "bezier_world.frag";
+struct bezier : UniformHolder {
+  static constexpr char name[] = "bezier.frag";
 
   NEW_UNIFORM(glm::vec2, p0);
   NEW_UNIFORM(glm::vec2, p1);
@@ -74,18 +74,23 @@ struct bezier_world : UniformHolder {
   NEW_UNIFORM(unsigned int, step_count);
   NEW_UNIFORM(glm::uvec2, screen_dimensions);
   NEW_VIEW;
+  NEW_UNIFORM(bool, world);
+  NEW_UNIFORM(bool, debug);
 };
-struct bezier_gui : UniformHolder {
-  static constexpr char name[] = "bezier_gui.frag";
-
-  NEW_UNIFORM(glm::vec2, p0);
-  NEW_UNIFORM(glm::vec2, p1);
-  NEW_UNIFORM(glm::vec2, p2);
-  NEW_UNIFORM(glm::vec2, p3);
-  NEW_UNIFORM(Color, color0);
-  NEW_UNIFORM(Color, color1);
-  NEW_UNIFORM(float, thickness);
-  NEW_UNIFORM(unsigned int, step_count);
+// struct bezier_gui : UniformHolder {
+//   static constexpr char name[] = "bezier_gui.frag";
+//
+//   NEW_UNIFORM(glm::vec2, p0);
+//   NEW_UNIFORM(glm::vec2, p1);
+//   NEW_UNIFORM(glm::vec2, p2);
+//   NEW_UNIFORM(glm::vec2, p3);
+//   NEW_UNIFORM(Color, color0);
+//   NEW_UNIFORM(Color, color1);
+//   NEW_UNIFORM(float, thickness);
+//   NEW_UNIFORM(unsigned int, step_count);
+// };
+struct debug : UniformHolder {
+  static constexpr char name[] = "debug.frag";
 };
 } // namespace frag
 } // namespace shaders

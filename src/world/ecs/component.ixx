@@ -39,7 +39,7 @@ struct Renderable {
   Mesh mesh;
 };
 struct DirectRenderable {
-  std::function<void(BaseFrame *)> func;
+  std::function<void(BaseFrame *)> draw;
 };
 } // namespace comp
 } // namespace ecs

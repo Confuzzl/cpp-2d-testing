@@ -144,14 +144,33 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
   }
 }
 
-void BaseFrame::drawPolygon(const collision::Polygon &polygon,
-                            const Color &color) const {
-  VBOHandle vbo =
-      VBO_HOLDER.get<>(static_cast<GLuint>(polygon.getVertices().size()));
-  vbo->write(polygon.getVertices());
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_TRIANGLE_FAN, vbo);
-}
-void BaseFrame::drawCircle(const collision::Circle &circle,
-                           const Color &color) const {
-  drawCircle(circle.getPos(), circle.getRadius(), color);
+import aabb;
+
+void BaseFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
+                           const float thickness,
+                           unsigned int (*stepFunction)(const float,
+                                                        const glm::vec2),
+                           const bool world, const bool debug) {
+  BoundingBox box;
+  if (debug) {
+    box.expand(curve.a);
+    box.expand(curve.b);
+    box.expand(curve.c);
+    box.expand(curve.d);
+    box.expand(thickness * 2.0f);
+  } else {
+    box = curve.box();
+    box.expand(thickness);
+  }
+
+  VBO_4->write(box.toTriStrip());
+  SHADERS.bezier.setView(matrix)
+      .setScreenDimensions({App::WIDTH, App::HEIGHT})
+      .setPoints(curve.a, curve.b, curve.c, curve.d)
+      .setColor(c0, c1)
+      .setThickness(thickness)
+      .setStepCount(stepFunction(MAIN_CAMERA.zoom, box.size()))
+      .setDebug(debug)
+      .setWorld(world)
+      .draw(GL_TRIANGLE_STRIP, VBO_4);
 }

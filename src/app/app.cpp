@@ -11,6 +11,8 @@ import debug;
 import gl_debug;
 import rendering;
 
+// const glm::vec2 App::DIMENSIONS{App::WIDTH, App::HEIGHT};
+
 App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glfwSetCursorPosCallback(window, InputHandler::mousePosCallback);
   glfwSetMouseButtonCallback(window, InputHandler::mouseClickCallback);
@@ -44,10 +46,11 @@ void App::start() {
       startUpdate(currentTime);
     if (frameCycle.isPastLength(currentTime))
       startFrame(currentTime);
-    if (currentTime - seconds++ >= 1) {
+    if (currentTime - seconds >= 1) {
       loopCycle.pushCount();
       updateCycle.pushCount();
       frameCycle.pushCount();
+      seconds++;
     }
   }
 }

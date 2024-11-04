@@ -66,7 +66,7 @@ struct ProgramObject {
 export namespace shaders {
 template <vert::format V, frag::format F>
 struct BaseProgram : ::GL::ProgramObject {
-protected:
+  // protected:
   GL::VertexArrayObject<typename V::layout_t> vao;
   V vertex;
   F fragment;
@@ -141,24 +141,29 @@ struct Striped : SimpleProgram<vert::basic, frag::striped> {
   Striped &setPattern(const Pattern pattern = FORWARD);
   Striped &setFragColor(const Color &frag_color);
 };
-struct WorldBezier : SimpleProgram<vert::basic, frag::bezier_world> {
-  WorldBezier &setView(const glm::mat4 &view);
-  WorldBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
-                         const glm::vec2 p2, const glm::vec2 p3);
-  WorldBezier &setColor(const Color color);
-  WorldBezier &setColor(const Color color0, const Color color1);
-  WorldBezier &setThickness(const float thickness);
-  WorldBezier &setStepCount(const unsigned int step_count);
-  WorldBezier &setScreenDimensions(const glm::uvec2 screen_dimensions);
+struct Bezier : SimpleProgram<vert::basic, frag::bezier> {
+  Bezier &setView(const glm::mat4 &view);
+  Bezier &setPoints(const glm::vec2 p0, const glm::vec2 p1, const glm::vec2 p2,
+                    const glm::vec2 p3);
+  Bezier &setColor(const Color color);
+  Bezier &setColor(const Color color0, const Color color1);
+  Bezier &setThickness(const float thickness);
+  Bezier &setStepCount(const unsigned int step_count);
+  Bezier &setScreenDimensions(const glm::uvec2 screen_dimensions);
+  Bezier &setDebug(const bool debug);
+  Bezier &setWorld(const bool world);
 };
-struct GUIBezier : SimpleProgram<vert::basic, frag::bezier_gui> {
-  GUIBezier &setView(const glm::mat4 &view);
-  GUIBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
-                       const glm::vec2 p2, const glm::vec2 p3);
-  GUIBezier &setColor(const Color color);
-  GUIBezier &setColor(const Color color0, const Color color1);
-  GUIBezier &setThickness(const float thickness);
-  GUIBezier &setStepCount(const unsigned int step_count);
+// struct GUIBezier : SimpleProgram<vert::basic, frag::bezier_gui> {
+//   GUIBezier &setView(const glm::mat4 &view);
+//   GUIBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
+//                        const glm::vec2 p2, const glm::vec2 p3);
+//   GUIBezier &setColor(const Color color);
+//   GUIBezier &setColor(const Color color0, const Color color1);
+//   GUIBezier &setThickness(const float thickness);
+//   GUIBezier &setStepCount(const unsigned int step_count);
+// };
+struct Debug : SimpleProgram<vert::basic, frag::debug> {
+  Debug &setView(const glm::mat4 &view);
 };
 
 template <vert::format V, frag::format F, geom::format G>

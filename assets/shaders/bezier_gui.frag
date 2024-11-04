@@ -43,7 +43,11 @@ void main() {
 		float t = float(i) / float(step_count);
 		vec2 a = bezierPoint(t);
 		vec2 b = bezierPoint(float(i + 1) / float(step_count));
-		if (inLine(pos, a, b, thickness))
+		if (inLine(pos, a, b, thickness)) {
 			color = mix(rgba(color0), rgba(color1), t);
+			return;
+		}
 	}
+//	color = vec4(mix(rgba(color0), rgba(color1), 0.5).rgb, 0.5);
+	discard;
 }

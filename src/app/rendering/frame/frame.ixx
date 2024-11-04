@@ -10,13 +10,14 @@ import dimensions;
 import collision;
 import vertex_layout;
 import mesh;
+import bezier;
 
 import <format>;
 
+export struct BoundingBox;
+
 export struct BaseFrame {
   glm::mat4 matrix{1.0f};
-
-  virtual void render() = 0;
 
   void drawPoint(const glm::vec2 point, const float size = 10,
                  const Color &color = colors::WHITE) const;
@@ -44,8 +45,8 @@ export struct BaseFrame {
   void drawMesh(const Mesh &mesh, const glm::vec2 &pos = {},
                 const float rot = 0) const;
 
-  void drawPolygon(const collision::Polygon &polygon,
-                   const Color &color = colors::WHITE) const;
-  void drawCircle(const collision::Circle &circle,
-                  const Color &color = colors::WHITE) const;
+  void drawBezier(const Bezier &curve, const Color c0, const Color c1,
+                  const float thickness,
+                  unsigned int (*stepFunction)(const float, const glm::vec2),
+                  const bool world, const bool debug);
 };

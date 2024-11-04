@@ -10,6 +10,7 @@ import update_cycle;
 import scene;
 import rendering;
 import window;
+import glm;
 
 export struct App {
   static constexpr GLsizei WIDTH = 1280, HEIGHT = 720;

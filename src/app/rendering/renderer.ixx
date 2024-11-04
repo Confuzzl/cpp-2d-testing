@@ -14,7 +14,7 @@ import shaders;
 import texture;
 
 export struct Renderer {
-  static const glm::mat4 UI_MATRIX;
+  static glm::mat4 UI_MATRIX();
 
   GL::QueryObject queryObject;
   GLint elapsed = 0;
@@ -28,10 +28,12 @@ export struct Renderer {
     shaders::Basic basic;
     shaders::Transform trans;
     shaders::Striped striped;
-    shaders::WorldBezier worldBezier;
-    shaders::GUIBezier guiBezier;
+    shaders::Bezier bezier;
+    // shaders::WorldBezier worldBezier;
+    // shaders::GUIBezier guiBezier;
     shaders::Line line;
     shaders::Circle circ;
+    shaders::Debug debug;
   } shaders;
 
   struct {

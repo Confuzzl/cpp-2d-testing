@@ -4,18 +4,19 @@ import frame;
 import <string>;
 import color;
 import glm;
-
-namespace font {
-constexpr unsigned short TEXEL_RANGE = 1 << 15;
-constexpr unsigned short IMG_WIDTH = 1024, IMG_HEIGHT = 1024;
-constexpr unsigned char CHAR_WIDTH = 64, CHAR_HEIGHT = 128;
-constexpr unsigned char COLUMNS = 16, ROWS = 8;
-} // namespace font
+import bezier;
 
 export struct GUIFrame : BaseFrame {
-  void render() override;
+  GUIFrame();
+
+  void render();
 
   void text(const std::string &str, const Color &color = colors::WHITE,
             const unsigned short x = 0, const unsigned short y = 0,
             const float scale = 0.25) const;
+
+  void drawBezier(const Bezier &curve, const Color c0, const Color c1,
+                  const float thickness = 5.0f, const bool debug = false);
+  void drawBezier(const Bezier &curve, const Color color,
+                  const float thickness = 5.0f, const bool debug = false);
 };
