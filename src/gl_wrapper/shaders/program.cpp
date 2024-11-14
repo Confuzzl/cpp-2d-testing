@@ -99,31 +99,32 @@ SET_UNIFORM_F(Bezier, ScreenDimensions, glm::uvec2, screen_dimensions)
 SET_UNIFORM_F(Bezier, Debug, bool, debug)
 SET_UNIFORM_F(Bezier, World, bool, world)
 
-// SET_UNIFORM_V(GUIBezier, View, glm::mat4 &, view)
-// GUIBezier &GUIBezier::setPoints(const glm::vec2 p0, const glm::vec2 p1,
-//                                 const glm::vec2 p2, const glm::vec2 p3) {
+// SET_UNIFORM_V(LineCapped, View, glm::mat4 &, view)
+// LineCapped &LineCapped::setPoints(const glm::vec2 p0, const glm::vec2 p1) {
 //   setUniform(fragment.p0, p0);
 //   setUniform(fragment.p1, p1);
-//   setUniform(fragment.p2, p2);
-//   setUniform(fragment.p3, p3);
 //   return *this;
 // }
-// GUIBezier &GUIBezier::setColor(const Color color) {
-//   setColor(color, color);
+// SET_UNIFORM_F(LineCapped, Thickness, float, thickness)
+// SET_UNIFORM_F(LineCapped, FragColor, Color &, frag_color)
+//
+// SET_UNIFORM_V(LineUncapped, View, glm::mat4 &, view)
+// LineUncapped &LineUncapped::setPoints(const glm::vec2 p0, const glm::vec2 p1)
+// {
+//   setUniform(fragment.p0, p0);
+//   setUniform(fragment.p1, p1);
 //   return *this;
 // }
-// GUIBezier &GUIBezier::setColor(const Color color0, const Color color1) {
-//   setUniform(fragment.color0, color0);
-//   setUniform(fragment.color1, color1);
-//   return *this;
-// }
-// SET_UNIFORM_F(GUIBezier, Thickness, float, thickness);
-// SET_UNIFORM_F(GUIBezier, StepCount, unsigned int, step_count);
+// SET_UNIFORM_F(LineUncapped, Thickness, float, thickness)
+// SET_UNIFORM_F(LineUncapped, FragColor, Color &, frag_color)
 
 SET_UNIFORM_V(Debug, View, glm::mat4 &, view);
 
+// SET_UNIFORM_V(Line, View, glm::mat4 &, view)
 SET_UNIFORM_G(Line, View, glm::mat4 &, view)
 SET_UNIFORM_G(Line, Thickness, float, thickness)
+// SET_UNIFORM_G(Line, World, bool, world)
+// SET_UNIFORM_G(Line, ScaleMatrix, glm::mat4 &, scale_matrix);
 SET_UNIFORM_F(Line, FragColor, Color &, frag_color)
 
 SET_UNIFORM_G(Circle, View, glm::mat4 &, view)

@@ -77,20 +77,25 @@ struct bezier : UniformHolder {
   NEW_UNIFORM(bool, world);
   NEW_UNIFORM(bool, debug);
 };
-// struct bezier_gui : UniformHolder {
-//   static constexpr char name[] = "bezier_gui.frag";
-//
-//   NEW_UNIFORM(glm::vec2, p0);
-//   NEW_UNIFORM(glm::vec2, p1);
-//   NEW_UNIFORM(glm::vec2, p2);
-//   NEW_UNIFORM(glm::vec2, p3);
-//   NEW_UNIFORM(Color, color0);
-//   NEW_UNIFORM(Color, color1);
-//   NEW_UNIFORM(float, thickness);
-//   NEW_UNIFORM(unsigned int, step_count);
-// };
+
 struct debug : UniformHolder {
   static constexpr char name[] = "debug.frag";
 };
+// struct line_capped : UniformHolder {
+//   static constexpr char name[] = "line_capped.frag";
+//
+//   NEW_UNIFORM(glm::vec2, p0);
+//   NEW_UNIFORM(glm::vec2, p1);
+//   NEW_COLOR;
+//   NEW_UNIFORM(float, thickness);
+// };
+// struct line_uncapped : UniformHolder {
+//   static constexpr char name[] = "line_uncapped.frag";
+//
+//   NEW_UNIFORM(glm::vec2, p0);
+//   NEW_UNIFORM(glm::vec2, p1);
+//   NEW_COLOR;
+//   NEW_UNIFORM(float, thickness);
+// };
 } // namespace frag
 } // namespace shaders

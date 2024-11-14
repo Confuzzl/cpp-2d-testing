@@ -11,7 +11,7 @@ import debug;
 import gl_debug;
 import rendering;
 
-// const glm::vec2 App::DIMENSIONS{App::WIDTH, App::HEIGHT};
+// const glm::vec2 App::BoundingBoxS{App::WIDTH, App::HEIGHT};
 
 App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
   glfwSetCursorPosCallback(window, InputHandler::mousePosCallback);
@@ -31,6 +31,10 @@ App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
 }
 App::~App() {
   println("app terminated at {:.2f}s", glfwGetTime());
+  println("min: {}\navg: {}\nmax: {}", MAIN_RENDERER.minElapsed / 1'000'000.0,
+          (MAIN_RENDERER.elapsedAccumulate / MAIN_RENDERER.elapsedCounter) /
+              1'000'000.0,
+          MAIN_RENDERER.maxElapsed / 1'000'000.0);
   glfwDestroyWindow(window);
   glfwTerminate();
 }
@@ -52,6 +56,9 @@ void App::start() {
       frameCycle.pushCount();
       seconds++;
     }
+
+    if (currentTime > 60)
+      close();
   }
 }
 

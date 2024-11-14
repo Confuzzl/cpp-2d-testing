@@ -1,12 +1,11 @@
 module;
 
-// #include "gl_wrapper/shaders/uniform_macro.h"
 #include "util/gl.h"
 
 #define SET_UNIFORM_TEMPLATE(type, call)                                       \
   template <>                                                                  \
-  void setUniform<type>(const shaders::Uniform<type> &uniform,                 \
-                        const type &value) const {                             \
+  void setUniform(const shaders::Uniform<type> &uniform, const type &value)    \
+      const {                                                                  \
     call;                                                                      \
   }
 #define SET_SCALAR(type, scalar_type)                                          \
@@ -66,7 +65,7 @@ struct ProgramObject {
 export namespace shaders {
 template <vert::format V, frag::format F>
 struct BaseProgram : ::GL::ProgramObject {
-  // protected:
+protected:
   GL::VertexArrayObject<typename V::layout_t> vao;
   V vertex;
   F fragment;
@@ -153,21 +152,25 @@ struct Bezier : SimpleProgram<vert::basic, frag::bezier> {
   Bezier &setDebug(const bool debug);
   Bezier &setWorld(const bool world);
 };
-// struct GUIBezier : SimpleProgram<vert::basic, frag::bezier_gui> {
-//   GUIBezier &setView(const glm::mat4 &view);
-//   GUIBezier &setPoints(const glm::vec2 p0, const glm::vec2 p1,
-//                        const glm::vec2 p2, const glm::vec2 p3);
-//   GUIBezier &setColor(const Color color);
-//   GUIBezier &setColor(const Color color0, const Color color1);
-//   GUIBezier &setThickness(const float thickness);
-//   GUIBezier &setStepCount(const unsigned int step_count);
-// };
 struct Debug : SimpleProgram<vert::basic, frag::debug> {
   Debug &setView(const glm::mat4 &view);
 };
+// struct LineCapped : SimpleProgram<vert::basic, frag::line_capped> {
+//   LineCapped &setView(const glm::mat4 &view);
+//   LineCapped &setPoints(const glm::vec2 p0, const glm::vec2 p1);
+//   LineCapped &setFragColor(const Color &frag_color);
+//   LineCapped &setThickness(const float thickness);
+// };
+// struct LineUncapped : SimpleProgram<vert::basic, frag::line_uncapped> {
+//   LineUncapped &setView(const glm::mat4 &view);
+//   LineUncapped &setPoints(const glm::vec2 p0, const glm::vec2 p1);
+//   LineUncapped &setFragColor(const Color &frag_color);
+//   LineUncapped &setThickness(const float thickness);
+// };
 
 template <vert::format V, frag::format F, geom::format G>
 struct GeometryProgram : BaseProgram<V, F> {
+protected:
   G geometry;
 
   GeometryProgram()
@@ -177,7 +180,8 @@ struct GeometryProgram : BaseProgram<V, F> {
         geometry{GL::ProgramObject::ID} {}
 };
 
-struct Line : GeometryProgram<vert::identity, frag::basic, geom::line> {
+struct Line
+    : GeometryProgram<vert::/*basic*/ identity, frag::basic, geom::line> {
   Line &setView(const glm::mat4 &view);
   Line &setThickness(const float thickness);
   Line &setFragColor(const Color &frag_color);

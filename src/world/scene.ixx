@@ -6,12 +6,23 @@ import <memory>;
 // import bvh2;
 import ecs_manager;
 
+import hash_grid;
+
+export namespace ecs {
+inline namespace comp {
+struct Boundable;
+}
+template <> void onAdd(const EntID ent, Boundable &comp);
+template <> void onRemove(const EntID ent, Boundable &comp);
+} // namespace ecs
+
 export struct Scene {
   Camera camera{{0, 0}};
 
   ecs::Manager ecs;
 
   // collision::BoundingVolumeHierarchy tree;
+  collision::SpatialHashGrid grid;
 
   // Scene();
   //~Scene();

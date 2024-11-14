@@ -23,7 +23,7 @@ T random_int(const T a = std::numeric_limits<T>::min(),
 }
 
 export template <typename T>
-bool in_range(const T n, const T min, const T max) {
+constexpr bool in_range(const T n, const T min, const T max) {
   return min <= n && n <= max;
 }
 

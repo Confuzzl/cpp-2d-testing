@@ -20,6 +20,6 @@ export struct Mesh {
   GLenum primitive;
 
   Mesh(std::vector<vertex_layout::pos> &&data, const GLenum primitive,
-       const Color &color = colors::WHITE)
+       const Color color)
       : data{std::move(data)}, primitive{primitive}, color{color} {}
 };

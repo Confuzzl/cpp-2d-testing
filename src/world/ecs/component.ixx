@@ -40,6 +40,8 @@ struct Renderable {
 };
 struct DirectRenderable {
   std::function<void(BaseFrame *)> draw;
+
+  void operator()(BaseFrame *f) { draw(f); }
 };
 } // namespace comp
 } // namespace ecs

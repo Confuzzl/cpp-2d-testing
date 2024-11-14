@@ -6,13 +6,10 @@ export module frame;
 
 import glm;
 import color;
-import dimensions;
 import collision;
-import vertex_layout;
+// import vertex_layout;
 import mesh;
 import bezier;
-
-import <format>;
 
 export struct BoundingBox;
 
@@ -20,27 +17,28 @@ export struct BaseFrame {
   glm::mat4 matrix{1.0f};
 
   void drawPoint(const glm::vec2 point, const float size = 10,
-                 const Color &color = colors::WHITE) const;
+                 const Color color = BLACK) const;
   void drawPointFixed(const glm::vec2 point, const float size = 10,
-                      const Color &color = colors::WHITE) const;
+                      const Color color = BLACK) const;
 
-  void drawLine(const Dimension &dimensions, const float size = 0.1,
-                const Color &color = colors::WHITE) const;
-  void drawLineFixed(const Dimension &dimensions,
-                     const Color &color = colors::WHITE) const;
+  void drawLinePerspective(const BoundingBox &dimensions, const float thickness,
+                           const Color color = BLACK) const;
+  void drawLineConstant(const BoundingBox &dimensions, const float thickness,
+                        const Color color = BLACK) const;
+  void drawLine(const BoundingBox &dimensions, const Color color = BLACK) const;
 
-  void drawArrow(const Dimension &dimensions,
-                 const Color &color = colors::WHITE) const;
+  void drawArrow(const BoundingBox &dimensions,
+                 const Color color = BLACK) const;
 
   void drawCircle(const glm::vec2 center, const float radius,
-                  const Color &color = colors::WHITE) const;
+                  const Color color = BLACK) const;
 
-  void drawBox(const Dimension &dimensions, const float lineSize = 5,
-               const Color &color = colors::WHITE) const;
-  void drawBoxFixed(const Dimension &dimensions,
-                    const Color &color = colors::WHITE) const;
-  void drawQuad(const Dimension &dimensions,
-                const Color &color = colors::WHITE) const;
+  // void drawBox(const BoundingBox &dimensions, const float lineSize = 5,
+  //              const Color color = BLACK) const;
+  // void drawBoxFixed(const BoundingBox &dimensions,
+  //                   const Color color = BLACK) const;
+
+  void drawQuad(const BoundingBox &dimensions, const Color color = BLACK) const;
 
   void drawMesh(const Mesh &mesh, const glm::vec2 &pos = {},
                 const float rot = 0) const;

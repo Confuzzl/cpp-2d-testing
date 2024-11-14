@@ -12,25 +12,32 @@ const uint step_count = 10;
 
 out vec4 color;
 
-bool inPoint(const vec2 a, const vec2 b, const float d) {
+bool written = false;
+
+void point(const vec2 a, const vec2 b, const float d, const vec3 col) {
 	vec2 diff = b - a;
-	return dot(diff, diff) <= d * d;
+	if (dot(diff, diff) > d * d)
+		return;
+	color = vec4(col, 1.0);
+	written = true;
 }
 
-bool inLine(const vec2 p, const vec2 a, const vec2 b, const float d) {
+void line(const vec2 p, const vec2 a, const vec2 b, const float d, const vec3 col) {
 	vec2 line = b - a;
 	vec2 diff = p - a;
-	float t = clamp(dot(diff, line) / dot(line, line), 0.0, 1.0);
-	return length(diff - line * t) <= d;
-}
+	float t = dot(diff, line) / dot(line, line);
+	if (t < 0 || t > 1)
+		return;
+	vec2 projected = a + line * t;
+	point(p, projected, d, col);
 
-vec2 bezierPoint(const float t) {
-	float nt = 1 - t;
-	return nt*nt*nt*p0 + 3*nt*nt*t*p1 + 3*nt*t*t*p2 + t*t*t*p3;
+//	float t = clamp(dot(diff, line) / dot(line, line), 0.0, 1.0);
+//	vec2 c = diff - line * t;
+//	if (dot(c, c) > d * d)
+//		return;
+//	color = vec4(col, 1.0);
+//	written = true;
 }
-
-#define POINT(p, size, c) if (inPoint(gl_FragCoord.xy, p, size)) { color = vec4(c.r, c.g, c.b, 1.0); return; }
-#define LINE(p0, p1, size, c) if (inLine(gl_FragCoord.xy, p0, p1, size)) { color = vec4(c.r, c.g, c.b, 1.0); return; }
 #define WHITE vec3(1.0, 1.0, 1.0)
 #define BLACK vec3(0.0, 0.0, 0.0)
 #define GRAY vec3(0.5, 0.5, 0.5)
@@ -41,14 +48,24 @@ vec2 bezierPoint(const float t) {
 #define MAGENTA vec3(1.0, 0.0, 1.0)
 #define YELLOW vec3(1.0, 1.0, 0.0)
 
+const uint lines = 1000;
+const float lineMin = 1.0;
+const float lineMax = 10.0;
+
 void main() {
-	POINT(p0, 10, BLACK)
-	POINT(p1, 10, BLACK)
-	POINT(p2, 10, BLACK)
-	POINT(p3, 10, BLACK)
-	LINE(p0, p1, 5, GRAY)
-	LINE(p2, p3, 5, GRAY)
-	discard;
+	line(gl_FragCoord.xy, p1, p3, 10.0, BLUE);
+	point(gl_FragCoord.xy, p1, 10.0, RED);
+	point(gl_FragCoord.xy, p3, 10.0, RED);
+	if(!written)
+		discard;
+//	line(gl_FragCoord.xy, p1, p3, 10.0, RED);
+//	POINT(p0, 10, BLACK)
+//	POINT(p1, 10, BLACK)
+//	POINT(p2, 10, BLACK)
+//	POINT(p3, 10, BLACK)
+//	LINE(p0, p1, 5, GRAY)
+//	LINE(p2, p3, 5, GRAY)
+//	discard;
 
 //	else
 //		discard;

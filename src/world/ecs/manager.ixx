@@ -17,6 +17,13 @@ import ecs_component;
 // https://github.com/chrischristakis/seecs
 export namespace ecs {
 using EntID = std::size_t;
+constexpr EntID NULL_ENT = -1;
+
+constexpr std::size_t MAX_COMPONENTS = 64u;
+using Signature = std::bitset<MAX_COMPONENTS>;
+
+template <typename T> void onAdd(const EntID ent, T &comp) {}
+template <typename T> void onRemove(const EntID ent, T &comp) {}
 
 struct GenSparseSet {
   virtual ~GenSparseSet() = default;
@@ -24,6 +31,9 @@ struct GenSparseSet {
 };
 template <typename T> struct SparseSet : GenSparseSet {
 private:
+  static constexpr bool ISNT_SIG_OR_ENT_ID_TYPE =
+      !std::same_as<T, Signature> && !std::same_as<T, EntID>;
+
   static constexpr std::size_t PAGE_SIZE = 1000;
   static constexpr std::size_t NONE = -1;
 
@@ -56,7 +66,7 @@ private:
 public:
   SparseSet() {}
   ~SparseSet() override = default;
-  void clear() /*override*/ {
+  void clear() {
     pages.clear();
     dense.clear();
     denseToEnt.clear();
@@ -67,7 +77,7 @@ public:
     this->pages.reserve(pages);
   }
 
-  std::size_t size() const /*override*/ { return dense.size(); }
+  std::size_t size() const { return dense.size(); }
   bool empty() const { return size() == 0; }
   const auto &data() const { return dense; }
 
@@ -75,12 +85,16 @@ public:
     const auto index = getDenseIndex(ent);
     if (index != NONE) {
       denseToEnt[index] = ent;
-      return (dense[index] = std::forward<U>(val));
+      T &component = (dense[index] = std::forward<U>(val));
+      onAdd<T>(ent, component);
+      return component;
     }
     setDenseIndex(ent, dense.size());
 
     denseToEnt.emplace_back(ent);
-    return dense.emplace_back(std::forward<U>(val));
+    T &component = dense.emplace_back(std::forward<U>(val));
+    onAdd<T>(ent, component);
+    return component;
   }
   T *get(const EntID ent) {
     const auto index = getDenseIndex(ent);
@@ -88,50 +102,26 @@ public:
   }
   bool contains(const EntID ent) { return getDenseIndex(ent) != NONE; }
   void remove(const EntID ent) override {
-    /*
-    removing 2:1
-    [3|2|5|0] dense to ent
-    [A|B|C|D] dense
-    [3|_|1|0|_|2] sparse
-     0 1 2 3 4 5
-    */
+
     const auto index = getDenseIndex(ent);
     if (index == NONE)
       return;
     setDenseIndex(denseToEnt.back(), index);
     setDenseIndex(ent, NONE);
-    /*
-    removing 2:1
-    [3|2|5|0] dense to ent
-    [A|B|C|D] dense
-    [1| | |0| |2] sparse
-     0 1 2 3 4 5
-    */
 
-    std::swap(dense[index], dense.back());
+    if constexpr (ISNT_SIG_OR_ENT_ID_TYPE) {
+      T &component = dense[index];
+      onRemove<T>(ent, component);
+      std::swap(component, dense.back());
+    } else {
+      std::swap(dense[index], dense.back());
+    }
     std::swap(denseToEnt[index], denseToEnt.back());
-    /*
-    removing 2:1
-    [3|0|5|2] dense to ent
-    [A|D|C|B] dense
-    [1| | |0| |2] sparse
-     0 1 2 3 4 5
-    */
 
     dense.pop_back();
     denseToEnt.pop_back();
-    /*
-    removing 2:1
-    [3|0|5] dense to ent
-    [A|D|C] dense
-    [1| | |0| |2] sparse
-     0 1 2 3 4 5
-    */
   }
 };
-
-template <typename T> void onAdd(T &comp) {}
-template <typename T> void onRemove(T &comp) {}
 
 struct Manager {
 private:
@@ -139,10 +129,6 @@ private:
   static constexpr std::size_t COMPONENT_POOL_RESERVE = 20;
   static constexpr std::size_t GROUP_RESERVE = 50;
   static constexpr std::size_t VIEW_RESERVE = 10;
-
-  static constexpr EntID NULL_ENT = -1;
-  static constexpr std::size_t MAX_COMPONENTS = 64u;
-  using Signature = std::bitset<MAX_COMPONENTS>;
 
   SparseSet<Signature> entitySignatures;
   std::vector<std::unique_ptr<GenSparseSet>> componentPools;
@@ -220,7 +206,6 @@ public:
       addToGroup(signature, ent);
     }
     T &c = pool.set(ent, std::move(comp));
-    onAdd<T>(c);
     return &c;
   }
   template <typename... Ts>
@@ -237,7 +222,6 @@ public:
     T *comp = pool.get(ent);
     if (!comp)
       return;
-    onRemove<T>(*comp);
     auto &signature = *sig;
     removeFromGroup(signature, ent);
     setComponentBit<T>(signature, false);

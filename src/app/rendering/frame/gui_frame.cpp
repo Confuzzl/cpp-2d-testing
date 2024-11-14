@@ -20,6 +20,7 @@ import debug;
 import bo_heap;
 import uniform;
 import math;
+import aabb;
 
 static glm::vec4 offsets() {
   return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
@@ -32,15 +33,48 @@ static glm::vec2 point(const unsigned int i) {
           (sin(o[i][2] * t + o[i][3]) + 1) * App::HEIGHT * 0.5};
 }
 
-GUIFrame::GUIFrame() { matrix = Renderer::UI_MATRIX(); }
+GUIFrame::GUIFrame() { matrix = App::UI_MATRIX; }
 
 void GUIFrame::render() {
   // drawBezier({point(0), point(1), point(2), point(3)}, colors::GREEN,
   //            colors::YELLOW, 5.0f, true);
 
-  text(std::format("{:>8.4}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
-       colors::BLACK);
-  text(std::format("{:>8}ns", MAIN_RENDERER.elapsed), colors::BLACK, 0, 30);
+  // debug();
+
+  text(std::format("     {:>10}ns", MAIN_RENDERER.elapsed), BLACK, 0, 0);
+  text(std::format("     {:>10.5}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
+       BLACK, 0, 30);
+  text(std::format("min: {:>10.5}ms", MAIN_RENDERER.minElapsed / 1'000'000.0),
+       BLACK, 0, 60);
+  text(std::format("avg: {:>10.5}ms", (MAIN_RENDERER.elapsedAccumulate /
+                                       MAIN_RENDERER.elapsedCounter) /
+                                          1'000'000.0),
+       BLACK, 0, 90);
+  text(std::format("max: {:>10.5}ms", MAIN_RENDERER.maxElapsed / 1'000'000.0),
+       BLACK, 0, 120);
+  text(std::format("zoom: {:.1f}x2^{}", MAIN_CAMERA.zoomFraction(),
+                   static_cast<int>(std::log2(MAIN_CAMERA.zoomExponent()))),
+       BLACK, 0, 150);
+  text(std::format("pos: {}", vec_string(MAIN_CAMERA.getPos())), BLACK, 0, 180);
+}
+
+void GUIFrame::debug() {
+  static constexpr BoundingBox SCREEN{App::DIMENSIONS};
+  VBO_4->write(SCREEN.toTriStrip());
+  SHADERS.debug.setView(matrix).draw(GL_TRIANGLE_STRIP, VBO_4);
+}
+
+void GUIFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
+                          const float thickness, const bool debug) {
+  static constexpr auto step = [](const float, const glm::vec2 size) {
+    const float s = std::max(size.x, size.y);
+    return static_cast<unsigned int>(std::sqrt(s));
+  };
+  BaseFrame::drawBezier(curve, c0, c1, thickness, step, false, debug);
+}
+void GUIFrame::drawBezier(const Bezier &curve, const Color color,
+                          const float thickness, const bool debug) {
+  drawBezier(curve, color, color, thickness, debug);
 }
 
 namespace font {
@@ -58,12 +92,12 @@ static constexpr unsigned short charHeightConvert(const unsigned char h) {
   return static_cast<unsigned short>(static_cast<float>(h) * font::CHAR_HEIGHT /
                                      font::IMG_HEIGHT * font::TEXEL_RANGE);
 }
-void GUIFrame::text(const std::string &str, const Color &color,
+void GUIFrame::text(const std::string &str, const Color color,
                     const unsigned short x, const unsigned short y,
                     const float scale) const {
   static constexpr auto MAX_LENGTH = 0x100u;
-  static const glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
-                                                {{0, 0}, {1, 1}, {0, 1}}};
+  static constexpr glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
+                                                    {{0, 0}, {1, 1}, {0, 1}}};
   static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
@@ -90,7 +124,7 @@ void GUIFrame::text(const std::string &str, const Color &color,
     uvInfo *= glm::vec4{SHRT_MAX};
 
     const glm::lowp_u16vec2 uvCoordinates{uvInfo.x, uvInfo.y};
-    const glm::lowp_u16vec2 uvDimensions{uvInfo.z, uvInfo.w};
+    const glm::lowp_u16vec2 uvBoundingBoxs{uvInfo.z, uvInfo.w};
 
     for (auto tri = 0; tri < 2; tri++) {
       for (auto v = 0; v < 3; v++) {
@@ -121,17 +155,4 @@ void GUIFrame::text(const std::string &str, const Color &color,
         .bindTexture(TEXTURE.sdfFont)
         .draw(GL_TRIANGLES, CHAR_VBO);
   }
-}
-
-void GUIFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
-                          const float thickness, const bool debug) {
-  static constexpr auto step = [](const float, const glm::vec2 size) {
-    const float s = std::max(size.x, size.y);
-    return static_cast<unsigned int>(std::sqrt(s));
-  };
-  BaseFrame::drawBezier(curve, c0, c1, thickness, step, false, debug);
-}
-void GUIFrame::drawBezier(const Bezier &curve, const Color color,
-                          const float thickness, const bool debug) {
-  drawBezier(curve, color, color, thickness, debug);
 }

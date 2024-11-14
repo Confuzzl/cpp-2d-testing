@@ -9,7 +9,7 @@ std::size_t Manager::registerID() {
   return counter++;
 }
 
-Manager::Signature *Manager::signaturePointerFrom(const EntID ent) {
+Signature *Manager::signaturePointerFrom(const EntID ent) {
   return entitySignatures.get(ent);
 }
 

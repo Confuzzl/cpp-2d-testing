@@ -40,7 +40,18 @@ void InputHandler::mouseClickCallback(GLFWwindow *window, int button,
                                       int action, int mods) {}
 void InputHandler::scrollCallback(GLFWwindow *window, double xpos,
                                   double ypos) {
-  static constexpr float INCREMENT = 0.1f;
-  MAIN_CAMERA.zoom = std::fmax(
-      INCREMENT, static_cast<float>(MAIN_CAMERA.zoom + ypos * INCREMENT));
+  const float nextFraction =
+      MAIN_CAMERA.zoomFraction() + 0.1f * static_cast<float>(ypos);
+  if (nextFraction <= 0.5f) {
+    // MAIN_CAMERA.fraction = 1.0f;
+    // MAIN_CAMERA.exponent /= 2.0f;
+    MAIN_CAMERA.halfZoom();
+  } else if (nextFraction >= 2.0f) {
+    // MAIN_CAMERA.fraction = 1.0f;
+    // MAIN_CAMERA.exponent *= 2.0f;
+    MAIN_CAMERA.doubleZoom();
+  } else {
+    // MAIN_CAMERA.fraction = nextFraction;
+    MAIN_CAMERA.setZoomFraction(nextFraction);
+  }
 }

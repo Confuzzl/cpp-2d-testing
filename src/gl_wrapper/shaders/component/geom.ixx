@@ -17,7 +17,9 @@ struct line : UniformHolder {
   static constexpr char name[] = "line.geom";
 
   NEW_VIEW;
+  // NEW_UNIFORM(glm::mat4, scale_matrix);
   NEW_UNIFORM(float, thickness);
+  // NEW_UNIFORM(bool, world);
 };
 struct circle : UniformHolder {
   static constexpr char name[] = "circle.geom";

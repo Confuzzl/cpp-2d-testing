@@ -10,65 +10,67 @@ import debug;
 export struct BoundingBox {
   glm::vec2 min{+F_INF, +F_INF}, max{-F_INF, -F_INF};
 
-  BoundingBox() = default;
-  BoundingBox(const glm::vec2 min, const glm::vec2 max) : min{min}, max{max} {}
-  BoundingBox(const glm::vec2 max) : BoundingBox({}, max) {}
+  constexpr BoundingBox() = default;
+  constexpr BoundingBox(const glm::vec2 min, const glm::vec2 max)
+      : min{min}, max{max} {}
+  constexpr BoundingBox(const glm::vec2 max) : BoundingBox({}, max) {}
 
-  bool intersects(const BoundingBox &other) const {
+  constexpr bool intersects(const BoundingBox &other) const {
     return (min.x < other.max.x && max.x > other.min.x) &&
            (min.y < other.max.y && max.y > other.min.y);
   }
-  bool contains(const glm::vec2 point) const {
+  constexpr bool contains(const glm::vec2 point) const {
     return in_range(point.x, min.x, max.x) && in_range(point.y, min.y, max.y);
   }
 
-  void expand(const float padding) {
+  constexpr void expand(const float padding) {
     min -= padding;
     max += padding;
   }
-  void expand(const glm::vec2 p) {
+  constexpr void expand(const glm::vec2 p) {
     min.x = std::min(min.x, p.x);
     max.x = std::max(max.x, p.x);
     min.y = std::min(min.y, p.y);
     max.y = std::max(max.y, p.y);
   }
-  void expand(const BoundingBox &other) {
+  constexpr void expand(const BoundingBox &other) {
     expand(other.min);
     expand(other.max);
   }
 
-  BoundingBox operator+(const glm::vec2 v) const { return {min + v, max + v}; }
-  BoundingBox &operator+=(const glm::vec2 v) {
+  constexpr BoundingBox operator+(const glm::vec2 v) const {
+    return {min + v, max + v};
+  }
+  constexpr BoundingBox &operator+=(const glm::vec2 v) {
     min += v;
     max += v;
     return *this;
   }
-  BoundingBox operator-(const glm::vec2 v) const { return {min - v, max - v}; }
-  BoundingBox &operator-=(const glm::vec2 v) {
+  constexpr BoundingBox operator-(const glm::vec2 v) const {
+    return {min - v, max - v};
+  }
+  constexpr BoundingBox &operator-=(const glm::vec2 v) {
     min -= v;
     max -= v;
     return *this;
   }
 
-  float height() const { return max.y - min.y; }
-  float width() const { return max.x - min.x; }
-  glm::vec2 size() const { return {width(), height()}; }
-  float area() const { return width() * height(); }
-  glm::vec2 median() const { return min + size() / 2.0f; }
+  constexpr float height() const { return max.y - min.y; }
+  constexpr float width() const { return max.x - min.x; }
+  constexpr glm::vec2 size() const { return {width(), height()}; }
+  constexpr float area() const { return width() * height(); }
+  constexpr glm::vec2 median() const { return min + size() / 2.0f; }
 
-  std::array<glm::vec2, 4> toTriStrip() const {
+  // .y union access cant be constexpr?
+  /*constexpr*/ std::array<glm::vec2, 4> toTriStrip() const {
+
     return {{min, {max.x, min.y}, {min.x, max.y}, max}};
   }
 
-  void reset() {
+  constexpr void reset() {
     min = {+F_INF, +F_INF};
     max = {-F_INF, -F_INF};
   }
-};
-
-export template <typename T>
-concept has_aabb = requires(T t) {
-  { t.getAABB() } -> std::same_as<BoundingBox>;
 };
 
 import <format>;

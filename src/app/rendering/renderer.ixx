@@ -14,10 +14,11 @@ import shaders;
 import texture;
 
 export struct Renderer {
-  static glm::mat4 UI_MATRIX();
-
   GL::QueryObject queryObject;
   GLint elapsed = 0;
+  double elapsedAccumulate = 0;
+  GLint elapsedCounter = 0;
+  GLint minElapsed = (1u << 31) - 1, maxElapsed = 1 << 31;
 
   GUIFrame guiFrame;
   WorldFrame worldFrame;
@@ -29,8 +30,6 @@ export struct Renderer {
     shaders::Transform trans;
     shaders::Striped striped;
     shaders::Bezier bezier;
-    // shaders::WorldBezier worldBezier;
-    // shaders::GUIBezier guiBezier;
     shaders::Line line;
     shaders::Circle circ;
     shaders::Debug debug;

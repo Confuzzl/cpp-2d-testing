@@ -9,6 +9,10 @@ import aabb;
 
 export namespace collision {
 struct BoundingVolumeHierarchy {
+  struct Object {
+    std::size_t entID;
+    BoundingBox box;
+  };
   using T = BoundingBox;
 
   enum CONSTRUCTION_SCHEME { TOP_DOWN, BOTTOM_UP, INCREMENTAL };

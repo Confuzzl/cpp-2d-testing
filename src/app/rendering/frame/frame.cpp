@@ -7,36 +7,41 @@ module frame;
 
 import <numbers>;
 import app;
-import vertex_layout;
+// import vertex_layout;
 import bo_heap;
-
+import aabb;
 import debug;
 
 void BaseFrame::drawPoint(const glm::vec2 point, const float size,
-                          const Color &color) const {
+                          const Color color) const {
   static constexpr float SCALE = 0.002f;
   drawCircle(point, SCALE * size, color);
 }
 void BaseFrame::drawPointFixed(const glm::vec2 point, const float size,
-                               const Color &color) const {
+                               const Color color) const {
   VBO_1->write(point);
 
   glPointSize(size);
   SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_POINTS, VBO_1);
 }
-
-void BaseFrame::drawLine(const Dimension &dimensions, const float size,
-                         const Color &color) const {
+void BaseFrame::drawLinePerspective(const BoundingBox &dimensions,
+                                    const float thickness,
+                                    const Color color) const {
   const auto [from, to] = dimensions;
 
   VBO_2->write(from);
   VBO_2->write(to);
 
-  SHADERS.line.setView(matrix).setFragColor(color).setThickness(size).draw(
+  SHADERS.line.setView(matrix).setFragColor(color).setThickness(thickness).draw(
       GL_LINES, VBO_2);
 }
-void BaseFrame::drawLineFixed(const Dimension &dimensions,
-                              const Color &color) const {
+void BaseFrame::drawLineConstant(const BoundingBox &dimensions,
+                                 const float thickness,
+                                 const Color color) const {
+  drawLinePerspective(dimensions, thickness / MAIN_CAMERA.zoom(), color);
+}
+void BaseFrame::drawLine(const BoundingBox &dimensions,
+                         const Color color) const {
   const auto [from, to] = dimensions;
 
   VBO_2->write(from);
@@ -45,8 +50,8 @@ void BaseFrame::drawLineFixed(const Dimension &dimensions,
   SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINES, VBO_2);
 }
 
-void BaseFrame::drawArrow(const Dimension &dimensions,
-                          const Color &color) const {
+void BaseFrame::drawArrow(const BoundingBox &dimensions,
+                          const Color color) const {
   const auto &[from, to] = dimensions;
   //   1
   //  /|\
@@ -78,7 +83,7 @@ void BaseFrame::drawArrow(const Dimension &dimensions,
 }
 
 void BaseFrame::drawCircle(const glm::vec2 center, const float radius,
-                           const Color &color) const {
+                           const Color color) const {
   VBO_1->write(center);
 
   SHADERS.circ.setView(matrix)
@@ -89,29 +94,30 @@ void BaseFrame::drawCircle(const glm::vec2 center, const float radius,
       .draw(GL_POINTS, VBO_1);
 }
 
-void BaseFrame::drawBox(const Dimension &dimensions, const float lineSize,
-                        const Color &color) const {
-  const auto [from, to] = dimensions;
-
-  const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-  drawLine({corners[0], corners[1]}, lineSize, color);
-  drawLine({corners[1], corners[2]}, lineSize, color);
-  drawLine({corners[2], corners[3]}, lineSize, color);
-  drawLine({corners[3], corners[0]}, lineSize, color);
-}
-
-void BaseFrame::drawBoxFixed(const Dimension &dimensions,
-                             const Color &color) const {
-  const auto [from, to] = dimensions;
-
-  const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-
-  VBO_4->write(corners);
-
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINE_LOOP, VBO_4);
-}
-void BaseFrame::drawQuad(const Dimension &dimensions,
-                         const Color &color) const {
+// void BaseFrame::drawBox(const BoundingBox &dimensions, const float lineSize,
+//                         const Color color) const {
+//   const auto [from, to] = dimensions;
+//
+//   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+//   drawLine({corners[0], corners[1]}, lineSize, color);
+//   drawLine({corners[1], corners[2]}, lineSize, color);
+//   drawLine({corners[2], corners[3]}, lineSize, color);
+//   drawLine({corners[3], corners[0]}, lineSize, color);
+// }
+//
+// void BaseFrame::drawBoxFixed(const BoundingBox &dimensions,
+//                              const Color color) const {
+//   const auto [from, to] = dimensions;
+//
+//   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+//
+//   VBO_4->write(corners);
+//
+//   SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINE_LOOP,
+//   VBO_4);
+// }
+void BaseFrame::drawQuad(const BoundingBox &dimensions,
+                         const Color color) const {
   const auto [from, to] = dimensions;
 
   const glm::vec2 corners[4] = {
@@ -169,7 +175,7 @@ void BaseFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
       .setPoints(curve.a, curve.b, curve.c, curve.d)
       .setColor(c0, c1)
       .setThickness(thickness)
-      .setStepCount(stepFunction(MAIN_CAMERA.zoom, box.size()))
+      .setStepCount(stepFunction(MAIN_CAMERA.zoom(), box.size()))
       .setDebug(debug)
       .setWorld(world)
       .draw(GL_TRIANGLE_STRIP, VBO_4);

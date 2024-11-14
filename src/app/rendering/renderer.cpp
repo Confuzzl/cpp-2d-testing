@@ -16,14 +16,9 @@ import glm;
 import debug;
 import app;
 
-glm::mat4 Renderer::UI_MATRIX() {
-  static auto mat = glm::ortho<float>(0, App::WIDTH, 0, App::HEIGHT);
-  return mat;
-}
-
 void Renderer::renderFrame(const double t) {
   glBeginQuery(GL_TIME_ELAPSED, queryObject.ID);
-  glClearColor(0.9f, 0.9f, 0.9f, 1);
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
   worldFrame.render();
@@ -32,4 +27,8 @@ void Renderer::renderFrame(const double t) {
   glfwSwapBuffers(MAIN_APP.window);
   glEndQuery(GL_TIME_ELAPSED);
   glGetQueryObjectiv(queryObject.ID, GL_QUERY_RESULT, &elapsed);
+  minElapsed = std::min(minElapsed, elapsed);
+  maxElapsed = std::max(maxElapsed, elapsed);
+  elapsedCounter++;
+  elapsedAccumulate += elapsed;
 }

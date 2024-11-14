@@ -22,8 +22,8 @@
     <ClCompile Include="src\app\rendering\bezier.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx" />
     <ClCompile Include="src\util\runtime_array.ixx" />
-    <ClCompile Include="src\world\collision\bvh2\bvh2.cpp" />
-    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx" />
+    <ClCompile Include="src\world\collision\partitioning\bvh2.cpp" />
+    <ClCompile Include="src\world\collision\partitioning\bvh2.ixx" />
     <ClCompile Include="src\world\collision\collision.cpp" />
     <ClCompile Include="Libraries\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\app\app.cpp" />
@@ -32,7 +32,6 @@
     <ClCompile Include="src\app\input\input_handler.ixx" />
     <ClCompile Include="src\app\input\key.cpp" />
     <ClCompile Include="src\app\input\key.ixx" />
-    <ClCompile Include="src\app\rendering\dimensions.ixx" />
     <ClCompile Include="src\app\rendering\frame\frame.cpp" />
     <ClCompile Include="src\app\rendering\frame\frame.ixx" />
     <ClCompile Include="src\app\rendering\frame\gui_frame.cpp" />
@@ -75,7 +74,9 @@
     <ClCompile Include="src\world\collision\aabb.ixx" />
     <ClCompile Include="src\world\collision\collision.ixx" />
     <ClCompile Include="src\world\collision\generic.ixx" />
+    <ClCompile Include="src\world\collision\partitioning\hash_grid.ixx" />
     <ClCompile Include="src\world\collision\polycirc.ixx" />
+    <ClCompile Include="src\world\collision\partitioning\quadtree.ixx" />
     <ClCompile Include="src\world\collision\sat.ixx" />
     <ClCompile Include="src\world\ecs\component.ixx" />
     <ClCompile Include="src\world\ecs\manager.cpp" />
@@ -384,6 +385,8 @@
     <None Include="assets\shaders\basic.vert" />
     <None Include="assets\shaders\circle.frag" />
     <None Include="assets\shaders\debug.frag" />
+    <None Include="assets\shaders\line_capped.frag" />
+    <None Include="assets\shaders\line_uncapped.frag" />
     <None Include="assets\shaders\polygon.geom" />
     <None Include="assets\shaders\sdf_font.frag" />
     <None Include="assets\shaders\trans.vert" />
@@ -534,7 +537,6 @@
     <Library Include="Libraries\lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="assets\shaders\bezier_gui.frag" />
     <Text Include="assets\shaders\line.geom" />
     <Text Include="assets\shaders\identity.vert" />
     <Text Include="assets\shaders\circle.geom" />

@@ -132,9 +132,6 @@
     <ClCompile Include="src\gl_wrapper\query_object.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\app\rendering\dimensions.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\app\rendering\frame\frame.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -195,16 +192,22 @@
     <ClCompile Include="src\world\ecs\manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\collision\bvh2\bvh2.ixx">
+    <ClCompile Include="src\world\collision\partitioning\bvh2.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\collision\bvh2\bvh2.cpp">
+    <ClCompile Include="src\world\collision\partitioning\bvh2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\app\rendering\bezier.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\partitioning\quadtree.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\partitioning\hash_grid.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1507,6 +1510,8 @@
     <None Include="assets\shaders\sdf_font.frag" />
     <None Include="cpp.hint" />
     <None Include="assets\shaders\debug.frag" />
+    <None Include="assets\shaders\line_uncapped.frag" />
+    <None Include="assets\shaders\line_capped.frag" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\lib\glfw3.lib" />
@@ -1517,6 +1522,5 @@
     <Text Include="assets\shaders\circle.geom" />
     <Text Include="assets\Text.txt" />
     <Text Include="assets\shaders\bezier.frag" />
-    <Text Include="assets\shaders\bezier_gui.frag" />
   </ItemGroup>
 </Project>

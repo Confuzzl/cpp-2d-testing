@@ -13,7 +13,7 @@ import <format>;
 using namespace GL;
 
 Texture::Texture(const std::string &name) {
-  std::string path = "assets/" + name;
+  const std::string path = "assets/" + name;
 
   glCreateTextures(GL_TEXTURE_2D, 1, &ID);
   glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
