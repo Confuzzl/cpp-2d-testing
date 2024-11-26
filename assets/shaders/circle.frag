@@ -1,10 +1,13 @@
 #version 460 core
 
-uniform vec2 center;
 uniform float radius;
-
-uniform uvec2 screen_dimensions;
-uniform mat4 view;
+uniform vec2 center;
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+layout(std140) uniform ScreenBlock {
+	uvec2 screen_dimensions;
+};
 
 uniform uint frag_color = 0xff;
 
@@ -24,6 +27,7 @@ vec2 worldPosition() {
 }
 
 void main() {
+//	const vec2 diff = worldPosition();
 	const vec2 diff = worldPosition() - center;
 //	const float edge = smoothstep(radius * radius - 0.5, radius * radius + 0.1, d2);
 //	if (edge >= 1)

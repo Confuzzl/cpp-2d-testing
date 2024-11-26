@@ -1,12 +1,15 @@
 #version 460 core
+
 layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 vertex_uv_in;
 
 out vec2 vertex_uv_out;
 
-uniform mat4 view;
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
 
-const int TEXEL_RANGE = 1 << 15;
+const int TEXEL_RANGE = (1 << 15) - 1;
 
 void main() {
 	gl_Position = view * vec4(pos, 0.0, 1.0);

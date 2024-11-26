@@ -25,4 +25,12 @@ template <typename T>
 concept has_value_ptr = requires(T t) {
   { glm::value_ptr(t) } -> std::convertible_to<void *>;
 };
+
+constexpr glm::mat4 ortho(const float x, const float y) {
+  return {{2.0f / x, 0.0f, 0.0f, 0.0f},
+          {0.0f, 2.0f / y, 0.0f, 0.0f},
+          {0.0f, 0.0f, -1.0f, 0.0f},
+          {-1.0f, -1.0f, 0.0f, 1.0f}};
 }
+constexpr glm::mat4 ortho(const glm::vec2 v) { return ortho(v.x, v.y); }
+} // namespace glm

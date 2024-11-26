@@ -8,6 +8,7 @@ import glm;
 import color;
 import collision;
 // import vertex_layout;
+import texture;
 import mesh;
 import bezier;
 
@@ -37,6 +38,17 @@ export struct BaseFrame {
   //              const Color color = BLACK) const;
   // void drawBoxFixed(const BoundingBox &dimensions,
   //                   const Color color = BLACK) const;
+  void drawTexture(const BoundingBox &dimensions, const GL::Texture &texture);
+  void drawBoxBlur(const BoundingBox &dimensions, const GL::Texture &texture,
+                   const unsigned int radius, const unsigned int direction);
+  void drawBoxBlur(const BoundingBox &dimensions, const GL::Texture &texture,
+                   const unsigned int radius);
+
+  void drawOutline(const BoundingBox &dimensions, const GL::Texture &texture,
+                   const unsigned int thickness, const unsigned int direction,
+                   const Color color);
+  void drawOutline(const BoundingBox &dimensions, const GL::Texture &texture,
+                   const unsigned int radius, const Color color);
 
   void drawQuad(const BoundingBox &dimensions, const Color color = BLACK) const;
 

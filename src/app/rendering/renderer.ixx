@@ -33,12 +33,9 @@ export struct Renderer {
     shaders::Line line;
     shaders::Circle circ;
     shaders::Debug debug;
+    shaders::BoxBlur boxblur;
+    shaders::Outline outline;
   } shaders;
-
-  struct {
-    GL::Texture font{"consolas1024.png"};
-    GL::Texture sdfFont{"sdf1024.png"};
-  } textures;
 
   struct {
     VBOAllocator vboHeap;
@@ -51,5 +48,5 @@ export struct Renderer {
 
   void renderFrame(const double t);
 
-  Renderer() = default;
+  Renderer();
 };

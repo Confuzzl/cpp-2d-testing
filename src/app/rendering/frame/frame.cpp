@@ -11,6 +11,8 @@ import app;
 import bo_heap;
 import aabb;
 import debug;
+import fbo;
+import ubo;
 
 void BaseFrame::drawPoint(const glm::vec2 point, const float size,
                           const Color color) const {
@@ -22,7 +24,7 @@ void BaseFrame::drawPointFixed(const glm::vec2 point, const float size,
   VBO_1->write(point);
 
   glPointSize(size);
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_POINTS, VBO_1);
+  SHADERS.basic.setFragColor(color).draw(GL_POINTS, VBO_1);
 }
 void BaseFrame::drawLinePerspective(const BoundingBox &dimensions,
                                     const float thickness,
@@ -32,8 +34,8 @@ void BaseFrame::drawLinePerspective(const BoundingBox &dimensions,
   VBO_2->write(from);
   VBO_2->write(to);
 
-  SHADERS.line.setView(matrix).setFragColor(color).setThickness(thickness).draw(
-      GL_LINES, VBO_2);
+  SHADERS.line.setFragColor(color).setThickness(thickness).draw(GL_LINES,
+                                                                VBO_2);
 }
 void BaseFrame::drawLineConstant(const BoundingBox &dimensions,
                                  const float thickness,
@@ -47,7 +49,7 @@ void BaseFrame::drawLine(const BoundingBox &dimensions,
   VBO_2->write(from);
   VBO_2->write(to);
 
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINES, VBO_2);
+  SHADERS.basic.setFragColor(color).draw(GL_LINES, VBO_2);
 }
 
 void BaseFrame::drawArrow(const BoundingBox &dimensions,
@@ -78,20 +80,15 @@ void BaseFrame::drawArrow(const BoundingBox &dimensions,
 
   VBO_4->write(vertices);
 
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINES, VBO_4,
-                                                         INDICES);
+  SHADERS.basic.setFragColor(color).draw(GL_LINES, VBO_4, INDICES);
 }
 
 void BaseFrame::drawCircle(const glm::vec2 center, const float radius,
                            const Color color) const {
   VBO_1->write(center);
 
-  SHADERS.circ.setView(matrix)
-      .setRadius(radius)
-      .setCenter(center)
-      .setScreenDimensions({App::WIDTH, App::HEIGHT})
-      .setFragColor(color)
-      .draw(GL_POINTS, VBO_1);
+  SHADERS.circ.setRadius(radius).setCenter(center).setFragColor(color).draw(
+      GL_POINTS, VBO_1);
 }
 
 // void BaseFrame::drawBox(const BoundingBox &dimensions, const float lineSize,
@@ -129,8 +126,155 @@ void BaseFrame::drawQuad(const BoundingBox &dimensions,
 
   VBO_4->write(corners);
 
-  SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_TRIANGLE_STRIP,
-                                                         VBO_4);
+  SHADERS.basic.setFragColor(color).draw(GL_TRIANGLE_STRIP, VBO_4);
+}
+
+void BaseFrame::drawTexture(const BoundingBox &dimensions,
+                            const GL::Texture &texture) {
+  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
+  const vertex_layout::postex data[4]{
+      {dimensions.min.x, dimensions.min.y, 0, 0},
+      {dimensions.max.x, dimensions.min.y, TEXEL_RANGE, 0},
+      {dimensions.min.x, dimensions.max.y, 0, TEXEL_RANGE},
+      {dimensions.max.x, dimensions.max.y, TEXEL_RANGE, TEXEL_RANGE}};
+
+  VBO->write(data);
+
+  SHADERS.texcol.setFragColor(WHITE).bindTexture(texture).draw(
+      GL_TRIANGLE_STRIP, VBO);
+}
+void BaseFrame::drawBoxBlur(const BoundingBox &dimensions,
+                            const GL::Texture &texture,
+                            const unsigned int radius,
+                            const unsigned int direction) {
+  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
+  const vertex_layout::postex data[4]{
+      {dimensions.min.x, dimensions.min.y, 0, 0},
+      {dimensions.max.x, dimensions.min.y, TEXEL_RANGE, 0},
+      {dimensions.min.x, dimensions.max.y, 0, TEXEL_RANGE},
+      {dimensions.max.x, dimensions.max.y, TEXEL_RANGE, TEXEL_RANGE}};
+
+  VBO->write(data);
+
+  SHADERS.boxblur.setDirection(direction)
+      .setRadius(radius)
+      .bindTexture(texture)
+      .draw(GL_TRIANGLE_STRIP, VBO);
+}
+void BaseFrame::drawBoxBlur(const BoundingBox &dimensions,
+                            const GL::Texture &texture,
+                            const unsigned int radius) {
+  static GL::FrameBufferObject fbo{};
+  GL::Texture pass{texture.size};
+
+  shaders::uniformBlock<shaders::uniform::ViewBlock>(
+      {glm::ortho(texture.size)});
+  glViewport(0, 0, texture.size.x, texture.size.y);
+  fbo.bind();
+  fbo.attachTexture(pass);
+  drawBoxBlur({texture.size}, texture, radius, 0);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+  glViewport(0, 0, App::WIDTH, App::HEIGHT);
+  drawBoxBlur(dimensions, pass, radius, 1);
+}
+
+static GL::Texture outlinePass() {
+  static constexpr glm::vec4 CLEAR{0.0, 0.0, 0.0, 0.0};
+  GL::Texture out{App::DIMENSIONS, GL_NEAREST, GL_CLAMP_TO_BORDER};
+  glTextureParameterfv(out.ID, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(CLEAR));
+  return out;
+}
+void BaseFrame::drawOutline(const BoundingBox &dimensions,
+                            const GL::Texture &texture,
+                            const unsigned int thickness,
+                            const unsigned int direction, const Color color) {
+  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
+  const vertex_layout::postex data[4]{
+      {dimensions.min.x, dimensions.min.y, 0, 0},
+      {dimensions.max.x, dimensions.min.y, TEXEL_RANGE, 0},
+      {dimensions.min.x, dimensions.max.y, 0, TEXEL_RANGE},
+      {dimensions.max.x, dimensions.max.y, TEXEL_RANGE, TEXEL_RANGE}};
+
+  VBO->write(data);
+
+  SHADERS.outline.setThickness(thickness)
+      .setDirection(direction)
+      .setFragColor(color)
+      .bindTexture(texture)
+      .draw(GL_TRIANGLE_STRIP, VBO);
+
+  // static constexpr vertex_layout::postex data[4]{
+  //     {0, 0, 0, 0},
+  //     {App::DIMENSIONS.x, 0, TEXEL_RANGE, 0},
+  //     {0, App::DIMENSIONS.y, 0, TEXEL_RANGE},
+  //     {App::DIMENSIONS.x, App::DIMENSIONS.y, TEXEL_RANGE, TEXEL_RANGE}};
+  // static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
+  // VBO->write(data);
+
+  // static GL::FrameBufferObject fbo;
+  // static GL::Texture pass = outlinePass();
+
+  // fbo.bind();
+  // fbo.attachTexture(pass);
+  // glClearColor(0.0, 0.0, 0.0, 0.0);
+  // glClear(GL_COLOR_BUFFER_BIT);
+  // drawTexture(dimensions, texture);
+
+  // shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
+
+  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  // SHADERS.outline.setThickness(thickness)
+  //     .setDirection(direction)
+  //     .setFragColor(color)
+  //     .bindTexture(pass)
+  //     .draw(GL_TRIANGLE_STRIP, VBO);
+
+  // shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+
+  // drawTexture(dimensions, texture);
+}
+void BaseFrame::drawOutline(const BoundingBox &dimensions,
+                            const GL::Texture &texture,
+                            const unsigned int thickness, const Color color) {
+  // static GL::FrameBufferObject fbo;
+  // static GL::Texture pass = outlinePass();
+
+  // fbo.bind();
+  // fbo.attachTexture(pass);
+  // glClearColor(0.0, 0.0, 0.0, 0.0);
+  // glClear(GL_COLOR_BUFFER_BIT);
+  // drawOutline(dimensions, texture, thickness, 0, color);
+
+  // shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
+
+  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  // drawOutline({App::DIMENSIONS}, pass, thickness, 1, color);
+
+  // shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+
+  static GL::FrameBufferObject fboA, fboB;
+  static GL::Texture passA = outlinePass(), passB = outlinePass();
+
+  fboA.bind();
+  fboA.attachTexture(passA);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  drawTexture(dimensions, texture);
+
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
+
+  fboB.bind();
+  fboB.attachTexture(passB);
+  glClear(GL_COLOR_BUFFER_BIT);
+  drawOutline({App::DIMENSIONS}, passA, thickness, 0, color);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  drawOutline({App::DIMENSIONS}, passB, thickness, 1, color);
+
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+  drawTexture(dimensions, texture);
 }
 
 void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
@@ -140,8 +284,7 @@ void BaseFrame::drawMesh(const Mesh &mesh, const glm::vec2 &pos,
 
   VBO->write(mesh.data);
 
-  SHADERS.trans.setView(matrix).setParentPos(pos).setRotation(rot).setFragColor(
-      mesh.color);
+  SHADERS.trans.setParentPos(pos).setRotation(rot).setFragColor(mesh.color);
 
   if (mesh.ebo->parent) {
     SHADERS.trans.draw(mesh.primitive, VBO, mesh.ebo);
@@ -170,9 +313,7 @@ void BaseFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
   }
 
   VBO_4->write(box.toTriStrip());
-  SHADERS.bezier.setView(matrix)
-      .setScreenDimensions({App::WIDTH, App::HEIGHT})
-      .setPoints(curve.a, curve.b, curve.c, curve.d)
+  SHADERS.bezier.setPoints(curve.a, curve.b, curve.c, curve.d)
       .setColor(c0, c1)
       .setThickness(thickness)
       .setStepCount(stepFunction(MAIN_CAMERA.zoom(), box.size()))

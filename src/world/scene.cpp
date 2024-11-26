@@ -51,14 +51,6 @@ void Scene::update(const double dt) {
     auto &[position] = *pos;
     auto &[velocity, acceleration, mass] = *linPhys;
 
-    // ecs.newEntity(ecs::DirectRenderable{
-    //     .func{[dt, position](BaseFrame *frame) {
-    //       frame->drawPointFixed(
-    //           position, 10,
-    //           colors::random_i(*reinterpret_cast<const unsigned int
-    //           *>(&dt)));
-    //     }}});
-
     // symplectic euler
     velocity += acceleration * static_cast<float>(dt);
     position += velocity * static_cast<float>(dt);

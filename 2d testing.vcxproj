@@ -19,7 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gl_wrapper\fbo.ixx" />
     <ClCompile Include="src\app\rendering\bezier.ixx" />
+    <ClCompile Include="src\gl_wrapper\buffer_object.ixx" />
+    <ClCompile Include="src\gl_wrapper\shaders\ubo.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx" />
     <ClCompile Include="src\util\runtime_array.ixx" />
     <ClCompile Include="src\world\collision\partitioning\bvh2.cpp" />
@@ -383,10 +386,12 @@
   <ItemGroup>
     <None Include="assets\shaders\basic.frag" />
     <None Include="assets\shaders\basic.vert" />
+    <None Include="assets\shaders\box_blur.frag" />
     <None Include="assets\shaders\circle.frag" />
     <None Include="assets\shaders\debug.frag" />
     <None Include="assets\shaders\line_capped.frag" />
     <None Include="assets\shaders\line_uncapped.frag" />
+    <None Include="assets\shaders\outline.frag" />
     <None Include="assets\shaders\polygon.geom" />
     <None Include="assets\shaders\sdf_font.frag" />
     <None Include="assets\shaders\trans.vert" />

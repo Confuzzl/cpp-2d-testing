@@ -15,6 +15,11 @@ import <vector>;
 import glm;
 import debug;
 import app;
+import ubo;
+
+Renderer::Renderer() {
+  shaders::uniformBlock<shaders::uniform::ScreenBlock>({App::DIMENSIONS});
+}
 
 void Renderer::renderFrame(const double t) {
   glBeginQuery(GL_TIME_ELAPSED, queryObject.ID);

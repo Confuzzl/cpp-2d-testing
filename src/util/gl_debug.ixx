@@ -72,3 +72,25 @@ export void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
   println("source={} type={} id={} severity={} | {}", sourceName(source),
           typeName(type), id, severityName(severity), message);
 }
+
+export std::string glGetErrorName() {
+  switch (glGetError()) {
+  case GL_NO_ERROR:
+    return "NO ERROR";
+  case GL_INVALID_ENUM:
+    return "INVALID ENUM";
+  case GL_INVALID_VALUE:
+    return "INVALID VALUE";
+  case GL_INVALID_OPERATION:
+    return "INVALID OPERATION";
+  case GL_INVALID_FRAMEBUFFER_OPERATION:
+    return "INVALID FRAMEBUFFER OPERATION";
+  case GL_OUT_OF_MEMORY:
+    return "OUT OF MEMORY";
+  case GL_STACK_UNDERFLOW:
+    return "STACK UNDERFLOW";
+  case GL_STACK_OVERFLOW:
+    return "STACK OVERFLOW";
+  }
+  throw std::runtime_error{"INVALID ERROR ENUM"};
+}

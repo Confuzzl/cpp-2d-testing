@@ -210,6 +210,15 @@
     <ClCompile Include="src\world\collision\partitioning\hash_grid.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gl_wrapper\shaders\ubo.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\buffer_object.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_wrapper\fbo.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\gl.h">
@@ -1512,6 +1521,8 @@
     <None Include="assets\shaders\debug.frag" />
     <None Include="assets\shaders\line_uncapped.frag" />
     <None Include="assets\shaders\line_capped.frag" />
+    <None Include="assets\shaders\box_blur.frag" />
+    <None Include="assets\shaders\outline.frag" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\lib\glfw3.lib" />

@@ -2,8 +2,8 @@
 
 in vec2 vertex_uv_out;
 
-layout (binding = 0) uniform sampler2D sampler;
-uniform uint frag_color = 0xff;
+uniform sampler2D sampler;
+uniform uint frag_color;
 uniform float threshold = 0.50;
 uniform float font_size;
 uniform bool anti_alias = true;

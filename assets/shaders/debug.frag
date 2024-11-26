@@ -48,16 +48,17 @@ void line(const vec2 p, const vec2 a, const vec2 b, const float d, const vec3 co
 #define MAGENTA vec3(1.0, 0.0, 1.0)
 #define YELLOW vec3(1.0, 1.0, 0.0)
 
-const uint lines = 1000;
+const uint lines = 10;
 const float lineMin = 1.0;
 const float lineMax = 10.0;
 
 void main() {
-	line(gl_FragCoord.xy, p1, p3, 10.0, BLUE);
-	point(gl_FragCoord.xy, p1, 10.0, RED);
-	point(gl_FragCoord.xy, p3, 10.0, RED);
-	if(!written)
-		discard;
+	
+//	line(gl_FragCoord.xy, p1, p3, 10.0, BLUE);
+//	point(gl_FragCoord.xy, p1, 10.0, RED);
+//	point(gl_FragCoord.xy, p3, 10.0, RED);
+//	if(!written)
+//		discard;
 //	line(gl_FragCoord.xy, p1, p3, 10.0, RED);
 //	POINT(p0, 10, BLACK)
 //	POINT(p1, 10, BLACK)

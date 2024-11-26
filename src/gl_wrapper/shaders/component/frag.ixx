@@ -26,8 +26,6 @@ struct circle : UniformHolder {
 
   NEW_UNIFORM(glm::vec2, center);
   NEW_UNIFORM(float, radius);
-  NEW_UNIFORM(glm::uvec2, screen_dimensions);
-  NEW_VIEW;
   NEW_COLOR;
 
   using UniformHolder::UniformHolder;
@@ -72,8 +70,6 @@ struct bezier : UniformHolder {
   NEW_UNIFORM(Color, color1);
   NEW_UNIFORM(float, thickness);
   NEW_UNIFORM(unsigned int, step_count);
-  NEW_UNIFORM(glm::uvec2, screen_dimensions);
-  NEW_VIEW;
   NEW_UNIFORM(bool, world);
   NEW_UNIFORM(bool, debug);
 };
@@ -81,21 +77,21 @@ struct bezier : UniformHolder {
 struct debug : UniformHolder {
   static constexpr char name[] = "debug.frag";
 };
-// struct line_capped : UniformHolder {
-//   static constexpr char name[] = "line_capped.frag";
-//
-//   NEW_UNIFORM(glm::vec2, p0);
-//   NEW_UNIFORM(glm::vec2, p1);
-//   NEW_COLOR;
-//   NEW_UNIFORM(float, thickness);
-// };
-// struct line_uncapped : UniformHolder {
-//   static constexpr char name[] = "line_uncapped.frag";
-//
-//   NEW_UNIFORM(glm::vec2, p0);
-//   NEW_UNIFORM(glm::vec2, p1);
-//   NEW_COLOR;
-//   NEW_UNIFORM(float, thickness);
-// };
+
+struct box_blur : UniformHolder {
+  static constexpr char name[] = "box_blur.frag";
+
+  NEW_SAMPLER;
+  NEW_UNIFORM(unsigned int, direction);
+  NEW_UNIFORM(unsigned int, radius);
+};
+struct outline : UniformHolder {
+  static constexpr char name[] = "outline.frag";
+
+  NEW_SAMPLER;
+  NEW_UNIFORM(unsigned int, thickness);
+  NEW_UNIFORM(unsigned int, direction);
+  NEW_COLOR;
+};
 } // namespace frag
 } // namespace shaders
