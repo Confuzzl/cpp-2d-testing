@@ -6,6 +6,7 @@ export module uniform;
 
 import debug;
 import glm;
+import gl_debug;
 
 export namespace shaders {
 template <typename T>
@@ -31,8 +32,10 @@ template <typename T> struct Uniform {
   Uniform(const GLuint programID, const char *name)
       : programID{programID}, location{glGetUniformLocation(programID, name)} {
     if (location == -1)
+      // return;
       throw std::runtime_error{
-          std::format("{} | {} was not a valid uniform name", programID, name)};
+          std::format("{} | {} was not a valid uniform name [{}]", programID,
+                      name, glGetErrorName())};
     println("{} | {}:{}", programID, name, location);
   }
 };
@@ -92,7 +95,8 @@ struct Sampler {
     const GLint location = glGetUniformLocation(shaderID, name);
     if (location == -1)
       throw std::runtime_error{
-          std::format("{}: {} was not a valid sampler name", shaderID, name)};
+          std::format("{}: {} was not a valid sampler name [{}]", shaderID,
+                      name, glGetErrorName())};
     GLuint binding;
     glGetUniformuiv(shaderID, location, &binding);
     return binding;

@@ -4,12 +4,16 @@ uniform vec2 p0;
 uniform vec2 p1;
 uniform vec2 p2;
 uniform vec2 p3;
-uniform uint color0 = 0x000000ff;
-uniform uint color1 = 0x000000ff;
-uniform float thickness = 0.01;
-uniform uint step_count = 50;
-uniform uvec2 screen_dimensions;
-uniform mat4 view;
+uniform uint color0;
+uniform uint color1;
+uniform float thickness;
+uniform uint step_count;
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+layout(std140) uniform ScreenBlock {
+	uvec2 screen_dimensions;
+};
 uniform bool world;
 uniform bool debug;
 

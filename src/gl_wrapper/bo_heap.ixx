@@ -10,19 +10,18 @@ import <list>;
 
 import glm;
 import vertex_layout;
+import buffer_object;
 
 import debug;
 
-namespace GL {
-struct BufferObject;
-}
+struct HeapBufferObject;
 
 export struct BufferObjectHeapHandle {
-  GL::BufferObject *parent = nullptr;
+  HeapBufferObject *parent = nullptr;
   GLuint offset = 0, size = 0;
 
   BufferObjectHeapHandle() = default;
-  BufferObjectHeapHandle(GL::BufferObject *parent, const GLuint offset,
+  BufferObjectHeapHandle(HeapBufferObject *parent, const GLuint offset,
                          const GLuint size);
   ~BufferObjectHeapHandle();
 };
@@ -31,7 +30,7 @@ export struct VBOHeapHandle : BufferObjectHeapHandle {
   GLuint count = 0, vertexSize = 0;
 
   VBOHeapHandle() = default;
-  VBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
+  VBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
                 const GLuint size, const GLuint vertexSize);
 
   void writeRaw(const void *data, const GLuint size);
@@ -52,7 +51,7 @@ export struct EBOHeapHandle : BufferObjectHeapHandle {
   GLuint length = 0;
 
   EBOHeapHandle() = default;
-  EBOHeapHandle(GL::BufferObject *parent, const GLuint offset,
+  EBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
                 const GLuint size,
                 const std::initializer_list<GLuint> &indices);
 };
@@ -62,11 +61,8 @@ export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
 // owning EBO handle
 export using EBOHandle = std::unique_ptr<EBOHeapHandle>;
 
-namespace GL {
-struct BufferObject {
+struct HeapBufferObject : GL::BufferObject {
   static constexpr auto MAX_SIZE = 0xffffffu;
-
-  GLuint ID;
 
   struct FreeBlock {
     GLuint offset, size;
@@ -74,21 +70,21 @@ struct BufferObject {
   using FreeList = std::list<FreeBlock>;
   FreeList freeList{{0, MAX_SIZE}};
 
-  BufferObject();
-  ~BufferObject();
-  BufferObject(const BufferObject &) = delete;
-  BufferObject(BufferObject &&o);
-  BufferObject &operator=(const BufferObject &) = delete;
-  BufferObject &operator=(BufferObject &&o);
+  HeapBufferObject();
+  ~HeapBufferObject() = default;
+  HeapBufferObject(const HeapBufferObject &) = delete;
+  HeapBufferObject(HeapBufferObject &&o);
+  HeapBufferObject &operator=(const HeapBufferObject &) = delete;
+  HeapBufferObject &operator=(HeapBufferObject &&o);
 
   void free(const BufferObjectHeapHandle *handle);
   void coalesce(const FreeList::iterator &block);
   void coalesceRight(const FreeList::iterator &block);
 };
 
-struct VertexBufferObject : BufferObject {
+namespace GL {
+struct VertexBufferObject : ::HeapBufferObject {
   template <typename T> VBOHandle allocate(const GLuint count) {
-
     const GLuint size = count * static_cast<GLuint>(sizeof(T));
     if (size > MAX_SIZE)
       return {};
@@ -114,7 +110,7 @@ struct VertexBufferObject : BufferObject {
   }
 };
 
-struct ElementBufferObject : BufferObject {
+struct ElementBufferObject : ::HeapBufferObject {
   EBOHandle allocate(const std::initializer_list<GLuint> &indices);
 };
 } // namespace GL
@@ -126,6 +122,7 @@ export template <typename T> struct BufferObjectAllocator {
 };
 export struct VBOAllocator : BufferObjectAllocator<GL::VertexBufferObject> {
   template <typename T = vertex_layout::pos> VBOHandle get(const GLuint count) {
+    // println("VBO for {}", count);
     for (auto &buffer : buffers) {
       if (auto out = buffer.allocate<T>(count); out)
         return out;

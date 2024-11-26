@@ -18,6 +18,9 @@ import math;
 import ecs_component;
 import <random>;
 import debug;
+import ubo;
+import texture;
+import fbo;
 
 static glm::vec4 offsets() {
   return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
@@ -31,21 +34,31 @@ static glm::vec2 point(const unsigned int i) {
 
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
 
   drawGrid();
 
-  for (const auto [id, draw] : ECS.viewComponents<ecs::DirectRenderable>()) {
-    (*draw)(this);
-    draw->operator()(this);
-  }
+  drawTexture({{-1, -1}, {0, 0}}, tex<"test2.png", GL_NEAREST>());
+  // drawOutline({{-1, 0}, {0, 1}}, tex<"test2.png", GL_NEAREST>(), 10, 0,
+  // GREEN); drawOutline({{0, -1}, {1, 0}}, tex<"test2.png", GL_NEAREST>(), 10,
+  // 1, GREEN);
+  drawOutline({{0, 0}, {1, 1}}, tex<"test2.png", GL_NEAREST>(), 1, GREEN);
+  // drawOutline({{0, 0}, {1, 1}}, tex<"test2.png", GL_NEAREST>(), 10, GREEN);
+  // drawOutline({{-1, 0}, {0, 1}}, tex<"test2.png", GL_NEAREST>(), 10, GREEN);
+  //  drawTexture({{0, 0}, {1, 1}}, tex<"test2.png">());
+
+  // for (const auto [id, draw] : ECS.viewComponents<ecs::DirectRenderable>()) {
+  //   (*draw)(this);
+  //   draw->operator()(this);
+  // }
   // for (const auto [id, rend] : ecs.viewComponents<ecs::Renderable>()) {
   //   drawMesh(rend->mesh);
   // }
 
-  for (const auto [id, box] : ECS.viewComponents<ecs::Boundable>()) {
-    drawQuad({box->bounds.min, box->bounds.max},
-             colors::random_i(id).setAlpha(127));
-  }
+  // for (const auto [id, box] : ECS.viewComponents<ecs::Boundable>()) {
+  //   drawQuad({box->bounds.min, box->bounds.max},
+  //            colors::random_i(id).setAlpha(127));
+  // }
 
   //// drawBezier({point(0), point(1), point(2), point(3)}, colors::MAGENTA,
   ////            colors::CYAN, 0.01f, true);
@@ -79,6 +92,8 @@ void WorldFrame::drawGrid() const {
   static constexpr int NUM_HALF_MINOR_LINES =
       NUM_HALF_MAJOR_LINES *
       (MINOR_PER_MAJOR - 1); // skip minor that overlaps major
+  static VBOHandle MAJOR = VBO_HOLDER.get(NUM_HALF_MAJOR_LINES * 8);
+  static VBOHandle MINOR = VBO_HOLDER.get(NUM_HALF_MINOR_LINES * 8);
 
   const float zoomLevel = MAIN_CAMERA.zoomExponent();
 
@@ -88,9 +103,6 @@ void WorldFrame::drawGrid() const {
 
   const float majorSpacing = MAJOR_LINE_SPACING / zoomLevel;
   const float minorSpacing = MINOR_LINE_SPACING / zoomLevel;
-
-  static VBOHandle MAJOR = VBO_HOLDER.get(NUM_HALF_MAJOR_LINES * 8);
-  static VBOHandle MINOR = VBO_HOLDER.get(NUM_HALF_MINOR_LINES * 8);
 
   for (auto i = 0; i < NUM_HALF_MAJOR_LINES; i++) {
     const float min = -NUM_HALF_MAJOR_LINES * majorSpacing,
@@ -113,12 +125,10 @@ void WorldFrame::drawGrid() const {
     for (const glm::vec2 p : majors)
       MAJOR->write(ipos + p);
   }
-  SHADERS.line.setView(matrix)
-      .setFragColor(LIGHTEST_GRAY)
+  SHADERS.line.setFragColor(LIGHTEST_GRAY)
       .setThickness(0.005f / MAIN_CAMERA.zoom())
       .draw(GL_LINES, MINOR);
-  SHADERS.line.setView(matrix)
-      .setFragColor(GRAY)
+  SHADERS.line.setFragColor(GRAY)
       .setThickness(0.005f / MAIN_CAMERA.zoom())
       .draw(GL_LINES, MAJOR);
 
@@ -127,8 +137,7 @@ void WorldFrame::drawGrid() const {
                           {0, -NUM_HALF_MAJOR_LINES * majorSpacing + ipos.y},
                           {0, +NUM_HALF_MAJOR_LINES * majorSpacing + ipos.y}};
   VBO_4->write(axes);
-  SHADERS.line.setView(matrix)
-      .setFragColor(BLACK)
+  SHADERS.line.setFragColor(BLACK)
       .setThickness(0.01f / MAIN_CAMERA.zoom())
       .draw(GL_LINES, VBO_4);
 }

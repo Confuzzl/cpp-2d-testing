@@ -71,6 +71,11 @@ export struct BoundingBox {
     min = {+F_INF, +F_INF};
     max = {-F_INF, -F_INF};
   }
+
+  static constexpr BoundingBox startSize(const glm::vec2 start,
+                                         const glm::vec2 size) {
+    return {start, start + size};
+  }
 };
 
 import <format>;

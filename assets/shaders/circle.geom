@@ -3,7 +3,9 @@
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-uniform mat4 view;
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
 uniform float radius = 1;
 
 void main() {

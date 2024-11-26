@@ -21,6 +21,8 @@ import bo_heap;
 import uniform;
 import math;
 import aabb;
+import ubo;
+import fbo;
 
 static glm::vec4 offsets() {
   return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
@@ -36,6 +38,8 @@ static glm::vec2 point(const unsigned int i) {
 GUIFrame::GUIFrame() { matrix = App::UI_MATRIX; }
 
 void GUIFrame::render() {
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+
   // drawBezier({point(0), point(1), point(2), point(3)}, colors::GREEN,
   //            colors::YELLOW, 5.0f, true);
 
@@ -61,7 +65,7 @@ void GUIFrame::render() {
 void GUIFrame::debug() {
   static constexpr BoundingBox SCREEN{App::DIMENSIONS};
   VBO_4->write(SCREEN.toTriStrip());
-  SHADERS.debug.setView(matrix).draw(GL_TRIANGLE_STRIP, VBO_4);
+  SHADERS.debug.draw(GL_TRIANGLE_STRIP, VBO_4);
 }
 
 void GUIFrame::drawBezier(const Bezier &curve, const Color c0, const Color c1,
@@ -96,8 +100,8 @@ void GUIFrame::text(const std::string &str, const Color color,
                     const unsigned short x, const unsigned short y,
                     const float scale) const {
   static constexpr auto MAX_LENGTH = 0x100u;
-  static constexpr glm::lowp_u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
-                                                    {{0, 0}, {1, 1}, {0, 1}}};
+  static constexpr glm::u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
+                                               {{0, 0}, {1, 1}, {0, 1}}};
   static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
 
   if (str.size() > MAX_LENGTH)
@@ -121,10 +125,10 @@ void GUIFrame::text(const std::string &str, const Color color,
     uvInfo.y = font::IMG_HEIGHT - uvInfo.x - uvInfo.z;
     uvInfo /= glm::vec4{font::IMG_WIDTH, font::IMG_HEIGHT, font::IMG_WIDTH,
                         font::IMG_HEIGHT};
-    uvInfo *= glm::vec4{SHRT_MAX};
+    uvInfo *= TEXEL_RANGE;
 
-    const glm::lowp_u16vec2 uvCoordinates{uvInfo.x, uvInfo.y};
-    const glm::lowp_u16vec2 uvBoundingBoxs{uvInfo.z, uvInfo.w};
+    const glm::u16vec2 uvCoordinates{uvInfo.x, uvInfo.y};
+    const glm::u16vec2 uvBoundingBoxs{uvInfo.z, uvInfo.w};
 
     for (auto tri = 0; tri < 2; tri++) {
       for (auto v = 0; v < 3; v++) {
@@ -144,15 +148,13 @@ void GUIFrame::text(const std::string &str, const Color color,
   CHAR_VBO->write(vertices);
 
   if (scale < 1) {
-    SHADERS.texcol.setView(matrix)
-        .setFragColor(color)
-        .bindTexture(TEXTURE.font)
+    SHADERS.texcol.setFragColor(color)
+        .bindTexture(tex<"consolas1024.png">())
         .draw(GL_TRIANGLES, CHAR_VBO);
   } else {
-    SHADERS.sdf.setView(matrix)
-        .setFragColor(color)
+    SHADERS.sdf.setFragColor(color)
         .setFontSize(scale)
-        .bindTexture(TEXTURE.sdfFont)
+        .bindTexture(tex<"sdf1024.png">())
         .draw(GL_TRIANGLES, CHAR_VBO);
   }
 }

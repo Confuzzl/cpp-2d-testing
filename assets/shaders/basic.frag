@@ -1,6 +1,6 @@
 #version 460 core
 
-uniform uint frag_color = 0xff;
+uniform uint frag_color;
 
 out vec4 color;
 

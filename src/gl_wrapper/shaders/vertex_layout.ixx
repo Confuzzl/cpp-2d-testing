@@ -31,8 +31,10 @@ template <typename... inputs_t> void enable(const GLuint ID) {
 struct pos {
   glm::vec2 _pos;
 
-  pos(const float x, const float y) : _pos{x, y} {}
-  pos(const glm::vec2 pos) : _pos{pos} {}
+  template <typename X, typename Y>
+  constexpr pos(const X x, const Y y)
+      : _pos{static_cast<float>(x), static_cast<float>(y)} {}
+  constexpr pos(const glm::vec2 pos) : _pos{pos} {}
 
   const void *data() const { return &_pos; }
 };
@@ -42,10 +44,12 @@ struct postex {
   glm::vec2 pos;
   glm::u16vec2 tex;
 
-  postex(const float x, const float y, const unsigned short u,
-         const unsigned short v)
-      : pos{x, y}, tex{u, v} {}
-  postex(const glm::vec2 pos, const glm::u16vec2 tex) : pos{pos}, tex{tex} {}
+  template <typename X, typename Y, typename U, typename V>
+  constexpr postex(const X x, const Y y, const U u, const V v)
+      : pos{static_cast<float>(x), static_cast<float>(y)},
+        tex{static_cast<unsigned short>(u), static_cast<unsigned short>(v)} {}
+  constexpr postex(const glm::vec2 pos, const glm::u16vec2 tex)
+      : pos{pos}, tex{tex} {}
 
   const void *data() const { return &pos; }
 };

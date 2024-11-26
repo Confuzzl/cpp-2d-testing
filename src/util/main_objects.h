@@ -8,7 +8,7 @@
 
 #define SHADERS MAIN_RENDERER.shaders
 
-#define TEXTURE MAIN_RENDERER.textures
+// #define TEXTURE MAIN_RENDERER.textures
 
 #define VBO_1 MAIN_RENDERER.allocators.vbo1
 #define VBO_2 MAIN_RENDERER.allocators.vbo2

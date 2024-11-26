@@ -8,6 +8,7 @@ export module shaders:vertex;
 import glm;
 import vertex_layout;
 import uniform;
+import ubo;
 
 import debug;
 
@@ -35,8 +36,6 @@ struct identity : Base<vertex_layout::pos> {
 struct basic : Base<vertex_layout::pos> {
   static constexpr char name[] = "basic.vert";
 
-  NEW_VIEW;
-
   using Base::Base;
 };
 
@@ -45,14 +44,11 @@ struct trans : Base<vertex_layout::pos> {
 
   NEW_UNIFORM(glm::vec2, parent_pos);
   NEW_UNIFORM(float, rotation);
-  NEW_VIEW;
 
   using Base::Base;
 };
 struct tex : Base<vertex_layout::postex> {
   static constexpr char name[] = "tex.vert";
-
-  NEW_VIEW;
 
   using Base::Base;
 };

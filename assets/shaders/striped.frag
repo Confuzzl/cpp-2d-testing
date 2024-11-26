@@ -1,14 +1,14 @@
 #version 460 core
 
-uniform uint width = 1;
-uniform uint spacing = 0;
+uniform uint width;
+uniform uint spacing;
 
 #define FORWARD 1
 #define BACKWARD 2
 #define CROSS 3
-uniform uint pattern = FORWARD;
+uniform uint pattern;
 
-uniform uint frag_color = 0xff;
+uniform uint frag_color;
 
 out vec4 color;
 
