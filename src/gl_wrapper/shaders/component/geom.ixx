@@ -17,15 +17,21 @@ concept format = has_uniform<T> && has_extension<T>("geom");
 struct line : UniformHolder {
   static constexpr char name[] = "line.geom";
 
+<<<<<<< HEAD
   NEW_UNIFORM_BLOCK(ViewBlock)
 
+=======
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   NEW_UNIFORM(float, thickness);
 };
 struct circle : UniformHolder {
   static constexpr char name[] = "circle.geom";
 
+<<<<<<< HEAD
   NEW_UNIFORM_BLOCK(ViewBlock)
 
+=======
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   NEW_UNIFORM(float, radius);
 };
 } // namespace geom

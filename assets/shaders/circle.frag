@@ -1,14 +1,22 @@
 #version 460 core
 
+<<<<<<< HEAD
+=======
+uniform float radius;
+uniform vec2 center;
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
 layout(std140) uniform ScreenBlock {
 	uvec2 screen_dimensions;
 };
+<<<<<<< HEAD
 
 uniform float radius;
 uniform vec2 center;
+=======
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
 uniform uint frag_color = 0xff;
 

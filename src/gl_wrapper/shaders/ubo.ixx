@@ -7,6 +7,7 @@ export module ubo;
 import glm;
 import buffer_object;
 
+<<<<<<< HEAD
 import <stdexcept>;
 import <format>;
 import debug;
@@ -16,6 +17,17 @@ template <typename T> struct UniformBufferObject : BufferObject {
   T data;
 
   UniformBufferObject() : BufferObject(sizeof(T)) {}
+=======
+export namespace GL {
+template <typename T> struct UniformBufferObject : BufferObject {
+  T data;
+  GLuint blockIndex;
+
+  UniformBufferObject(const char *name) : BufferObject(sizeof(T)) {
+    blockIndex = glGetUniformBlockIndex(ID, name);
+    glBindBufferBase(GL_UNIFORM_BUFFER, blockIndex, ID);
+  }
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
   void update(const T &data) {
     this->data = data;
@@ -23,10 +35,17 @@ template <typename T> struct UniformBufferObject : BufferObject {
   }
 };
 } // namespace GL
+<<<<<<< HEAD
 
 export namespace shaders {
 template <typename T> GL::UniformBufferObject<T> &getUBO() {
   static GL::UniformBufferObject<T> out;
+=======
+export namespace shaders {
+template <typename T> GL::UniformBufferObject<T> &uniformBlock(const T &data) {
+  static GL::UniformBufferObject<T> out{T::name};
+  out.update(data);
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   return out;
 }
 namespace uniform {
@@ -39,6 +58,7 @@ struct ScreenBlock {
   glm::uvec2 screen_dimensions;
 };
 } // namespace uniform
+<<<<<<< HEAD
 } // namespace shaders
 
 export namespace GL {
@@ -54,3 +74,6 @@ template <typename T> struct UniformBlock {
   }
 };
 } // namespace GL
+=======
+} // namespace shaders
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678

@@ -2,12 +2,20 @@
 
 layout (location = 0) in vec2 pos;
 
+<<<<<<< HEAD
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
 
 uniform vec2 parent_pos;
 uniform float rotation;
+=======
+uniform vec2 parent_pos;
+uniform float rotation;
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
 void main() {
 	const float s = sin(rotation);

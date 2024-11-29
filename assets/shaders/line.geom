@@ -8,6 +8,12 @@ layout(std140) uniform ViewBlock {
 };
 
 uniform float thickness;
+<<<<<<< HEAD
+=======
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
 void main() {
 	int ab = int(gl_in[0].gl_Position.x < gl_in[1].gl_Position.x);

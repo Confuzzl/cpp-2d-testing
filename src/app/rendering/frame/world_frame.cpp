@@ -34,11 +34,26 @@ static glm::vec2 point(const unsigned int i) {
 
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
+<<<<<<< HEAD
   shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
 
   drawGrid();
 
   // drawOutline({{-1, -1}, {1, 1}}, tex<"test2.png">(), 10, RED);
+=======
+  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
+
+  drawGrid();
+
+  drawTexture({{-1, -1}, {0, 0}}, tex<"test2.png", GL_NEAREST>());
+  // drawOutline({{-1, 0}, {0, 1}}, tex<"test2.png", GL_NEAREST>(), 10, 0,
+  // GREEN); drawOutline({{0, -1}, {1, 0}}, tex<"test2.png", GL_NEAREST>(), 10,
+  // 1, GREEN);
+  drawOutline({{0, 0}, {1, 1}}, tex<"test2.png", GL_NEAREST>(), 1, GREEN);
+  // drawOutline({{0, 0}, {1, 1}}, tex<"test2.png", GL_NEAREST>(), 10, GREEN);
+  // drawOutline({{-1, 0}, {0, 1}}, tex<"test2.png", GL_NEAREST>(), 10, GREEN);
+  //  drawTexture({{0, 0}, {1, 1}}, tex<"test2.png">());
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
   // for (const auto [id, draw] : ECS.viewComponents<ecs::DirectRenderable>()) {
   //   (*draw)(this);

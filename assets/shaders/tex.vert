@@ -9,6 +9,12 @@ layout(std140) uniform ViewBlock {
 
 out vec2 vertex_uv_out;
 
+<<<<<<< HEAD
+=======
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+>>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
 const int TEXEL_RANGE = (1 << 15) - 1;
 
