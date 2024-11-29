@@ -1,5 +1,12 @@
 #version 460 core
 
+layout(std140) uniform ViewBlock {
+	mat4 view;
+};
+layout(std140) uniform ScreenBlock {
+	uvec2 screen_dimensions;
+};
+
 uniform vec2 p0;
 uniform vec2 p1;
 uniform vec2 p2;
@@ -8,12 +15,6 @@ uniform uint color0;
 uniform uint color1;
 uniform float thickness;
 uniform uint step_count;
-layout(std140) uniform ViewBlock {
-	mat4 view;
-};
-layout(std140) uniform ScreenBlock {
-	uvec2 screen_dimensions;
-};
 uniform bool world;
 uniform bool debug;
 

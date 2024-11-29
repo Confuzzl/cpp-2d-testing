@@ -3,11 +3,12 @@
 layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 vertex_uv_in;
 
-out vec2 vertex_uv_out;
-
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
+
+out vec2 vertex_uv_out;
+
 
 const int TEXEL_RANGE = (1 << 15) - 1;
 

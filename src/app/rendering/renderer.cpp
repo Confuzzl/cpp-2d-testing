@@ -18,7 +18,7 @@ import app;
 import ubo;
 
 Renderer::Renderer() {
-  shaders::uniformBlock<shaders::uniform::ScreenBlock>({App::DIMENSIONS});
+  shaders::getUBO<shaders::uniform::ScreenBlock>().update({App::DIMENSIONS});
 }
 
 void Renderer::renderFrame(const double t) {

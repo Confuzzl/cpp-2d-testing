@@ -3,10 +3,11 @@
 layout (lines) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-uniform float thickness;
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
+
+uniform float thickness;
 
 void main() {
 	int ab = int(gl_in[0].gl_Position.x < gl_in[1].gl_Position.x);

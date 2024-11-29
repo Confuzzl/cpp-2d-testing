@@ -8,6 +8,7 @@ export module shaders:fragment;
 import glm;
 import color;
 import uniform;
+import ubo;
 
 export namespace shaders {
 namespace frag {
@@ -23,6 +24,9 @@ struct basic : UniformHolder {
 };
 struct circle : UniformHolder {
   static constexpr char name[] = "circle.frag";
+
+  NEW_UNIFORM_BLOCK(ViewBlock)
+  NEW_UNIFORM_BLOCK(ScreenBlock)
 
   NEW_UNIFORM(glm::vec2, center);
   NEW_UNIFORM(float, radius);
@@ -61,6 +65,9 @@ struct sdf_font : UniformHolder {
 };
 struct bezier : UniformHolder {
   static constexpr char name[] = "bezier.frag";
+
+  NEW_UNIFORM_BLOCK(ViewBlock)
+  NEW_UNIFORM_BLOCK(ScreenBlock)
 
   NEW_UNIFORM(glm::vec2, p0);
   NEW_UNIFORM(glm::vec2, p1);

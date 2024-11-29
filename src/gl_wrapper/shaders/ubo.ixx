@@ -7,15 +7,15 @@ export module ubo;
 import glm;
 import buffer_object;
 
+import <stdexcept>;
+import <format>;
+import debug;
+
 export namespace GL {
 template <typename T> struct UniformBufferObject : BufferObject {
   T data;
-  GLuint blockIndex;
 
-  UniformBufferObject(const char *name) : BufferObject(sizeof(T)) {
-    blockIndex = glGetUniformBlockIndex(ID, name);
-    glBindBufferBase(GL_UNIFORM_BUFFER, blockIndex, ID);
-  }
+  UniformBufferObject() : BufferObject(sizeof(T)) {}
 
   void update(const T &data) {
     this->data = data;
@@ -23,10 +23,10 @@ template <typename T> struct UniformBufferObject : BufferObject {
   }
 };
 } // namespace GL
+
 export namespace shaders {
-template <typename T> GL::UniformBufferObject<T> &uniformBlock(const T &data) {
-  static GL::UniformBufferObject<T> out{T::name};
-  out.update(data);
+template <typename T> GL::UniformBufferObject<T> &getUBO() {
+  static GL::UniformBufferObject<T> out;
   return out;
 }
 namespace uniform {
@@ -40,3 +40,17 @@ struct ScreenBlock {
 };
 } // namespace uniform
 } // namespace shaders
+
+export namespace GL {
+template <typename T> struct UniformBlock {
+  GLuint blockIndex;
+
+  UniformBlock(const GLuint programID)
+      : blockIndex{glGetUniformBlockIndex(programID, T::name)} {
+    if (blockIndex == GL_INVALID_INDEX)
+      throw std::runtime_error{
+          std::format("INVALID BLOCK INDEX FOR {}", T::name)};
+    glBindBufferBase(GL_UNIFORM_BUFFER, blockIndex, ::shaders::getUBO<T>().ID);
+  }
+};
+} // namespace GL

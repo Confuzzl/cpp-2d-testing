@@ -36,11 +36,15 @@ struct identity : Base<vertex_layout::pos> {
 struct basic : Base<vertex_layout::pos> {
   static constexpr char name[] = "basic.vert";
 
+  NEW_UNIFORM_BLOCK(ViewBlock)
+
   using Base::Base;
 };
 
 struct trans : Base<vertex_layout::pos> {
   static constexpr char name[] = "trans.vert";
+
+  NEW_UNIFORM_BLOCK(ViewBlock)
 
   NEW_UNIFORM(glm::vec2, parent_pos);
   NEW_UNIFORM(float, rotation);
@@ -49,6 +53,8 @@ struct trans : Base<vertex_layout::pos> {
 };
 struct tex : Base<vertex_layout::postex> {
   static constexpr char name[] = "tex.vert";
+
+  NEW_UNIFORM_BLOCK(ViewBlock)
 
   using Base::Base;
 };

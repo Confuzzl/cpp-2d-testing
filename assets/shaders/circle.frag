@@ -1,13 +1,14 @@
 #version 460 core
 
-uniform float radius;
-uniform vec2 center;
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
 layout(std140) uniform ScreenBlock {
 	uvec2 screen_dimensions;
 };
+
+uniform float radius;
+uniform vec2 center;
 
 uniform uint frag_color = 0xff;
 
