@@ -15,15 +15,6 @@ uniform uint color0;
 uniform uint color1;
 uniform float thickness;
 uniform uint step_count;
-<<<<<<< HEAD
-=======
-layout(std140) uniform ViewBlock {
-	mat4 view;
-};
-layout(std140) uniform ScreenBlock {
-	uvec2 screen_dimensions;
-};
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 uniform bool world;
 uniform bool debug;
 

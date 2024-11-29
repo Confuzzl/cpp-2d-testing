@@ -6,10 +6,7 @@ layout (triangle_strip, max_vertices = 4) out;
 layout(std140) uniform ViewBlock {
 	mat4 view;
 };
-<<<<<<< HEAD
 
-=======
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 uniform float radius = 1;
 
 void main() {

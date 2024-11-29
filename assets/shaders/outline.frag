@@ -31,26 +31,6 @@ void main() {
 			vertex_uv_out + vec2(ln * uv_step) * vec2(other_direction, direction)
 		).a > 0.0) {
 			color = rgba();
-		return;
-	}
-	const uint other_direction = 1 - direction;
-
-	const ivec2 dim = textureSize(sampler, 0);
-
-	const int uv_n = int((vertex_uv_out * dim)[direction]);
-	
-	const float uv_step = 1.0 / dim[direction];
-
-	for (int ln = -int(thickness); ln <= int(thickness); ln++) {
-		const int off_n = uv_n + ln;
-		const float n = float(off_n) / dim[direction];
-
-		if (texture(sampler, vec2(
-			vertex_uv_out.x + ln * uv_step * other_direction,
-			vertex_uv_out.y + ln * uv_step * direction
-		)).a > 0.0) {
-			vec4 c = rgba();
-			color = c;
 			return;
 		}
 	}
