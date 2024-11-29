@@ -167,11 +167,7 @@ void BaseFrame::drawBoxBlur(const BoundingBox &dimensions,
   static GL::FrameBufferObject fbo{};
   GL::Texture pass{texture.size};
 
-<<<<<<< HEAD
   shaders::getUBO<shaders::uniform::ViewBlock>().update(
-=======
-  shaders::uniformBlock<shaders::uniform::ViewBlock>(
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
       {glm::ortho(texture.size)});
   glViewport(0, 0, texture.size.x, texture.size.y);
   fbo.bind();
@@ -179,11 +175,7 @@ void BaseFrame::drawBoxBlur(const BoundingBox &dimensions,
   drawBoxBlur({texture.size}, texture, radius, 0);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-<<<<<<< HEAD
   shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
-=======
-  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   glViewport(0, 0, App::WIDTH, App::HEIGHT);
   drawBoxBlur(dimensions, pass, radius, 1);
 }
@@ -196,7 +188,6 @@ static GL::Texture outlinePass() {
 }
 void BaseFrame::drawOutline(const BoundingBox &dimensions,
                             const GL::Texture &texture,
-<<<<<<< HEAD
                             const unsigned int thickness, const Color color) {
   static GL::FrameBufferObject fboA, fboB;
   static GL::Texture passA = outlinePass(), passB = outlinePass();
@@ -206,76 +197,6 @@ void BaseFrame::drawOutline(const BoundingBox &dimensions,
       {App::DIMENSIONS.x, 0, TEXEL_RANGE, 0},
       {0, App::DIMENSIONS.y, 0, TEXEL_RANGE},
       {App::DIMENSIONS.x, App::DIMENSIONS.y, TEXEL_RANGE, TEXEL_RANGE}};
-=======
-                            const unsigned int thickness,
-                            const unsigned int direction, const Color color) {
-  static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
-  const vertex_layout::postex data[4]{
-      {dimensions.min.x, dimensions.min.y, 0, 0},
-      {dimensions.max.x, dimensions.min.y, TEXEL_RANGE, 0},
-      {dimensions.min.x, dimensions.max.y, 0, TEXEL_RANGE},
-      {dimensions.max.x, dimensions.max.y, TEXEL_RANGE, TEXEL_RANGE}};
-
-  VBO->write(data);
-
-  SHADERS.outline.setThickness(thickness)
-      .setDirection(direction)
-      .setFragColor(color)
-      .bindTexture(texture)
-      .draw(GL_TRIANGLE_STRIP, VBO);
-
-  // static constexpr vertex_layout::postex data[4]{
-  //     {0, 0, 0, 0},
-  //     {App::DIMENSIONS.x, 0, TEXEL_RANGE, 0},
-  //     {0, App::DIMENSIONS.y, 0, TEXEL_RANGE},
-  //     {App::DIMENSIONS.x, App::DIMENSIONS.y, TEXEL_RANGE, TEXEL_RANGE}};
-  // static VBOHandle VBO = VBO_HOLDER.get<vertex_layout::postex>(4);
-  // VBO->write(data);
-
-  // static GL::FrameBufferObject fbo;
-  // static GL::Texture pass = outlinePass();
-
-  // fbo.bind();
-  // fbo.attachTexture(pass);
-  // glClearColor(0.0, 0.0, 0.0, 0.0);
-  // glClear(GL_COLOR_BUFFER_BIT);
-  // drawTexture(dimensions, texture);
-
-  // shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
-
-  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  // SHADERS.outline.setThickness(thickness)
-  //     .setDirection(direction)
-  //     .setFragColor(color)
-  //     .bindTexture(pass)
-  //     .draw(GL_TRIANGLE_STRIP, VBO);
-
-  // shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
-
-  // drawTexture(dimensions, texture);
-}
-void BaseFrame::drawOutline(const BoundingBox &dimensions,
-                            const GL::Texture &texture,
-                            const unsigned int thickness, const Color color) {
-  // static GL::FrameBufferObject fbo;
-  // static GL::Texture pass = outlinePass();
-
-  // fbo.bind();
-  // fbo.attachTexture(pass);
-  // glClearColor(0.0, 0.0, 0.0, 0.0);
-  // glClear(GL_COLOR_BUFFER_BIT);
-  // drawOutline(dimensions, texture, thickness, 0, color);
-
-  // shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
-
-  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  // drawOutline({App::DIMENSIONS}, pass, thickness, 1, color);
-
-  // shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
-
-  static GL::FrameBufferObject fboA, fboB;
-  static GL::Texture passA = outlinePass(), passB = outlinePass();
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
   fboA.bind();
   fboA.attachTexture(passA);
@@ -283,16 +204,12 @@ void BaseFrame::drawOutline(const BoundingBox &dimensions,
   glClear(GL_COLOR_BUFFER_BIT);
   drawTexture(dimensions, texture);
 
-<<<<<<< HEAD
   shaders::getUBO<shaders::uniform::ViewBlock>().update({App::UI_MATRIX});
-=======
-  shaders::uniformBlock<shaders::uniform::ViewBlock>({App::UI_MATRIX});
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
   fboB.bind();
   fboB.attachTexture(passB);
   glClear(GL_COLOR_BUFFER_BIT);
-<<<<<<< HEAD
+
   VBO->write(data);
   SHADERS.outline.bindTexture(passA)
       .setThickness(thickness)
@@ -309,14 +226,7 @@ void BaseFrame::drawOutline(const BoundingBox &dimensions,
       .draw(GL_TRIANGLE_STRIP, VBO);
 
   shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
-=======
-  drawOutline({App::DIMENSIONS}, passA, thickness, 0, color);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  drawOutline({App::DIMENSIONS}, passB, thickness, 1, color);
-
-  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   drawTexture(dimensions, texture);
 }
 

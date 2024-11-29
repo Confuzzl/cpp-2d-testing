@@ -36,11 +36,8 @@ struct identity : Base<vertex_layout::pos> {
 struct basic : Base<vertex_layout::pos> {
   static constexpr char name[] = "basic.vert";
 
-<<<<<<< HEAD
   NEW_UNIFORM_BLOCK(ViewBlock)
 
-=======
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   using Base::Base;
 };
 
@@ -57,11 +54,8 @@ struct trans : Base<vertex_layout::pos> {
 struct tex : Base<vertex_layout::postex> {
   static constexpr char name[] = "tex.vert";
 
-<<<<<<< HEAD
   NEW_UNIFORM_BLOCK(ViewBlock)
 
-=======
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
   using Base::Base;
 };
 } // namespace vert

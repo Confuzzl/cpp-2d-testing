@@ -45,12 +45,6 @@ export struct BaseFrame {
                    const unsigned int radius);
 
   void drawOutline(const BoundingBox &dimensions, const GL::Texture &texture,
-<<<<<<< HEAD
-=======
-                   const unsigned int thickness, const unsigned int direction,
-                   const Color color);
-  void drawOutline(const BoundingBox &dimensions, const GL::Texture &texture,
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
                    const unsigned int radius, const Color color);
 
   void drawQuad(const BoundingBox &dimensions, const Color color = BLACK) const;

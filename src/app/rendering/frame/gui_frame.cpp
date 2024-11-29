@@ -38,16 +38,12 @@ static glm::vec2 point(const unsigned int i) {
 GUIFrame::GUIFrame() { matrix = App::UI_MATRIX; }
 
 void GUIFrame::render() {
-<<<<<<< HEAD
   shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
-=======
-  shaders::uniformBlock<shaders::uniform::ViewBlock>({matrix});
 
   // drawBezier({point(0), point(1), point(2), point(3)}, colors::GREEN,
   //            colors::YELLOW, 5.0f, true);
 
   // debug();
->>>>>>> 897504e5eb9f49af32b14b9c1c6d0ff23dc2d678
 
   text(std::format("     {:>10}ns", MAIN_RENDERER.elapsed), BLACK, 0, 0);
   text(std::format("     {:>10.5}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
