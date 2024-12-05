@@ -18,15 +18,15 @@ import hash_grid;
 
 namespace ecs {
 template <> void onAdd(const EntID ent, Boundable &comp) {
-  MAIN_SCENE.grid.insert(ent, comp.bounds);
+  MAIN_SCENE.grid.insert(ent, comp.localBounds);
 }
 template <> void onRemove(const EntID ent, Boundable &comp) {
-  MAIN_SCENE.grid.remove(ent, comp.bounds);
+  MAIN_SCENE.grid.remove(ent, comp.localBounds);
 }
 } // namespace ecs
 
 void Scene::init() {
-  ecs.newEntity(ecs::Boundable{.bounds{{-1, -1}, {1, 1}}});
+  // ecs.newEntity(ecs::Boundable{.bounds{{-1, -1}, {1, 1}}});
 
   // for (auto i = 0u; i < 100; i++) {
   //   const auto start = random_vec({-5, -5}, {3, 3});
@@ -44,10 +44,12 @@ void Scene::init() {
 }
 
 void Scene::update(const double dt) {
+  for (const auto [id, pos, bound] :
+       ecs.viewComponents<ecs::Positionable, ecs::Boundable>()) {
+    bound->position = pos->position;
+  }
   for (const auto [id, pos, linPhys] :
        ecs.viewComponents<ecs::Positionable, ecs::LinearPhysical>()) {
-    if (id != 0)
-      continue;
     auto &[position] = *pos;
     auto &[velocity, acceleration, mass] = *linPhys;
 

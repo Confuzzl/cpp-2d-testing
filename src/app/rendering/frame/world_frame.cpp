@@ -39,8 +39,6 @@ void WorldFrame::render() {
 
   drawGrid();
 
-  // drawOutline({{-1, -1}, {1, 1}}, tex<"test2.png">(), 10, RED);
-
   // for (const auto [id, draw] : ECS.viewComponents<ecs::DirectRenderable>()) {
   //   (*draw)(this);
   //   draw->operator()(this);
@@ -49,30 +47,10 @@ void WorldFrame::render() {
   //   drawMesh(rend->mesh);
   // }
 
-  // for (const auto [id, box] : ECS.viewComponents<ecs::Boundable>()) {
-  //   drawQuad({box->bounds.min, box->bounds.max},
-  //            colors::random_i(id).setAlpha(127));
-  // }
-
-  //// drawBezier({point(0), point(1), point(2), point(3)}, colors::MAGENTA,
-  ////            colors::CYAN, 0.01f, true);
-  ////
-  // drawBezier({{0, 0}, {0, 1}, {1, 1}, {2, 0}}, colors::BLUE, 0.01f, true);
-  // drawBezier({{2, 0}, {3, -1}, {3, 0}, {3, 1}}, colors::RED, 0.01f, true);
-
-  // static const auto spline = Spline::begin({{-3, 0}, {-3, 1}, {-2, 1}, {-1,
-  // 0}})
-  //                                .add({0, 0}, {0, 1})
-  //                                .add({-1, 2}, {-2, 0})
-  //     /*.endLoop()*/;
-  // for (auto i = 0u; i < spline.pieces.size(); i++) {
-  //   float t = static_cast<float>(i) / spline.pieces.size();
-  //   const Color a = colors::mix(colors::MAGENTA, colors::YELLOW, t);
-  //   const Color b =
-  //       colors::mix(colors::MAGENTA, colors::YELLOW,
-  //                   static_cast<float>(i + 1) / spline.pieces.size());
-  //   drawBezier(spline.pieces[i], a, b);
-  // }
+  for (const auto [id, box] : ECS.viewComponents<ecs::Boundable>()) {
+    drawQuad({box->localBounds.min, box->localBounds.max},
+             colors::random_i(id).setAlpha(127));
+  }
 }
 
 void WorldFrame::drawGrid() const {

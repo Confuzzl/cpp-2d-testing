@@ -22,9 +22,9 @@ struct LinearPhysical {
   float mass;
 };
 struct RotationalPhysical {
-  float angularVelocity;
-  float angularAcceleration;
-  float angularMass;
+  float velocity;
+  float acceleration;
+  float mass;
 };
 struct Polygonal {
   runtime_array<glm::vec2> vertices;
@@ -33,7 +33,8 @@ struct Circular {
   float radius;
 };
 struct Boundable {
-  BoundingBox bounds;
+  glm::vec2 position;
+  BoundingBox localBounds;
 };
 struct Renderable {
   Mesh mesh;

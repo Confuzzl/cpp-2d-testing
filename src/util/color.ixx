@@ -25,10 +25,9 @@ export struct Color {
   template <std::integral T>
   constexpr Color(const T c)
       : Color(c >> 24 & 0xff, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff) {}
-  // template <typename T> constexpr Color(const T c) : Color(c, c, c) {}
 
-  Color(const glm::vec3 &c) : Color(c.r, c.g, c.b) {}
-  Color(const glm::vec4 &c) : Color(c.r, c.g, c.b, c.a) {}
+  constexpr Color(const glm::vec3 &c) : Color(c.r, c.g, c.b) {}
+  constexpr Color(const glm::vec4 &c) : Color(c.r, c.g, c.b, c.a) {}
 
   operator glm::vec3() const { return {r / 255.0f, g / 255.0f, b / 255.0f}; }
   operator glm::vec4() const {
