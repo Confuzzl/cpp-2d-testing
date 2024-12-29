@@ -19,12 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\world\collision\partitioning\quadtree.cpp" />
     <ClCompile Include="src\gl_wrapper\fbo.ixx" />
     <ClCompile Include="src\app\rendering\bezier.ixx" />
     <ClCompile Include="src\gl_wrapper\buffer_object.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\ubo.ixx" />
     <ClCompile Include="src\gl_wrapper\shaders\uniform.ixx" />
-    <ClCompile Include="src\util\runtime_array.ixx" />
+    <ClCompile Include="src\util\container\free_list.ixx" />
+    <ClCompile Include="src\util\container\runtime_array.ixx" />
+    <ClCompile Include="src\util\container\small_vector.ixx" />
     <ClCompile Include="src\world\collision\partitioning\bvh2.cpp" />
     <ClCompile Include="src\world\collision\partitioning\bvh2.ixx" />
     <ClCompile Include="src\world\collision\collision.cpp" />

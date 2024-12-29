@@ -174,7 +174,7 @@
     <ClCompile Include="src\world\collision\sat.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\runtime_array.ixx">
+    <ClCompile Include="src\util\container\runtime_array.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\world\collision\polycirc.ixx">
@@ -217,6 +217,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_wrapper\fbo.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\container\free_list.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\container\small_vector.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\collision\partitioning\quadtree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -67,8 +67,8 @@ struct HeapBufferObject : GL::BufferObject {
   struct FreeBlock {
     GLuint offset, size;
   };
-  using FreeList = std::list<FreeBlock>;
-  FreeList freeList{{0, MAX_SIZE}};
+  using free_list = std::list<FreeBlock>;
+  free_list freeList{{0, MAX_SIZE}};
 
   HeapBufferObject();
   ~HeapBufferObject() = default;
@@ -78,8 +78,8 @@ struct HeapBufferObject : GL::BufferObject {
   HeapBufferObject &operator=(HeapBufferObject &&o);
 
   void free(const BufferObjectHeapHandle *handle);
-  void coalesce(const FreeList::iterator &block);
-  void coalesceRight(const FreeList::iterator &block);
+  void coalesce(const free_list::iterator &block);
+  void coalesceRight(const free_list::iterator &block);
 };
 
 namespace GL {

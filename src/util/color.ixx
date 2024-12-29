@@ -22,8 +22,8 @@ export struct Color {
   template <typename T>
   constexpr Color(const T r, const T g, const T b) : Color(r, g, b, T{255}) {}
 
-  template <std::integral T>
-  constexpr Color(const T c)
+  // template <std::integral T>
+  constexpr Color(const unsigned int c)
       : Color(c >> 24 & 0xff, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff) {}
 
   constexpr Color(const glm::vec3 &c) : Color(c.r, c.g, c.b) {}
@@ -65,7 +65,7 @@ export constexpr Color operator""_rgb(const unsigned long long n) {
 }
 export constexpr Color operator""_rgba(const unsigned long long n) {
   const unsigned int c = n & 0xff'ff'ff'ff;
-  return {c};
+  return Color{c};
 }
 
 export {
@@ -107,8 +107,9 @@ Color random() {
 }
 
 Color random_i(const unsigned long long i) {
+  static auto offset = random_int();
   static std::mt19937 gen;
-  gen.seed(static_cast<unsigned int>(i));
+  gen.seed(static_cast<unsigned int>(offset + i));
   const auto num = gen();
   return {num | 0xff};
 }

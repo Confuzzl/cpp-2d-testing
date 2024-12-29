@@ -54,12 +54,12 @@ void HeapBufferObject::free(const BufferObjectHeapHandle *handle) {
   }
   coalesce(freeList.insert(after, {handle->offset, handle->size}));
 }
-void HeapBufferObject::coalesce(const FreeList::iterator &block) {
+void HeapBufferObject::coalesce(const free_list::iterator &block) {
   coalesceRight(block);
   if (block != freeList.cbegin())
     coalesceRight(std::prev(block));
 }
-void HeapBufferObject::coalesceRight(const FreeList::iterator &block) {
+void HeapBufferObject::coalesceRight(const free_list::iterator &block) {
   const auto next = std::next(block);
   if (block->offset + block->size == next->offset) {
     block->size += next->size;

@@ -91,28 +91,34 @@ void BaseFrame::drawCircle(const glm::vec2 center, const float radius,
       GL_POINTS, VBO_1);
 }
 
-// void BaseFrame::drawBox(const BoundingBox &dimensions, const float lineSize,
-//                         const Color color) const {
-//   const auto [from, to] = dimensions;
-//
-//   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-//   drawLine({corners[0], corners[1]}, lineSize, color);
-//   drawLine({corners[1], corners[2]}, lineSize, color);
-//   drawLine({corners[2], corners[3]}, lineSize, color);
-//   drawLine({corners[3], corners[0]}, lineSize, color);
-// }
-//
-// void BaseFrame::drawBoxFixed(const BoundingBox &dimensions,
-//                              const Color color) const {
-//   const auto [from, to] = dimensions;
-//
-//   const glm::vec2 corners[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
-//
-//   VBO_4->write(corners);
-//
-//   SHADERS.basic.setView(matrix).setFragColor(color).draw(GL_LINE_LOOP,
-//   VBO_4);
-// }
+void BaseFrame::drawBoxPerspective(const BoundingBox &dimensions,
+                                   const float thickness,
+                                   const Color color) const {
+  const auto [from, to] = dimensions;
+
+  const glm::vec2 vertices[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+
+  VBO_4->write(vertices);
+
+  SHADERS.line.setFragColor(color).setThickness(thickness).draw(GL_LINE_LOOP,
+                                                                VBO_4);
+}
+void BaseFrame::drawBoxConstant(const BoundingBox &dimensions,
+                                const float thickness,
+                                const Color color) const {
+  drawBoxPerspective(dimensions, thickness / MAIN_CAMERA.zoom(), color);
+}
+void BaseFrame::drawBox(const BoundingBox &dimensions,
+                        const Color color) const {
+  const auto [from, to] = dimensions;
+
+  const glm::vec2 vertices[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+
+  VBO_4->write(vertices);
+
+  SHADERS.basic.setFragColor(color).draw(GL_LINE_LOOP, VBO_4);
+}
+
 void BaseFrame::drawQuad(const BoundingBox &dimensions,
                          const Color color) const {
   const auto [from, to] = dimensions;

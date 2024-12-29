@@ -33,7 +33,7 @@ struct Circular {
   float radius;
 };
 struct Boundable {
-  glm::vec2 position;
+  // glm::vec2 position;
   BoundingBox localBounds;
 };
 struct Renderable {
@@ -42,7 +42,7 @@ struct Renderable {
 struct DirectRenderable {
   std::function<void(BaseFrame *)> draw;
 
-  void operator()(BaseFrame *f) { draw(f); }
+  // void operator()(BaseFrame *f) { draw(f); }
 };
 } // namespace comp
 } // namespace ecs

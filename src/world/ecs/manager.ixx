@@ -14,6 +14,35 @@ import debug;
 
 import ecs_component;
 
+// export namespace ecs {
+// struct Signature {
+//   std::size_t data = 0;
+//
+//   void set(const std::size_t i, const bool val) {
+//     data = (data & ~(1ull << i)) | (static_cast<std::size_t>(val) << i);
+//   }
+//
+//   Signature operator&(const Signature that) const { return {data &
+//   that.data}; } Signature operator|(const Signature that) const { return
+//   {data | that.data}; }
+//
+//   bool operator==(const Signature that) const { return data == that.data; }
+//   bool operator!=(const Signature that) const { return data != that.data; }
+//
+//   bool none() const { return data == 0; }
+//
+//   unsigned long long to_ullong() const { return data; }
+//
+//   bool operator[](const std::size_t i) const { return (data >> i) & 1; }
+// };
+// } // namespace ecs
+//
+// template <> struct std::hash<ecs::Signature> {
+//   std::size_t operator()(const ecs::Signature &sig) const noexcept {
+//     return std::hash<std::size_t>{}(sig.data);
+//   }
+// };
+
 // https://github.com/chrischristakis/seecs
 export namespace ecs {
 using EntID = std::size_t;
@@ -22,17 +51,14 @@ constexpr EntID NULL_ENT = -1;
 constexpr std::size_t MAX_COMPONENTS = 64u;
 using Signature = std::bitset<MAX_COMPONENTS>;
 
-template <typename T> void onAdd(const EntID ent, T &comp) {}
-template <typename T> void onRemove(const EntID ent, T &comp) {}
-
 struct GenSparseSet {
   virtual ~GenSparseSet() = default;
   virtual void remove(const EntID) = 0;
 };
 template <typename T> struct SparseSet : GenSparseSet {
 private:
-  static constexpr bool ISNT_SIG_OR_ENT_ID_TYPE =
-      !std::same_as<T, Signature> && !std::same_as<T, EntID>;
+  // static constexpr bool IS_SIG_OR_ENT_ID_TYPE =
+  //     std::same_as<T, Signature> || std::same_as<T, EntID>;
 
   static constexpr std::size_t PAGE_SIZE = 1000;
   static constexpr std::size_t NONE = -1;
@@ -86,14 +112,14 @@ public:
     if (index != NONE) {
       denseToEnt[index] = ent;
       T &component = (dense[index] = std::forward<U>(val));
-      onAdd<T>(ent, component);
+      // onAdd<T>(ent, component);
       return component;
     }
     setDenseIndex(ent, dense.size());
 
     denseToEnt.emplace_back(ent);
     T &component = dense.emplace_back(std::forward<U>(val));
-    onAdd<T>(ent, component);
+    // onAdd<T>(ent, component);
     return component;
   }
   T *get(const EntID ent) {
@@ -109,13 +135,13 @@ public:
     setDenseIndex(denseToEnt.back(), index);
     setDenseIndex(ent, NONE);
 
-    if constexpr (ISNT_SIG_OR_ENT_ID_TYPE) {
-      T &component = dense[index];
-      onRemove<T>(ent, component);
-      std::swap(component, dense.back());
-    } else {
-      std::swap(dense[index], dense.back());
-    }
+    std::swap(dense[index], dense.back());
+    // if constexpr (IS_SIG_OR_ENT_ID_TYPE) {
+    // } else {
+    //   T &component = dense[index];
+    //   // onRemove<T>(ent, component);
+    //   std::swap(component, dense.back());
+    // }
     std::swap(denseToEnt[index], denseToEnt.back());
 
     dense.pop_back();
@@ -153,11 +179,11 @@ private:
     return std::make_pair(id, &pool);
   }
 
-  template <typename T> auto getComponentBitIndex() {
+  template <typename T> std::size_t getComponentBitIndex() {
     return registerInfo<T>().first;
   }
   template <typename T> bool getComponentBit(const Signature sig) {
-    return sig.test(getComponentBitIndex<T>());
+    return sig[getComponentBitIndex<T>()];
   }
   template <typename T> void setComponentBit(Signature &sig, const bool val) {
     sig.set(getComponentBitIndex<T>(), val);

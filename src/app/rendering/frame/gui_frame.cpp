@@ -23,6 +23,8 @@ import math;
 import aabb;
 import ubo;
 import fbo;
+import scene;
+import quadtree;
 
 static glm::vec4 offsets() {
   return {random_float(-2.0f, 2.0f), random_float(-5.0f, 5.0f),
@@ -45,17 +47,32 @@ void GUIFrame::render() {
 
   // debug();
 
-  text(std::format("     {:>10}ns", MAIN_RENDERER.elapsed), BLACK, 0, 0);
-  text(std::format("     {:>10.5}ms", MAIN_RENDERER.elapsed / 1'000'000.0),
-       BLACK, 0, 30);
-  text(std::format("min: {:>10.5}ms", MAIN_RENDERER.minElapsed / 1'000'000.0),
-       BLACK, 0, 60);
-  text(std::format("avg: {:>10.5}ms", (MAIN_RENDERER.elapsedAccumulate /
-                                       MAIN_RENDERER.elapsedCounter) /
-                                          1'000'000.0),
-       BLACK, 0, 90);
-  text(std::format("max: {:>10.5}ms", MAIN_RENDERER.maxElapsed / 1'000'000.0),
-       BLACK, 0, 120);
+  const auto min = MAIN_RENDERER.minElapsed;
+  const auto avg =
+      MAIN_RENDERER.elapsedAccumulate / MAIN_RENDERER.elapsedCounter;
+  const auto max = MAIN_RENDERER.maxElapsed;
+
+  glfwSetWindowTitle(
+      MAIN_APP.window,
+      std::format("{}|{}|{} FPS",
+                  static_cast<unsigned int>(1'000'000'000.0 / min),
+                  static_cast<unsigned int>(1'000'000'000.0 / avg),
+                  static_cast<unsigned int>(1'000'000'000.0 / max))
+          .c_str());
+
+  // text(std::format("nodes: {} elementnodes: {} elements: {}",
+  //                  MAIN_SCENE.data.nodes.size(),
+  //                  MAIN_SCENE.data.elementNodeCount,
+  //                  MAIN_SCENE.data.elementCount),
+  //      BLACK, 0, 0);
+
+  //  text(std::format("     {:>10}ns", MAIN_RENDERER.elapsed), BLACK, 0, 0);
+  //  text(std::format("     {:>10.5}ms", MAIN_RENDERER.elapsed /
+  //  1'000'000.0),
+  //       BLACK, 0, 30);
+  text(std::format("min: {:>10.5}ms", min / 1'000'000.0), BLACK, 0, 60);
+  text(std::format("avg: {:>10.5}ms", avg / 1'000'000.0), BLACK, 0, 90);
+  text(std::format("max: {:>10.5}ms", max / 1'000'000.0), BLACK, 0, 120);
   text(std::format("zoom: {:.1f}x2^{}", MAIN_CAMERA.zoomFraction(),
                    static_cast<int>(std::log2(MAIN_CAMERA.zoomExponent()))),
        BLACK, 0, 150);

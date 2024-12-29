@@ -7,6 +7,7 @@ export module texture;
 import <string>;
 import glm;
 import <vector>;
+import debug;
 
 export namespace GL {
 struct Texture {
@@ -26,10 +27,6 @@ struct Texture {
 };
 } // namespace GL
 
-template <std::size_t N> struct str {
-  char m[N];
-  constexpr str(const char (&s)[N]) { std::copy_n(s, N, m); }
-};
 export template <str NAME, GLenum filter = GL_LINEAR> GL::Texture &tex() {
   static GL::Texture out{NAME.m, filter};
   return out;

@@ -61,9 +61,8 @@ export struct BoundingBox {
   constexpr float area() const { return width() * height(); }
   constexpr glm::vec2 median() const { return min + size() / 2.0f; }
 
-  // .y union access cant be constexpr?
-  /*constexpr*/ std::array<glm::vec2, 4> toTriStrip() const {
-
+  constexpr std::array<glm::vec2, 4> toTriStrip() const {
+    // .y union access cant be constexpr?
     return {{min, {max.x, min.y}, {min.x, max.y}, max}};
   }
 

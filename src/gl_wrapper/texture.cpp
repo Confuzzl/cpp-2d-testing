@@ -8,8 +8,6 @@ module;
 
 module texture;
 
-import debug;
-
 using namespace GL;
 
 Texture::Texture(const GLenum filter, const GLenum wrap) {

@@ -57,8 +57,8 @@ void App::start() {
       seconds++;
     }
 
-    if (currentTime > 60)
-      close();
+    // if (currentTime > 60)
+    //   close();
   }
 }
 

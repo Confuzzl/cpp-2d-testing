@@ -34,11 +34,17 @@ export struct BaseFrame {
   void drawCircle(const glm::vec2 center, const float radius,
                   const Color color = BLACK) const;
 
-  // void drawBox(const BoundingBox &dimensions, const float lineSize = 5,
-  //              const Color color = BLACK) const;
-  // void drawBoxFixed(const BoundingBox &dimensions,
-  //                   const Color color = BLACK) const;
+  void drawBoxPerspective(const BoundingBox &dimensions, const float thickness,
+                          const Color color = BLACK) const;
+  void drawBoxConstant(const BoundingBox &dimensions, const float thickness,
+                       const Color color = BLACK) const;
+
+  void drawBox(const BoundingBox &dimensions, const Color color = BLACK) const;
+
+  void drawQuad(const BoundingBox &dimensions, const Color color = BLACK) const;
+
   void drawTexture(const BoundingBox &dimensions, const GL::Texture &texture);
+
   void drawBoxBlur(const BoundingBox &dimensions, const GL::Texture &texture,
                    const unsigned int radius, const unsigned int direction);
   void drawBoxBlur(const BoundingBox &dimensions, const GL::Texture &texture,
@@ -46,8 +52,6 @@ export struct BaseFrame {
 
   void drawOutline(const BoundingBox &dimensions, const GL::Texture &texture,
                    const unsigned int radius, const Color color);
-
-  void drawQuad(const BoundingBox &dimensions, const Color color = BLACK) const;
 
   void drawMesh(const Mesh &mesh, const glm::vec2 &pos = {},
                 const float rot = 0) const;
