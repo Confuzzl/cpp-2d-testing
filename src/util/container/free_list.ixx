@@ -17,6 +17,7 @@ private:
 
 public:
   template <typename... Args> std::size_t emplace_back(Args &&...args) {
+
     if (first == NULL_INDEX) {
       data.emplace_back(Element{.element = T(std::forward<Args>(args)...)});
       return data.size() - 1;

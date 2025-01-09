@@ -68,9 +68,6 @@ void WorldFrame::render() {
 
   drawGrid();
 
-  drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
-           collision::Quadtree::BOUNDS);
-
   // for (const auto [id, draw] : ECS.viewComponents<ecs::DirectRenderable>()) {
   //   draw->draw(this);
   // }
@@ -78,17 +75,26 @@ void WorldFrame::render() {
   //   drawMesh(rend->mesh);
   // }
 
+  // const auto corner = glm::vec2{App::ASPECT_RATIO, 1.0} / MAIN_CAMERA.zoom();
+  // const auto screen = BoundingBox{-corner, corner} + MAIN_CAMERA.getPos();
+
+  drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
+           collision::Quadtree::BOUNDS);
+
   for (const auto [id, pos, box] :
        ECS.viewComponents<ecs::Positionable, ecs::Boundable>()) {
     drawQuad(box->localBounds + pos->position,
-             colors::random_i(id).setAlpha(127));
+             colors::random_i(id) /*.setAlpha(127)*/);
   }
 }
 
 void WorldFrame::drawGrid() const {
+  static constexpr unsigned int GRID_X_RADIUS = 4;
+  static constexpr unsigned int GRID_Y_RADIUS = 2;
+
   static constexpr unsigned int GRID_RADIUS = 4;
   static constexpr float MAJOR_LINE_SPACING = 1.0f;
-  static constexpr unsigned int MINOR_PER_MAJOR = 4;
+  static constexpr unsigned int MINOR_PER_MAJOR = 5;
   static constexpr float MINOR_LINE_SPACING =
       MAJOR_LINE_SPACING / MINOR_PER_MAJOR;
   static constexpr int NUM_HALF_MAJOR_LINES =

@@ -108,18 +108,22 @@ private:
   }
 
 public:
-  void draw(const GLenum primitive, VBOHandle &vbo) const {
-    bind(vbo);
-    glDrawArrays(primitive, 0, vbo->count);
-    vbo->reset();
-  }
   void draw(const GLenum primitive, VBOHandle &vbo,
-            const EBOHandle &ebo) const {
+            const bool reset = true) const {
+    bind(vbo);
+    const auto count = vbo->count;
+    if (reset)
+      vbo->reset();
+    glDrawArrays(primitive, 0, count);
+  }
+  void draw(const GLenum primitive, VBOHandle &vbo, const EBOHandle &ebo,
+            const bool reset = true) const {
     bind(vbo, ebo);
+    if (reset)
+      vbo->reset();
     glDrawElements(
         primitive, ebo->length, GL_UNSIGNED_INT,
         reinterpret_cast<void *>(static_cast<GLuint64>(ebo->offset)));
-    vbo->reset();
   }
 };
 

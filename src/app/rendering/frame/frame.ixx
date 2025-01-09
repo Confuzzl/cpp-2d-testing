@@ -7,7 +7,6 @@ export module frame;
 import glm;
 import color;
 import collision;
-// import vertex_layout;
 import texture;
 import mesh;
 import bezier;

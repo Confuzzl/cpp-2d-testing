@@ -15,9 +15,9 @@ export namespace GL {
 template <typename T> struct UniformBufferObject : BufferObject {
   T data;
 
-  UniformBufferObject() : BufferObject(sizeof(T)) {}
+  UniformBufferObject() : BufferObject(sizeof(T), GL_DYNAMIC_STORAGE_BIT) {}
 
-  void update(const T &data) {
+  template <typename U = T> void update(U &&data) {
     this->data = data;
     glNamedBufferSubData(ID, 0, sizeof(T), &this->data);
   }

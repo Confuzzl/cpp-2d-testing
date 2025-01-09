@@ -18,6 +18,16 @@ std::map<int, Key> InputHandler::keys{
     {GLFW_KEY_A, {Key::moveFunction({-1, 0})}},
     {GLFW_KEY_S, {Key::moveFunction({0, -1})}},
     {GLFW_KEY_D, {Key::moveFunction({+1, 0})}},
+    {GLFW_KEY_SPACE,
+     {[](const double) { MAIN_APP.updateCycle.toggle(); }, Key::NONE(),
+      Key::NONE(), Key::NONE()}},
+    {GLFW_KEY_RIGHT,
+     {[](const double) {
+        if (!MAIN_APP.updateCycle.locked)
+          return;
+        MAIN_SCENE.update(MAIN_APP.updateCycle.dt);
+      },
+      Key::NONE(), Key::NONE(), Key::NONE()}},
 };
 
 void InputHandler::processInput(const double dt) {
@@ -43,15 +53,10 @@ void InputHandler::scrollCallback(GLFWwindow *window, double xpos,
   const float nextFraction =
       MAIN_CAMERA.zoomFraction() + 0.1f * static_cast<float>(ypos);
   if (nextFraction <= 0.5f) {
-    // MAIN_CAMERA.fraction = 1.0f;
-    // MAIN_CAMERA.exponent /= 2.0f;
     MAIN_CAMERA.halfZoom();
   } else if (nextFraction >= 2.0f) {
-    // MAIN_CAMERA.fraction = 1.0f;
-    // MAIN_CAMERA.exponent *= 2.0f;
     MAIN_CAMERA.doubleZoom();
   } else {
-    // MAIN_CAMERA.fraction = nextFraction;
     MAIN_CAMERA.setZoomFraction(nextFraction);
   }
 }

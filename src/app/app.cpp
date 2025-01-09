@@ -13,7 +13,8 @@ import rendering;
 
 // const glm::vec2 App::BoundingBoxS{App::WIDTH, App::HEIGHT};
 
-App::App() try : loopCycle{0}, updateCycle{120}, frameCycle{60} {
+App::App() try
+    : loopCycle{0}, inputCycle{60}, updateCycle{120}, frameCycle{60} {
   glfwSetCursorPosCallback(window, InputHandler::mousePosCallback);
   glfwSetMouseButtonCallback(window, InputHandler::mouseClickCallback);
   glfwSetScrollCallback(window, InputHandler::scrollCallback);
@@ -46,6 +47,10 @@ void App::start() {
     const double currentTime = glfwGetTime();
 
     loopCycle.pushNewTime(currentTime);
+    if (inputCycle.isPastLength(currentTime)) {
+      inputCycle.pushNewTime(currentTime);
+      InputHandler::processInput(inputCycle.dt);
+    }
     if (updateCycle.isPastLength(currentTime))
       startUpdate(currentTime);
     if (frameCycle.isPastLength(currentTime))
@@ -64,8 +69,8 @@ void App::start() {
 
 void App::startUpdate(const double t) {
   updateCycle.pushNewTime(t);
-  InputHandler::processInput(updateCycle.dt);
-  MAIN_SCENE.update(updateCycle.dt);
+  if (!updateCycle.locked)
+    MAIN_SCENE.update(updateCycle.dt);
 }
 void App::startFrame(const double t) {
   frameCycle.pushNewTime(t);

@@ -25,42 +25,6 @@ export struct BufferObjectHeapHandle {
                          const GLuint size);
   ~BufferObjectHeapHandle();
 };
-
-export struct VBOHeapHandle : BufferObjectHeapHandle {
-  GLuint count = 0, vertexSize = 0;
-
-  VBOHeapHandle() = default;
-  VBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
-                const GLuint size, const GLuint vertexSize);
-
-  void writeRaw(const void *data, const GLuint size);
-  template <is_vertex_layout T> void write(const T &vertex) {
-    writeRaw(vertex.data(), sizeof(T));
-  }
-  template <glm::has_value_ptr T> void write(const T &data) {
-    writeRaw(glm::value_ptr(data), sizeof(T));
-  }
-  template <typename T> void write(const T &list) {
-    for (const auto &vertex : list)
-      write(vertex);
-  }
-
-  void reset();
-};
-export struct EBOHeapHandle : BufferObjectHeapHandle {
-  GLuint length = 0;
-
-  EBOHeapHandle() = default;
-  EBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
-                const GLuint size,
-                const std::initializer_list<GLuint> &indices);
-};
-
-// owning VBO handle
-export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
-// owning EBO handle
-export using EBOHandle = std::unique_ptr<EBOHeapHandle>;
-
 struct HeapBufferObject : GL::BufferObject {
   static constexpr auto MAX_SIZE = 0xffffffu;
 
@@ -78,9 +42,79 @@ struct HeapBufferObject : GL::BufferObject {
   HeapBufferObject &operator=(HeapBufferObject &&o);
 
   void free(const BufferObjectHeapHandle *handle);
+
+private:
   void coalesce(const free_list::iterator &block);
   void coalesceRight(const free_list::iterator &block);
 };
+
+export struct VBOHeapHandleSubData : BufferObjectHeapHandle {
+  GLuint count = 0, vertexSize = 0;
+
+  VBOHeapHandleSubData() = default;
+  VBOHeapHandleSubData(HeapBufferObject *parent, const GLuint offset,
+                       const GLuint size, const GLuint vertexSize);
+
+  void writeRaw(const void *data, const GLuint size, const GLuint count);
+  template <is_vertex_layout T> void write(const T &vertex) {
+    writeRaw(vertex.data(), sizeof(T), 1);
+  }
+  template <glm::has_value_ptr T> void write(const T &data) {
+    writeRaw(glm::value_ptr(data), sizeof(T), 1);
+  }
+  template <typename T> void write(const T &list) {
+    for (const auto &vertex : list)
+      write(vertex);
+  }
+
+  void reset();
+};
+export struct VBOHeapHandleMapped : BufferObjectHeapHandle {
+  GLuint count = 0, vertexSize = 0;
+
+  VBOHeapHandleMapped(HeapBufferObject *parent, const GLuint offset,
+                      const GLuint size, const GLuint vertexSize);
+
+  void map(const void *data, const GLuint size, const GLuint count);
+  template <typename T> T *map() const {
+    return static_cast<T *>(
+        glMapNamedBufferRange(parent->ID, offset, size, GL_MAP_WRITE_BIT));
+  }
+  void unmap(const GLuint count) {
+    this->count = count;
+    glUnmapNamedBuffer(parent->ID);
+  }
+
+  void writeRaw(const void *data, const GLuint size, const GLuint count);
+  template <is_vertex_layout T> void write(const T &vertex) {
+    writeRaw(vertex.data(), sizeof(T), 1);
+  }
+  template <glm::has_value_ptr T> void write(const T &data) {
+    writeRaw(glm::value_ptr(data), sizeof(T), 1);
+  }
+  template <typename T> void write(const T &list) {
+    using type = typename T::value_type;
+    const GLuint size = static_cast<GLuint>(list.size());
+    writeRaw(list.data(), static_cast<GLuint>(sizeof(type) * size), size);
+  }
+  template <typename T, GLuint L> void write(const T (&list)[L]) {
+    writeRaw(list, static_cast<GLuint>(sizeof(T) * L), L);
+  }
+
+  void reset();
+};
+export struct EBOHeapHandle : BufferObjectHeapHandle {
+  GLuint length = 0;
+
+  EBOHeapHandle() = default;
+  EBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
+                const GLuint size,
+                const std::initializer_list<GLuint> &indices);
+};
+
+using VBOHeapHandle = VBOHeapHandleMapped;
+export using VBOHandle = std::unique_ptr<VBOHeapHandle>;
+export using EBOHandle = std::unique_ptr<EBOHeapHandle>;
 
 namespace GL {
 struct VertexBufferObject : ::HeapBufferObject {

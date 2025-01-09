@@ -24,7 +24,7 @@ void main() {
 	const float alpha = texture(sampler, vertex_uv_out).r;
 	if (anti_alias) {
 		const vec4 c = rgba();
-		color = vec4(c.rgb, c.a * smoothstep(threshold, threshold + AA_FACTOR / max(2, font_size), alpha));
+		color = vec4(c.rgb, c.a * smoothstep(threshold - AA_FACTOR * font_size, threshold + AA_FACTOR * font_size, alpha));
 	} else {
 		if (alpha <= threshold)
 			discard;

@@ -10,9 +10,10 @@ export namespace GL {
 struct BufferObject {
   GLuint ID;
 
-  BufferObject(const GLsizeiptr size, const void *data = nullptr) {
+  BufferObject(const GLsizeiptr size, const GLbitfield flags,
+               const void *data = nullptr) {
     glCreateBuffers(1, &ID);
-    glNamedBufferStorage(ID, size, data, GL_DYNAMIC_STORAGE_BIT);
+    glNamedBufferStorage(ID, size, data, flags);
   }
   ~BufferObject() {
     if (ID)

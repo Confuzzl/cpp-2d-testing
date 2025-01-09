@@ -12,7 +12,7 @@ struct Quadtree {
 
   static constexpr index_t NULL_INDEX = -1;
   static constexpr auto MAX_CHILDREN = 2;
-  static constexpr auto MAX_DEPTH = 8u;
+  static constexpr auto MAX_DEPTH = 3u;
   static constexpr auto RADIUS = 1 << 2;
   static constexpr BoundingBox BOUNDS{{-RADIUS, -RADIUS}, {RADIUS, RADIUS}};
 
@@ -42,9 +42,9 @@ struct Quadtree {
   };
 
   free_list<Element> elements;
-  std::size_t elementCount = 0;
+  index_t elementCount;
   free_list<ElementNode> elementNodes;
-  std::size_t elementNodeCount = 0;
+  index_t elementNodeCount;
   std::vector<Node> nodes;
 
   index_t firstFourFreeNodes = NULL_INDEX;
@@ -57,8 +57,8 @@ struct Quadtree {
               unsigned int depth, index_t elementIndex);
   // returns true on successful remove
   bool remove(const std::size_t ent, const BoundingBox &box);
-  bool remove(const std::size_t ent, const BoundingBox &box, Node &node,
-              const BoundingBox &nodeBox);
+  index_t remove(const std::size_t ent, const BoundingBox &box, Node &node,
+                 const BoundingBox &nodeBox);
 
   void cleanup();
 };

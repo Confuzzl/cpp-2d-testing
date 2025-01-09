@@ -23,6 +23,7 @@ export struct App {
   Window window;
 
   UpdateCycle loopCycle;
+  UpdateCycle inputCycle;
   UpdateCycle updateCycle;
   UpdateCycle frameCycle;
   unsigned int seconds = 0;

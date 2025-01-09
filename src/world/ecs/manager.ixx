@@ -14,35 +14,6 @@ import debug;
 
 import ecs_component;
 
-// export namespace ecs {
-// struct Signature {
-//   std::size_t data = 0;
-//
-//   void set(const std::size_t i, const bool val) {
-//     data = (data & ~(1ull << i)) | (static_cast<std::size_t>(val) << i);
-//   }
-//
-//   Signature operator&(const Signature that) const { return {data &
-//   that.data}; } Signature operator|(const Signature that) const { return
-//   {data | that.data}; }
-//
-//   bool operator==(const Signature that) const { return data == that.data; }
-//   bool operator!=(const Signature that) const { return data != that.data; }
-//
-//   bool none() const { return data == 0; }
-//
-//   unsigned long long to_ullong() const { return data; }
-//
-//   bool operator[](const std::size_t i) const { return (data >> i) & 1; }
-// };
-// } // namespace ecs
-//
-// template <> struct std::hash<ecs::Signature> {
-//   std::size_t operator()(const ecs::Signature &sig) const noexcept {
-//     return std::hash<std::size_t>{}(sig.data);
-//   }
-// };
-
 // https://github.com/chrischristakis/seecs
 export namespace ecs {
 using EntID = std::size_t;
@@ -57,10 +28,7 @@ struct GenSparseSet {
 };
 template <typename T> struct SparseSet : GenSparseSet {
 private:
-  // static constexpr bool IS_SIG_OR_ENT_ID_TYPE =
-  //     std::same_as<T, Signature> || std::same_as<T, EntID>;
-
-  static constexpr std::size_t PAGE_SIZE = 1000;
+  static constexpr std::size_t PAGE_SIZE = 1024;
   static constexpr std::size_t NONE = -1;
 
   using Page = std::vector<size_t>;
@@ -112,14 +80,12 @@ public:
     if (index != NONE) {
       denseToEnt[index] = ent;
       T &component = (dense[index] = std::forward<U>(val));
-      // onAdd<T>(ent, component);
       return component;
     }
     setDenseIndex(ent, dense.size());
 
     denseToEnt.emplace_back(ent);
     T &component = dense.emplace_back(std::forward<U>(val));
-    // onAdd<T>(ent, component);
     return component;
   }
   T *get(const EntID ent) {
@@ -136,12 +102,6 @@ public:
     setDenseIndex(ent, NONE);
 
     std::swap(dense[index], dense.back());
-    // if constexpr (IS_SIG_OR_ENT_ID_TYPE) {
-    // } else {
-    //   T &component = dense[index];
-    //   // onRemove<T>(ent, component);
-    //   std::swap(component, dense.back());
-    // }
     std::swap(denseToEnt[index], denseToEnt.back());
 
     dense.pop_back();
@@ -267,53 +227,28 @@ public:
 
   void deleteEntity(EntID &ent);
 
-private:
-  template <bool exact, typename... Ts> auto viewIDs() {
+  template <typename... Ts> auto viewIDs() {
     std::vector<EntID> out;
     out.reserve(VIEW_RESERVE);
     const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
-      if constexpr (exact) {
-        if (signature != sig)
-          continue;
-      } else {
-        if ((signature & sig) != sig)
-          continue;
-      }
+      if ((signature & sig) != sig)
+        continue;
       out.insert(out.end(), group.data().begin(), group.data().end());
     }
     return out;
   }
-
-public:
-  template <typename... Ts> auto viewIDs() { return viewIDs<false, Ts...>; }
-  template <typename... Ts> auto viewExactIDs() { return viewIDs<true, Ts...>; }
-
-private:
-  template <bool exact, typename... Ts> auto viewComponents() {
+  template <typename... Ts> auto viewComponents() {
     std::vector<std::tuple<EntID, Ts *...>> out;
     out.reserve(VIEW_RESERVE);
     const auto sig = getSignature<Ts...>();
     for (const auto &[signature, group] : groups) {
-      if constexpr (exact) {
-        if (signature != sig)
-          continue;
-      } else {
-        if ((signature & sig) != sig)
-          continue;
-      }
+      if ((signature & sig) != sig)
+        continue;
       for (const EntID ent : group.data())
         out.emplace_back(ent, &getComponent<Ts>(ent)...);
     }
     return out;
-  }
-
-public:
-  template <typename... Ts> auto viewComponents() {
-    return viewComponents<false, Ts...>();
-  }
-  template <typename... Ts> auto viewExactComponents() {
-    return viewComponents<true, Ts...>();
   }
 };
 } // namespace ecs

@@ -65,6 +65,10 @@ export struct BoundingBox {
     // .y union access cant be constexpr?
     return {{min, {max.x, min.y}, {min.x, max.y}, max}};
   }
+  constexpr std::array<glm::vec2, 4> toLineLoop() const {
+    // .y union access cant be constexpr?
+    return {{min, {max.x, min.y}, max, {min.x, max.y}}};
+  }
 
   constexpr void reset() {
     min = {+F_INF, +F_INF};

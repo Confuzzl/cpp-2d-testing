@@ -15,16 +15,49 @@ BufferObjectHeapHandle::~BufferObjectHeapHandle() {
     parent->free(this);
 }
 
-VBOHeapHandle::VBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
-                             const GLuint size, const GLuint vertexSize)
-    : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
-void VBOHeapHandle::writeRaw(const void *data, const GLuint size) {
-  glNamedBufferSubData(parent->ID, offset + count * vertexSize, size, data);
-  if (++count * vertexSize > this->size)
+VBOHeapHandleSubData::VBOHeapHandleSubData(HeapBufferObject *parent,
+                                           const GLuint offset,
+                                           const GLuint size,
+                                           const GLuint vertexSize)
+    : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {
+  // auto ptr = glMapNamedBufferRange(parent->ID, offset, size,
+  // GL_MAP_WRITE_BIT); glUnmapNamedBuffer(parent->ID);
+}
+void VBOHeapHandleSubData::writeRaw(const void *data, const GLuint size,
+                                    const GLuint count) {
+  glNamedBufferSubData(parent->ID, offset + this->count * vertexSize, size,
+                       data);
+  this->count += count;
+  if (this->count * vertexSize > this->size)
     throw std::runtime_error{
         std::format("Overwrite at VBO handle at VBO {}", parent->ID)};
 }
-void VBOHeapHandle::reset() { count = 0; }
+void VBOHeapHandleSubData::reset() { count = 0; }
+
+VBOHeapHandleMapped::VBOHeapHandleMapped(HeapBufferObject *parent,
+                                         const GLuint offset, const GLuint size,
+                                         const GLuint vertexSize)
+    : BufferObjectHeapHandle(parent, offset, size), vertexSize{vertexSize} {}
+void VBOHeapHandleMapped::map(const void *data, const GLuint size,
+                              const GLuint count) {
+  auto ptr = glMapNamedBufferRange(parent->ID, offset, size, GL_MAP_WRITE_BIT);
+  std::memcpy(ptr, data, size);
+  glUnmapNamedBuffer(parent->ID);
+  this->count += count;
+}
+void VBOHeapHandleMapped::writeRaw(const void *data, const GLuint size,
+                                   const GLuint count) {
+  glNamedBufferSubData(parent->ID, offset + this->count * vertexSize, size,
+                       data);
+  this->count += count;
+  if (this->count * vertexSize > this->size)
+    throw std::runtime_error{
+        std::format("Overwrite at VBO handle at VBO {}", parent->ID)};
+}
+void VBOHeapHandleMapped::reset() {
+  count = 0;
+  // glUnmapNamedBuffer(parent->ID);
+}
 
 EBOHeapHandle::EBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
                              const GLuint size,
@@ -34,9 +67,11 @@ EBOHeapHandle::EBOHeapHandle(HeapBufferObject *parent, const GLuint offset,
   glNamedBufferSubData(parent->ID, offset, size, indices.begin());
 }
 
-HeapBufferObject::HeapBufferObject() : GL::BufferObject(MAX_SIZE) {}
+HeapBufferObject::HeapBufferObject()
+    : GL::BufferObject(MAX_SIZE, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT) {}
 HeapBufferObject::HeapBufferObject(HeapBufferObject &&o)
-    : GL::BufferObject(MAX_SIZE), freeList{std::move(o.freeList)} {
+    : GL::BufferObject(MAX_SIZE, GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT),
+      freeList{std::move(o.freeList)} {
   o.ID = 0;
 }
 HeapBufferObject &HeapBufferObject::operator=(HeapBufferObject &&o) {

@@ -96,9 +96,9 @@ void BaseFrame::drawBoxPerspective(const BoundingBox &dimensions,
                                    const Color color) const {
   const auto [from, to] = dimensions;
 
-  const glm::vec2 vertices[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+  const auto corners = dimensions.toLineLoop();
 
-  VBO_4->write(vertices);
+  VBO_4->write(corners);
 
   SHADERS.line.setFragColor(color).setThickness(thickness).draw(GL_LINE_LOOP,
                                                                 VBO_4);
@@ -112,9 +112,9 @@ void BaseFrame::drawBox(const BoundingBox &dimensions,
                         const Color color) const {
   const auto [from, to] = dimensions;
 
-  const glm::vec2 vertices[4] = {from, {to.x, from.y}, to, {from.x, to.y}};
+  const auto corners = dimensions.toLineLoop();
 
-  VBO_4->write(vertices);
+  VBO_4->write(corners);
 
   SHADERS.basic.setFragColor(color).draw(GL_LINE_LOOP, VBO_4);
 }
@@ -123,12 +123,7 @@ void BaseFrame::drawQuad(const BoundingBox &dimensions,
                          const Color color) const {
   const auto [from, to] = dimensions;
 
-  const glm::vec2 corners[4] = {
-      from,
-      {to.x, from.y},
-      {from.x, to.y},
-      to,
-  };
+  const auto corners = dimensions.toTriStrip();
 
   VBO_4->write(corners);
 
