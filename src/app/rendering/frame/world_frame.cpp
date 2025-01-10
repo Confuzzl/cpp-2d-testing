@@ -79,13 +79,16 @@ void WorldFrame::render() {
   // const auto screen = BoundingBox{-corner, corner} + MAIN_CAMERA.getPos();
 
   drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
-           collision::Quadtree::BOUNDS);
+           MAIN_SCENE.data.BOUNDS);
 
   for (const auto [id, pos, box] :
        ECS.viewComponents<ecs::Positionable, ecs::Boundable>()) {
-    drawQuad(box->localBounds + pos->position,
-             colors::random_i(id) /*.setAlpha(127)*/);
+    drawBox(box->localBounds + pos->position,
+            colors::random_i(id) /*.setAlpha(127)*/);
   }
+  // for (const auto [id, box] : MAIN_SCENE.data.queryAll({{1, 1}, {2, 2}})) {
+  //   drawQuad(box, colors::random_i(id));
+  // }
 }
 
 void WorldFrame::drawGrid() const {

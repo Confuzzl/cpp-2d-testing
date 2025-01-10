@@ -3,6 +3,7 @@ export module quadtree;
 import <vector>;
 import aabb;
 import free_list;
+import small_vector;
 
 export namespace collision {
 
@@ -11,10 +12,6 @@ struct Quadtree {
   using index_t = /*std::size_t*/ unsigned int;
 
   static constexpr index_t NULL_INDEX = -1;
-  static constexpr auto MAX_CHILDREN = 2;
-  static constexpr auto MAX_DEPTH = 3u;
-  static constexpr auto RADIUS = 1 << 2;
-  static constexpr BoundingBox BOUNDS{{-RADIUS, -RADIUS}, {RADIUS, RADIUS}};
 
   struct Node {
     index_t first;
@@ -30,6 +27,7 @@ struct Quadtree {
     std::size_t ent;
     BoundingBox box;
 
+    Element() = default;
     Element(const std::size_t ent, const BoundingBox &box)
         : ent{ent}, box{box} {}
   };
@@ -42,25 +40,55 @@ struct Quadtree {
   };
 
   free_list<Element> elements;
-  index_t elementCount;
   free_list<ElementNode> elementNodes;
-  index_t elementNodeCount;
   std::vector<Node> nodes;
-
+  index_t elementCount = 0;
+  index_t elementNodeCount = 0;
   index_t firstFourFreeNodes = NULL_INDEX;
 
-  Quadtree();
+  unsigned int MAX_CHILDREN;
+  unsigned int MAX_DEPTH;
+  BoundingBox BOUNDS;
+
+public:
+  Quadtree(const unsigned int maxChildren, unsigned int maxDepth,
+           const float radius);
 
   void insert(const std::size_t ent, const BoundingBox &box);
+
+private:
   void insert(const std::size_t ent, const BoundingBox &box,
               const index_t nodeIndex, const BoundingBox &nodeBox,
               unsigned int depth, index_t elementIndex);
+
+public:
   // returns true on successful remove
   bool remove(const std::size_t ent, const BoundingBox &box);
+
+private:
   index_t remove(const std::size_t ent, const BoundingBox &box, Node &node,
                  const BoundingBox &nodeBox);
 
+public:
+  // node list doesnt change size
   void cleanup();
+
+  bool query(const BoundingBox &box) const;
+
+private:
+  bool query(const BoundingBox &box, const Node &node,
+             const BoundingBox &nodeBox) const;
+
+private:
+  // (list, min, max)
+  std::tuple<small_vector<index_t>, std::size_t, std::size_t>
+  queryLeaves(const BoundingBox &box) const;
+  void queryLeaves(const BoundingBox &box, const Node &node,
+                   const BoundingBox &nodeBox, small_vector<index_t> &list,
+                   std::size_t &min, std::size_t &max) const;
+
+public:
+  small_vector<Element> queryAll(const BoundingBox &box) const;
 };
 } // namespace collision
 

@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\util\sentinel.ixx" />
     <ClCompile Include="src\world\collision\partitioning\quadtree.cpp" />
     <ClCompile Include="src\gl_wrapper\fbo.ixx" />
     <ClCompile Include="src\app\rendering\bezier.ixx" />

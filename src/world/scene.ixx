@@ -22,14 +22,10 @@ export struct Scene {
 
   ecs::Manager ecs;
 
-  // collision::BoundingVolumeHierarchy tree;
-
   using Accel = collision::Quadtree;
-
-  // collision::SpatialHashGrid grid;
   Accel data;
 
-  // Scene();
+  Scene();
   //~Scene();
 
   void init();
