@@ -22,7 +22,6 @@ export struct Color {
   template <typename T>
   constexpr Color(const T r, const T g, const T b) : Color(r, g, b, T{255}) {}
 
-  // template <std::integral T>
   constexpr Color(const unsigned int c)
       : Color(c >> 24 & 0xff, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff) {}
 

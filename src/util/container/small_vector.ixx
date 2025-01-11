@@ -1,6 +1,5 @@
 export module small_vector;
 
-import <cstdlib>;
 import <vector>;
 import <algorithm>;
 import <memory>;
@@ -10,7 +9,7 @@ import <memory>;
 export template <typename T> struct small_vector {
 private:
   struct Storage {
-    static constexpr auto CAP = 128;
+    static constexpr auto CAP = 64;
 
     T buffer[CAP]{};
     T *data = buffer;
@@ -89,19 +88,19 @@ public:
     return storage.data[index];
   }
   T &front() { return storage.data[0]; }
-  const T &front() const { return front(); }
+  const T &front() const { return storage.data[0]; }
   T &back() { return storage.data[storage.count - 1]; }
-  const T &back() const { return back(); }
+  const T &back() const { return storage.data[storage.count - 1]; }
 
   T *data() { return storage.data; }
-  const T *data() const { return data(); }
+  const T *data() const { return storage.data; }
   const T *cdata() { return data(); }
 
   T *begin() { return data(); }
-  const T *begin() const { return begin(); }
+  const T *begin() const { return data(); }
   const T *cbegin() const { return begin(); }
   T *end() { return data() + storage.count; }
-  const T *end() const { return end(); }
+  const T *end() const { return data() + storage.count; }
   const T *cend() const { return end(); }
 
   std::size_t size() const { return storage.count; }

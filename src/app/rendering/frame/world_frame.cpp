@@ -78,6 +78,9 @@ void WorldFrame::render() {
   // const auto corner = glm::vec2{App::ASPECT_RATIO, 1.0} / MAIN_CAMERA.zoom();
   // const auto screen = BoundingBox{-corner, corner} + MAIN_CAMERA.getPos();
 
+  static constexpr BoundingBox query{{-1, -1}, {1, 1}};
+  drawQuad(query, RED);
+
   drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
            MAIN_SCENE.data.BOUNDS);
 
@@ -86,7 +89,8 @@ void WorldFrame::render() {
     drawBox(box->localBounds + pos->position,
             colors::random_i(id) /*.setAlpha(127)*/);
   }
-  // for (const auto [id, box] : MAIN_SCENE.data.queryAll({{1, 1}, {2, 2}})) {
+
+  // for (const auto [id, box] : MAIN_SCENE.data.queryAll(query)) {
   //   drawQuad(box, colors::random_i(id));
   // }
 }

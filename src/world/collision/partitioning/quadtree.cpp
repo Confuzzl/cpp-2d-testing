@@ -1,9 +1,6 @@
 module quadtree;
 
-// import small_vector;
 import debug;
-
-import <bitset>;
 
 static auto quadrants(const BoundingBox &nodeBox) {
   struct Boxes {
@@ -105,18 +102,14 @@ void Quadtree::insert(const std::size_t ent, const BoundingBox &box,
   if (oldNode.isLeaf()) {
     if (firstFourFreeNodes == NULL_INDEX) {
       node.first = static_cast<index_t>(nodes.size());
-      nodes.emplace_back(NULL_INDEX, 0);
-      nodes.emplace_back(NULL_INDEX, 0);
-      nodes.emplace_back(NULL_INDEX, 0);
-      nodes.emplace_back(NULL_INDEX, 0);
+      for (auto i = 0u; i < 4; i++)
+        nodes.emplace_back(NULL_INDEX, 0);
     } else {
       debugln<DEBUG_QUADTREE>(print, "inserting with firstfourfreenodes");
       node.first = firstFourFreeNodes;
       const auto nextFree = nodes[node.first].first;
-      nodes[node.first + 0] = {NULL_INDEX, 0};
-      nodes[node.first + 1] = {NULL_INDEX, 0};
-      nodes[node.first + 2] = {NULL_INDEX, 0};
-      nodes[node.first + 3] = {NULL_INDEX, 0};
+      for (auto i = 0u; i < 4; i++)
+        nodes[node.first + i] = {NULL_INDEX, 0};
       firstFourFreeNodes = nextFree;
     }
   }
@@ -129,10 +122,10 @@ void Quadtree::insert(const std::size_t ent, const BoundingBox &box,
   // push old elements down
   if (oldNode.isLeaf()) {
     debugln<DEBUG_QUADTREE>(print, "pushing leaves");
+
     index_t elementNodeIndex = oldNode.first,
             next = elementNodes[elementNodeIndex].next;
-    auto count = 0u;
-    while (count++ < oldNode.count) {
+    for (auto count = 0u; count < oldNode.count; count++) {
       const ElementNode &elementNode = elementNodes[elementNodeIndex];
       const index_t index = elementNode.elementIndex;
       const Element &element = elements[index];
@@ -140,13 +133,10 @@ void Quadtree::insert(const std::size_t ent, const BoundingBox &box,
                               index, next);
       elementNodes.erase(elementNodeIndex);
       decElementNodes(this);
-      insert(element.ent, element.box, tl, tlBox, depth, index);
-      insert(element.ent, element.box, tr, trBox, depth, index);
-      insert(element.ent, element.box, bl, blBox, depth, index);
-      insert(element.ent, element.box, br, brBox, depth, index);
+      insert(element.ent, element.box, nodeIndex, nodeBox, depth + 1, index);
 
       elementNodeIndex = next;
-      if (count != oldNode.count)
+      if (elementNodeIndex != NULL_INDEX)
         next = elementNodes[elementNodeIndex].next;
     }
   }
@@ -187,6 +177,7 @@ Quadtree::index_t Quadtree::remove(const std::size_t ent,
 
     const auto [tlBox, trBox, blBox, brBox] = quadrants(nodeBox);
 
+    // either all null or some must share the same index
     const auto tl = remove(ent, box, nodes[node.first + 0], tlBox),
                tr = remove(ent, box, nodes[node.first + 1], trBox),
                bl = remove(ent, box, nodes[node.first + 2], blBox),
@@ -197,9 +188,7 @@ Quadtree::index_t Quadtree::remove(const std::size_t ent,
       if (index == NULL_INDEX)
         continue;
       removalIndex = index;
-      // break;
-      if (removalIndex != NULL_INDEX && index != removalIndex)
-        throw std::runtime_error{"EEEE"};
+      break;
     }
     debugln<DEBUG_QUADTREE>(print, "removalIndex={}", removalIndex);
 
@@ -209,27 +198,25 @@ Quadtree::index_t Quadtree::remove(const std::size_t ent,
     return NULL_INDEX;
 
   ElementNode dummy{node.first, NULL_INDEX};
-  index_t prevIndex = NULL_INDEX, currIndex = node.first;
-  auto count = 0u;
-  while (count < node.count) {
-    auto &prevElementNode = (count == 0 ? dummy : elementNodes[prevIndex]),
-         &currElementNode = elementNodes[currIndex];
+  auto prevElementNode = &dummy, currElementNode = &elementNodes[node.first];
+  for (auto count = 0u; count < node.count; count++) {
+    auto currIndex = prevElementNode->next;
 
     debugln<DEBUG_QUADTREE>(print, "{}: ent[{}]={}", count,
-                            currElementNode.elementIndex,
-                            elements[currElementNode.elementIndex].ent);
-    if (const auto index = currElementNode.elementIndex;
+                            currElementNode->elementIndex,
+                            elements[currElementNode->elementIndex].ent);
+    if (const auto index = currElementNode->elementIndex;
         index != NULL_INDEX && elements[index].ent == ent) {
 
       // stitch list
-      prevElementNode.next = currElementNode.next;
+      prevElementNode->next = currElementNode->next;
       elementNodes.erase(currIndex);
       // elementNodeCount--;
       decElementNodes(this);
 
       // set head if removing first enode
       if (count == 0)
-        node.first = prevElementNode.next;
+        node.first = prevElementNode->next;
 
       node.count--;
       debugln<DEBUG_QUADTREE>(print, "new count {}", node.count);
@@ -237,13 +224,10 @@ Quadtree::index_t Quadtree::remove(const std::size_t ent,
         node.first = NULL_INDEX;
       return index;
     }
-    prevIndex = currIndex;
-    if (count != node.count)
-      currIndex = currElementNode.next;
-
-    count++;
+    prevElementNode = currElementNode;
+    if (const auto next = prevElementNode->next; next != NULL_INDEX)
+      currElementNode = &elementNodes[next];
   }
-
   return NULL_INDEX;
 }
 
@@ -275,10 +259,9 @@ void Quadtree::cleanup() {
     nodes[node.first].first = firstFourFreeNodes;
     firstFourFreeNodes = node.first;
 
-    node.first = NULL_INDEX;
-    node.count = 0;
+    node = {NULL_INDEX, 0};
 
-    debugln<DEBUG_QUADTREE>(print, "freed quad {}", firstFourFreeNodes);
+    debugln<DEBUG_QUADTREE>(print, "freed quartet {}", firstFourFreeNodes);
   }
 }
 
@@ -295,7 +278,8 @@ bool Quadtree::query(const BoundingBox &box, const Node &node,
       auto &element = elements[currElementNode->elementIndex];
       if (element.box.intersects(box))
         return true;
-      currElementNode = &elementNodes[currElementNode->next];
+      if (const auto next = currElementNode->next; next != NULL_INDEX)
+        currElementNode = &elementNodes[next];
     }
     return false;
   }
@@ -329,7 +313,8 @@ void Quadtree::queryLeaves(const BoundingBox &box, const Node &node,
         min = std::min(min, element.ent);
         max = std::max(max, element.ent);
       }
-      currElementNode = &elementNodes[currElementNode->next];
+      if (auto next = currElementNode->next; next != NULL_INDEX)
+        currElementNode = &elementNodes[next];
     }
   } else {
     const auto [tlBox, trBox, blBox, brBox] = quadrants(nodeBox);

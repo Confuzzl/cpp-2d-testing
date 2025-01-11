@@ -105,12 +105,16 @@ void Scene::init() {
   // println("========================");
   // remove(eee, {{-0.5, -0.5}, {0.5, 0.5}});
 
-  for (auto i = 0u; i < 20; i++) {
+  for (auto i = 0u; i < 30; i++) {
     const auto size = random_vec({0.1, 0.1}, {0.25, 0.25});
     newBound({-size, +size}, random_vec({-3, -3}, {+3, +3}));
   }
 
-  data.queryAll({{0, 0}, {1, 1}});
+  // const auto query = data.queryAll({{-1, -1}, {1, 1}});
+  // println(query.size());
+  // for (const auto [id, box] : query) {
+  //   println("{}: {}", id, box);
+  // }
 
   // for (auto i = 0u; i < 10; i++) {
   //   const auto size = random_vec({0.1, 0.1}, {0.25, 0.25});
