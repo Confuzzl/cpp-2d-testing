@@ -79,7 +79,7 @@ private:
   bool query(const BoundingBox &box, const Node &node,
              const BoundingBox &nodeBox) const;
 
-private:
+public:
   // (list, min, max)
   std::tuple<small_vector<index_t>, std::size_t, std::size_t>
   queryLeaves(const BoundingBox &box) const;

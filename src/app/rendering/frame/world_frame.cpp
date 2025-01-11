@@ -79,7 +79,9 @@ void WorldFrame::render() {
   // const auto screen = BoundingBox{-corner, corner} + MAIN_CAMERA.getPos();
 
   static constexpr BoundingBox query{{-1, -1}, {1, 1}};
-  drawQuad(query, RED);
+  static auto list = MAIN_SCENE.data.queryAll(query);
+
+  drawQuad(query, BLUE.setAlpha(63));
 
   drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
            MAIN_SCENE.data.BOUNDS);
@@ -90,9 +92,9 @@ void WorldFrame::render() {
             colors::random_i(id) /*.setAlpha(127)*/);
   }
 
-  // for (const auto [id, box] : MAIN_SCENE.data.queryAll(query)) {
-  //   drawQuad(box, colors::random_i(id));
-  // }
+  for (const auto [id, box] : list) {
+    drawQuad(box, colors::random_i(id));
+  }
 }
 
 void WorldFrame::drawGrid() const {

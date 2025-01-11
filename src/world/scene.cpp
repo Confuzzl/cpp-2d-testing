@@ -105,14 +105,32 @@ void Scene::init() {
   // println("========================");
   // remove(eee, {{-0.5, -0.5}, {0.5, 0.5}});
 
+  // static constexpr auto sidelength = 15;
+  // static constexpr auto gap = 1.731941f;
+  // static constexpr glm::vec2 halfsize{0.1857f};
+  // static constexpr glm::vec2 offset{0.18248, 0.95824};
+
+  // for (auto i = -sidelength; i <= +sidelength; i++) {
+  //   for (auto j = -sidelength; j <= +sidelength; j++) {
+  //     newBound({-halfsize, +halfsize}, glm::vec2{i, j} * gap + offset);
+  //   }
+  // }
+
   for (auto i = 0u; i < 30; i++) {
     const auto size = random_vec({0.1, 0.1}, {0.25, 0.25});
     newBound({-size, +size}, random_vec({-3, -3}, {+3, +3}));
   }
 
-  // const auto query = data.queryAll({{-1, -1}, {1, 1}});
-  // println(query.size());
-  // for (const auto [id, box] : query) {
+  // static constexpr BoundingBox queryBox{{-1, -1}, {1, 1}};
+  //  const auto [list, min, max] = data.queryLeaves(queryBox);
+  //  for (const auto elementIndex : list) {
+  //    const auto [id, box] = data.elements[elementIndex];
+  //    println("{}: {}", id, box);
+  //  }
+  //  println("============");
+  //  const auto query = data.queryAll(queryBox);
+  //  println(query.size());
+  //  for (const auto [id, box] : query) {
   //   println("{}: {}", id, box);
   // }
 

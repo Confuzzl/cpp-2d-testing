@@ -14,6 +14,8 @@ export struct Color {
   unsigned char r = 0, g = 0, b = 0, a = 255;
 
   constexpr Color() = default;
+  constexpr Color(const Color &) = default;
+  constexpr Color(Color &&) = default;
   template <typename T>
   constexpr Color(const T r, const T g, const T b, const T a)
       : r{static_cast<unsigned char>(r)}, g{static_cast<unsigned char>(g)},
@@ -51,6 +53,14 @@ export struct Color {
   Color &setAlpha(const unsigned char a) {
     this->a = a;
     return *this;
+  }
+  Color setRed(const unsigned char r) const { return Color{*this}.setRed(r); }
+  Color setGreen(const unsigned char g) const {
+    return Color{*this}.setGreen(g);
+  }
+  Color setBlue(const unsigned char b) const { return Color{*this}.setBlue(b); }
+  Color setAlpha(const unsigned char a) const {
+    return Color{*this}.setAlpha(a);
   }
 };
 
