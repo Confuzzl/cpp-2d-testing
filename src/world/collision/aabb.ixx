@@ -14,6 +14,9 @@ export struct BoundingBox {
   constexpr BoundingBox(const glm::vec2 min, const glm::vec2 max)
       : min{min}, max{max} {}
   constexpr BoundingBox(const glm::vec2 max) : BoundingBox({}, max) {}
+  constexpr BoundingBox(const float radius) : min{-radius}, max{+radius} {};
+  constexpr BoundingBox(const float min, const float max)
+      : min{min}, max{max} {}
 
   constexpr bool intersects(const BoundingBox &other) const {
     return (min.x < other.max.x && max.x > other.min.x) &&
@@ -21,6 +24,9 @@ export struct BoundingBox {
   }
   constexpr bool contains(const glm::vec2 point) const {
     return in_range(point.x, min.x, max.x) && in_range(point.y, min.y, max.y);
+  }
+  constexpr bool contains(const BoundingBox &other) const {
+    return contains(other.min) && contains(other.max);
   }
 
   constexpr void expand(const float padding) {

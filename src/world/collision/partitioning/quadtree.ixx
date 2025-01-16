@@ -73,11 +73,11 @@ public:
   // node list doesnt change size
   void cleanup();
 
-  bool query(const BoundingBox &box) const;
+  bool query(const BoundingBox &box, const std::size_t exclude = -1) const;
 
 private:
-  bool query(const BoundingBox &box, const Node &node,
-             const BoundingBox &nodeBox) const;
+  bool query(const BoundingBox &box, const std::size_t exclude,
+             const Node &node, const BoundingBox &nodeBox) const;
 
 public:
   // (list, min, max)
@@ -88,7 +88,8 @@ public:
                    std::size_t &min, std::size_t &max) const;
 
 public:
-  small_vector<Element> queryAll(const BoundingBox &box) const;
+  small_vector<Element> queryAll(const BoundingBox &box,
+                                 const std::size_t exclude = -1) const;
 };
 } // namespace collision
 

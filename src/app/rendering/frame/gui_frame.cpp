@@ -52,17 +52,11 @@ void GUIFrame::render() {
       MAIN_RENDERER.elapsedAccumulate / MAIN_RENDERER.elapsedCounter;
   const auto max = MAIN_RENDERER.maxElapsed;
 
-  glfwSetWindowTitle(MAIN_APP.window,
-                     std::format("nodes: {} elementNodes: {} elements: {}",
-                                 MAIN_SCENE.data.nodes.size(),
-                                 MAIN_SCENE.data.elementNodeCount,
-                                 MAIN_SCENE.data.elementCount)
-                         .c_str());
-
-  text(std::format("nodes: {} elementNodes: {} elements: {}",
-                   MAIN_SCENE.data.nodes.size(),
-                   MAIN_SCENE.data.elementNodeCount,
-                   MAIN_SCENE.data.elementCount),
+  text(std::format(
+           "nodes: {} elementNodes: {}/{} elements: {}/{}",
+           MAIN_SCENE.data.nodes.size(), MAIN_SCENE.data.elementNodeCount,
+           MAIN_SCENE.data.elementNodes.range(), MAIN_SCENE.data.elementCount,
+           MAIN_SCENE.data.elements.range()),
        BLACK, 0, 30);
   if (MAIN_APP.updateCycle.locked)
     text("paused", BLACK, 0, 0);
@@ -73,6 +67,54 @@ void GUIFrame::render() {
                    static_cast<int>(std::log2(MAIN_CAMERA.zoomExponent()))),
        BLACK, 0, 150);
   text(std::format("pos: {}", vec_string(MAIN_CAMERA.getPos())), BLACK, 0, 180);
+
+  // const auto nodeCount = MAIN_SCENE.data.nodes.size();
+  // for (auto i = 0u; i < nodeCount; i++) {
+  //   static constexpr auto width = 10;
+  //   static constexpr float padding = 20;
+  //   static constexpr float size = (App::WIDTH - (width + 1) * padding) /
+  //   width;
+
+  //  const auto col = i % width;
+  //  const auto row = i / width;
+
+  //  const auto &node = MAIN_SCENE.data.nodes[i];
+  //  const glm::vec2 start{padding + (size + padding) * col,
+  //                        600 - row * (size + padding)};
+  //  drawQuad(BoundingBox::startSize(start, {size, size}), AZURE);
+  //  text(std::format("{}", i), WHITE, start.x + size * 0.5,
+  //       start.y + size * 0.4, 0.25f);
+  //  text(node.first == collision::Quadtree::NULL_INDEX
+  //           ? "X"
+  //           : std::format("{}", node.first),
+  //       BLACK, start.x, start.y + size * 0.4, 0.25f);
+  //  text(node.count == collision::Quadtree::NULL_INDEX
+  //           ? "X"
+  //           : std::format("{}", node.count),
+  //       BLACK, start.x, start.y, 0.25f);
+  //}
+  // for (auto i = 0u; i < MAIN_SCENE.data.elementNodeCount; i++) {
+  //  static constexpr auto width = 8;
+  //  static constexpr float padding = 20;
+  //  static constexpr float size = (App::WIDTH - (width + 1) * padding) /
+  //  width;
+
+  //  const auto col = i % width;
+  //  const auto row = i / width;
+
+  //  const auto &node = MAIN_SCENE.data.elementNodes[i];
+  //  const glm::vec2 start{padding + (size + padding) * col,
+  //                        200 - row * (size + padding)};
+  //  drawQuad(BoundingBox::startSize(start, {size, size}), LIME);
+  //  text(std::format("{}", i), WHITE, start.x + size * 0.5,
+  //       start.y + size * 0.4, 0.25f);
+  //  text(node.next == collision::Quadtree::NULL_INDEX
+  //           ? "X"
+  //           : std::format("{}", node.next),
+  //       BLACK, start.x, start.y + size * 0.4, 0.25f);
+  //  text(std::format("{}", node.elementIndex), BLACK, start.x, start.y,
+  //  0.25f);
+  //}
 }
 
 void GUIFrame::debug() {
@@ -115,14 +157,15 @@ void GUIFrame::text(const std::string &str, const Color color,
   static constexpr auto MAX_LENGTH = 0x100u;
   static constexpr glm::u16vec2 QUAD_UVS[2][3]{{{0, 0}, {1, 0}, {1, 1}},
                                                {{0, 0}, {1, 1}, {0, 1}}};
-  static VBOHandle CHAR_VBO = VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH);
+  static VBOHandle CHAR_VBO =
+      VBO_HOLDER.get<vertex_layout::postex>(MAX_LENGTH * 6);
 
   if (str.size() > MAX_LENGTH)
     return;
 
-  const auto vertexCount = 6 * str.size();
+  const auto vertexCount = str.size() * 6;
 
-  std::vector<vertex_layout::postex> vertices{};
+  std::vector<vertex_layout::postex> vertices;
   vertices.reserve(vertexCount);
 
   unsigned short xOffset = x;

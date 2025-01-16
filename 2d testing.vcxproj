@@ -84,6 +84,7 @@
     <ClCompile Include="src\world\collision\polycirc.ixx" />
     <ClCompile Include="src\world\collision\partitioning\quadtree.ixx" />
     <ClCompile Include="src\world\collision\sat.ixx" />
+    <ClCompile Include="src\world\collision\shapes.ixx" />
     <ClCompile Include="src\world\ecs\component.ixx" />
     <ClCompile Include="src\world\ecs\manager.cpp" />
     <ClCompile Include="src\world\ecs\manager.ixx" />

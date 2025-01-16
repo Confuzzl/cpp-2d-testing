@@ -78,29 +78,13 @@ void WorldFrame::render() {
   // const auto corner = glm::vec2{App::ASPECT_RATIO, 1.0} / MAIN_CAMERA.zoom();
   // const auto screen = BoundingBox{-corner, corner} + MAIN_CAMERA.getPos();
 
-  static constexpr BoundingBox query{{-1, -1}, {1, 1}};
-  static auto list = []() {
-    const auto out = MAIN_SCENE.data.queryAll(query);
-    println(out.size());
-    for (const auto [ent, box] : out) {
-      println("{} {}", ent, box);
-    }
-    return out;
-  }();
-
-  drawQuad(query, BLUE.setAlpha(63));
-
   drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
            MAIN_SCENE.data.BOUNDS);
 
   for (const auto [id, pos, box] :
        ECS.viewComponents<ecs::Positionable, ecs::Boundable>()) {
-    drawBox(box->localBounds + pos->position,
-            colors::random_i(id) /*.setAlpha(127)*/);
-  }
-
-  for (const auto [id, box] : list) {
-    drawQuad(box, colors::random_i(id));
+    drawQuad(box->localBounds + pos->position,
+             colors::random_i(id) /*.setAlpha(127)*/);
   }
 
   // drawQuad(BoundingBox{{-0.21953356, -0.21695694}, {0.21953356, 0.21695694}}

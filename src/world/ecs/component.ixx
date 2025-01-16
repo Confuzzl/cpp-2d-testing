@@ -10,30 +10,23 @@ export struct BaseFrame;
 
 export namespace ecs {
 inline namespace comp {
-struct Positionable {
+struct Transformable {
   glm::vec2 position;
+  float rotation = 0;
 };
-struct Rotatable {
-  float rotation;
-};
-struct LinearPhysical {
-  glm::vec2 velocity;
-  glm::vec2 acceleration;
-  float mass;
-};
-struct RotationalPhysical {
-  float velocity;
-  float acceleration;
-  float mass;
-};
-struct Polygonal {
-  runtime_array<glm::vec2> vertices;
-};
-struct Circular {
-  float radius;
+struct Physical {
+  struct {
+    glm::vec2 velocity;
+    glm::vec2 acceleration;
+    float mass = 0;
+  } linear;
+  struct {
+    float velocity;
+    float acceleration;
+    float mass;
+  } angular;
 };
 struct Boundable {
-  // glm::vec2 position;
   BoundingBox localBounds;
 };
 struct Renderable {
@@ -41,8 +34,6 @@ struct Renderable {
 };
 struct DirectRenderable {
   std::function<void(BaseFrame *)> draw;
-
-  // void operator()(BaseFrame *f) { draw(f); }
 };
 } // namespace comp
 } // namespace ecs

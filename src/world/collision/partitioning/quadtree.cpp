@@ -18,18 +18,7 @@ static auto quadrants(const BoundingBox &nodeBox) {
 
 using namespace collision;
 
-static void decElementNodes(Quadtree *self) {
-  if (self->elementNodeCount == 0)
-    throw std::runtime_error{"AAAAAAAAAAAAA"};
-  self->elementNodeCount--;
-}
-static void decElements(Quadtree *self) {
-  if (self->elementCount == 0)
-    throw std::runtime_error{"BBBBBBBBBBBB"};
-  self->elementCount--;
-}
-
-static constexpr bool print = 1;
+static constexpr bool print = 0;
 
 Quadtree::Quadtree(const unsigned int maxChildren, unsigned int maxDepth,
                    const float radius)
@@ -132,11 +121,11 @@ void Quadtree::insert(const std::size_t ent, const BoundingBox &box,
       debugln<DEBUG_QUADTREE>(print, "{} (index={}) -> {}", elementNodeIndex,
                               index, next);
       elementNodes.erase(elementNodeIndex);
-      decElementNodes(this);
-      insert(ent, box, tl, tlBox, depth, index);
-      insert(ent, box, tr, trBox, depth, index);
-      insert(ent, box, bl, blBox, depth, index);
-      insert(ent, box, br, brBox, depth, index);
+      elementNodeCount--;
+      insert(element.ent, element.box, tl, tlBox, depth, index);
+      insert(element.ent, element.box, tr, trBox, depth, index);
+      insert(element.ent, element.box, bl, blBox, depth, index);
+      insert(element.ent, element.box, br, brBox, depth, index);
 
       elementNodeIndex = next;
       if (elementNodeIndex != NULL_INDEX)
@@ -155,7 +144,7 @@ bool Quadtree::remove(const std::size_t ent, const BoundingBox &box) {
   if (index != NULL_INDEX) {
     debugln<DEBUG_QUADTREE>(print, "removing element {}", elements[index].ent);
     elements.erase(index);
-    decElements(this);
+    elementCount--;
   }
   return index != NULL_INDEX;
 }
@@ -214,8 +203,7 @@ Quadtree::index_t Quadtree::remove(const std::size_t ent,
       // stitch list
       prevElementNode->next = currElementNode->next;
       elementNodes.erase(currIndex);
-      // elementNodeCount--;
-      decElementNodes(this);
+      elementNodeCount--;
 
       // set head if removing first enode
       if (count == 0)
@@ -268,11 +256,11 @@ void Quadtree::cleanup() {
   }
 }
 
-bool Quadtree::query(const BoundingBox &box) const {
-  return query(box, nodes[0], BOUNDS);
+bool Quadtree::query(const BoundingBox &box, const std::size_t exclude) const {
+  return query(box, exclude, nodes[0], BOUNDS);
 }
-bool Quadtree::query(const BoundingBox &box, const Node &node,
-                     const BoundingBox &nodeBox) const {
+bool Quadtree::query(const BoundingBox &box, const std::size_t exclude,
+                     const Node &node, const BoundingBox &nodeBox) const {
   if (!nodeBox.intersects(box))
     return false;
   if (node.isLeaf()) {
@@ -282,7 +270,7 @@ bool Quadtree::query(const BoundingBox &box, const Node &node,
     auto currElementNode = &elementNodes[node.first];
     for (auto i = 0u; i < node.count; i++) {
       auto &element = elements[currElementNode->elementIndex];
-      if (element.box.intersects(box))
+      if (element.box.intersects(box) && element.ent != exclude)
         return true;
       if (const auto next = currElementNode->next; next != NULL_INDEX)
         currElementNode = &elementNodes[next];
@@ -290,16 +278,16 @@ bool Quadtree::query(const BoundingBox &box, const Node &node,
     return false;
   }
   const auto [tlBox, trBox, blBox, brBox] = quadrants(nodeBox);
-  const auto tl = query(box, nodes[node.first + 0], tlBox),
-             tr = query(box, nodes[node.first + 1], trBox),
-             bl = query(box, nodes[node.first + 2], blBox),
-             br = query(box, nodes[node.first + 3], brBox);
+  const auto tl = query(box, exclude, nodes[node.first + 0], tlBox),
+             tr = query(box, exclude, nodes[node.first + 1], trBox),
+             bl = query(box, exclude, nodes[node.first + 2], blBox),
+             br = query(box, exclude, nodes[node.first + 3], brBox);
   return tl || tr || bl || br;
 }
 
 std::tuple<small_vector<Quadtree::index_t>, std::size_t, std::size_t>
 Quadtree::queryLeaves(const BoundingBox &box) const {
-  debugln(true, "Quadtree::queryLeaves(box={})", box);
+  debugln<DEBUG_QUADTREE>(print, "Quadtree::queryLeaves(box={})", box);
 
   small_vector<index_t> out;
   std::size_t min = -1, max = 0;
@@ -310,10 +298,10 @@ void Quadtree::queryLeaves(const BoundingBox &box, const Node &node,
                            const BoundingBox &nodeBox,
                            small_vector<index_t> &list, std::size_t &min,
                            std::size_t &max) const {
-  debugln(true,
-          "Quadtree::queryLeaves("
-          "box={}, node, nodeBox={}, list, min={}, max={})",
-          box, nodeBox, min, max);
+  debugln<DEBUG_QUADTREE>(print,
+                          "Quadtree::queryLeaves("
+                          "box={}, node={}, nodeBox={}, list, min={}, max={})",
+                          box, node, nodeBox, min, max);
 
   if (!nodeBox.intersects(box))
     return;
@@ -321,11 +309,12 @@ void Quadtree::queryLeaves(const BoundingBox &box, const Node &node,
     if (node.count == 0)
       return;
 
-    debugln(true, "checking {} leaf elements", node.count);
+    debugln<DEBUG_QUADTREE>(print, "checking {} leaf elements", node.count);
     auto currElementNode = &elementNodes[node.first];
     for (auto i = 0u; i < node.count; i++) {
       auto &element = elements[currElementNode->elementIndex];
-      debugln(true, "element {} : {}", element.ent, element.box);
+      debugln<DEBUG_QUADTREE>(print, "element {} : {}", element.ent,
+                              element.box);
       if (element.box.intersects(box)) {
         list.emplace_back(currElementNode->elementIndex);
         min = std::min(min, element.ent);
@@ -335,7 +324,7 @@ void Quadtree::queryLeaves(const BoundingBox &box, const Node &node,
         currElementNode = &elementNodes[next];
     }
   } else {
-    debugln(true, "going branches");
+    debugln<DEBUG_QUADTREE>(print, "going branches");
     const auto [tlBox, trBox, blBox, brBox] = quadrants(nodeBox);
     queryLeaves(box, nodes[node.first + 0], tlBox, list, min, max);
     queryLeaves(box, nodes[node.first + 1], trBox, list, min, max);
@@ -345,8 +334,8 @@ void Quadtree::queryLeaves(const BoundingBox &box, const Node &node,
 }
 
 small_vector<Quadtree::Element>
-Quadtree::queryAll(const BoundingBox &box) const {
-  debugln(true, "Quadtree::queryAll(box={})", box);
+Quadtree::queryAll(const BoundingBox &box, const std::size_t exclude) const {
+  debugln<DEBUG_QUADTREE>(print, "Quadtree::queryAll(box={})", box);
 
   small_vector<Element> out;
   auto [indices, min, max] = queryLeaves(box);
@@ -358,6 +347,9 @@ Quadtree::queryAll(const BoundingBox &box) const {
   visited.resize(range, false);
   for (const auto index : indices) {
     const auto &element = elements[index];
+    if (element.ent == exclude)
+      continue;
+
     const auto visitIndex = element.ent - min;
     if (visited[visitIndex])
       continue;
