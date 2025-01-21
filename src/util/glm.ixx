@@ -10,6 +10,12 @@ export import <glm/gtx/norm.hpp>;
 export constexpr glm::vec2 cw_perp(const glm::vec2 v) { return {v.y, -v.x}; }
 export constexpr glm::vec2 ccw_perp(const glm::vec2 v) { return {-v.y, v.x}; }
 
+export glm::vec2 transform(const glm::vec2 p, const glm::vec2 v,
+                           const float r) {
+  const float sin = std::sin(r), cos = std::cos(r);
+  return glm::vec2{p.x * cos - p.y * sin, p.x * sin + p.y * cos} + v;
+}
+
 import math;
 export glm::vec2 random_vec(const glm::vec2 min, const glm::vec2 max) {
   return {random_float(min.x, max.x), random_float(min.y, max.y)};

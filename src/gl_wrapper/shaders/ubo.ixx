@@ -18,15 +18,23 @@ template <typename T> struct UniformBufferObject : BufferObject {
   UniformBufferObject() : BufferObject(sizeof(T), GL_DYNAMIC_STORAGE_BIT) {}
 
   template <typename U = T> void update(U &&data) {
-    this->data = data;
+    this->data = std::move(data);
     glNamedBufferSubData(ID, 0, sizeof(T), &this->data);
   }
 };
 } // namespace GL
 
+namespace shaders {
+GLuint BINDINGS = 0u;
+template <typename T> GLuint getBinding() {
+  static auto out = BINDINGS++;
+  return out;
+}
+} // namespace shaders
 export namespace shaders {
 template <typename T> GL::UniformBufferObject<T> &getUBO() {
   static GL::UniformBufferObject<T> out;
+  static auto binding = getBinding<T>();
   return out;
 }
 
@@ -51,7 +59,12 @@ template <typename T> struct UniformBlock {
     if (blockIndex == GL_INVALID_INDEX)
       throw std::runtime_error{
           std::format("INVALID BLOCK INDEX FOR {}", T::name)};
-    glBindBufferBase(GL_UNIFORM_BUFFER, blockIndex, shaders::getUBO<T>().ID);
+
+    const GLuint binding = shaders::getBinding<T>();
+    println("{} | {}:block={}, binding={}", programID, T::name, blockIndex,
+            binding);
+    glUniformBlockBinding(programID, blockIndex, binding);
+    glBindBufferBase(GL_UNIFORM_BUFFER, binding, shaders::getUBO<T>().ID);
   }
 };
 } // namespace GL

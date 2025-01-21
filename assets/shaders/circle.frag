@@ -27,13 +27,7 @@ vec2 worldPosition() {
 }
 
 void main() {
-//	const vec2 diff = worldPosition();
 	const vec2 diff = worldPosition() - center;
-//	const float edge = smoothstep(radius * radius - 0.5, radius * radius + 0.1, d2);
-//	if (edge >= 1)
-//		discard;
-// color = vec4(frag_color.xyz / 255.0, 1 - edge);
-
 	if (dot(diff, diff) > radius * radius)
 		discard;
 	color = rgba();

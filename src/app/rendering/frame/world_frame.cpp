@@ -2,7 +2,6 @@ module;
 
 #include "util/gl.h"
 #include "util/main_objects.h"
-#include <variant>
 
 module world_frame;
 
@@ -21,7 +20,7 @@ import debug;
 import ubo;
 import texture;
 import fbo;
-
+import <ranges>;
 import quadtree;
 
 static glm::vec4 offsets() {
@@ -64,7 +63,10 @@ static void drawNode(const WorldFrame *self, const collision::Quadtree &tree,
 void WorldFrame::render() {
   matrix = MAIN_CAMERA.getView();
 
-  shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
+  {
+    using namespace shaders::uniform;
+    shaders::getUBO<ViewBlock>().update({matrix});
+  }
 
   drawGrid();
 
@@ -81,16 +83,34 @@ void WorldFrame::render() {
   drawNode(this, MAIN_SCENE.data, MAIN_SCENE.data.nodes[0],
            MAIN_SCENE.data.BOUNDS);
 
-  for (const auto [id, pos, box] :
-       ECS.viewComponents<ecs::Positionable, ecs::Boundable>()) {
-    drawQuad(box->localBounds + pos->position,
-             colors::random_i(id) /*.setAlpha(127)*/);
-  }
+  for (const auto [id, t, p, c] :
+       ECS.viewComponents<ecs::Transformable, ecs::Physical,
+                          ecs::Collidable>()) {
+    const auto &trans = *t;
+    const auto &collider = c->collider;
 
-  // drawQuad(BoundingBox{{-0.21953356, -0.21695694}, {0.21953356, 0.21695694}}
-  // +
-  //              glm::vec2{0.5526717, 0.18073797},
-  //          AZURE);
+    using namespace collision;
+    collider.visit(
+        [this, &trans, &collider](const Wall &wall) {
+          glm::vec2 points[2]{};
+          auto i = 0;
+          for (const auto p : wall.vertexTransform(trans)) {
+            points[i++] = p;
+          }
+          drawLinePerspective({points[0], points[1]}, 0.02f, BLUE);
+          const glm::vec2 mid = (points[0] + points[1]) / 2.0f;
+          drawLinePerspective({mid, mid + wall.normal(trans) * 0.1f}, 0.01f,
+                              BLUE);
+        },
+        [this, &trans, id](const Circle &circle) {
+          drawCircle(trans.position, circle.radius, colors::random_i(id));
+        },
+        [](const Polygon &polygon) {});
+
+    const auto &phys = *p;
+    drawLinePerspective({trans.position, trans.position + phys.linear.velocity},
+                        0.02f, BLACK);
+  }
 }
 
 void WorldFrame::drawGrid() const {

@@ -16,7 +16,7 @@ void main() {
 	// 1---3
 	const vec2 coordinates[4] = {
 		center + vec2(-radius, +radius), center + vec2(-radius, -radius),
-		center + vec2(+radius, +radius), center + vec2(radius, -radius)
+		center + vec2(+radius, +radius), center + vec2(+radius, -radius)
 	};
 	for (uint i = 0; i < 4; i++) {
 		gl_Position = view * vec4(coordinates[i], 0, 1);

@@ -12,22 +12,8 @@ import frame;
 import aabb;
 import glm;
 import hash_grid;
-
-static auto newBound(const BoundingBox &box, const glm::vec2 pos) {
-  const auto [ent, b, p] = MAIN_SCENE.ecs.newEntity(
-      ecs::Boundable{box}, ecs::Transformable{.position{pos}});
-  MAIN_SCENE.data.insert(ent, b->localBounds + p->position);
-  return ent;
-}
-static auto newPhys(const BoundingBox &box, const glm::vec2 pos,
-                    const glm::vec2 vel, const glm::vec2 acc,
-                    const float mass = 1) {
-  const auto [ent, b, p, phy] = MAIN_SCENE.ecs.newEntity(
-      ecs::Boundable{box}, ecs::Transformable{.position{pos}},
-      ecs::Physical{.linear{.velocity{vel}, .acceleration{acc}, .mass{mass}}});
-  MAIN_SCENE.data.insert(ent, b->localBounds + p->position);
-  return ent;
-}
+import shapes;
+import <algorithm>;
 
 static auto remove(size_t &ent,
                    const BoundingBox &box = MAIN_SCENE.data.BOUNDS) {
@@ -36,32 +22,63 @@ static auto remove(size_t &ent,
     ECS.deleteEntity(ent);
 }
 
+// static template <typename T>
+static auto newCircle(ecs::Transformable &&trans, ecs::Physical &&phys,
+                      const float radius) {
+  BoundingBox box{radius};
+  using namespace collision;
+  const auto [id, t, p, c, b] =
+      MAIN_SCENE.ecs.newEntity(std::move(trans), std::move(phys),
+                               ecs::Collidable{
+                                   .collider{.data{
+                                       Circle{.radius = radius},
+                                   }},
+                               },
+                               ecs::Boundable{box});
+  MAIN_SCENE.data.insert(id, box + t->position);
+  return id;
+}
+
 Scene::Scene() : data{/*4, 8, 1 << 8*/ 2, 3, 4} {}
 
 void Scene::init() {
   debugln(false, "SCENE INIT");
-  // auto a = newBound({{0, 0}, {0.1, 0.1}}, {-0.2, 0.2});
-  // auto b = newBound({{0, 0}, {0.1, 0.1}}, {1.3, -0.8});
-  // auto c = newBound({{0, 0}, {0.1, 0.1}}, {-1.0, -0.8});
-  // auto d = newBound({{0, 0}, {0.1, 0.1}}, {0.6, 0.3});
-  // auto e = newBound({{0, 0}, {0.1, 0.1}}, {1.6, 1.3});
-  // auto f = newBound({{0, 0}, {0.1, 0.1}}, {2.3, 0.7});
-  // auto g = newBound({{0, 0}, {0.1, 0.1}}, {3.3, 2.9});
 
-  // for (auto i = 0u; i < 50; i++) {
+  using namespace collision;
+
+  auto a = newCircle(
+      ecs::Transformable{
+          .position{-0.5, 0},
+          .rotation = 0,
+      },
+      ecs::Physical{
+          .linear{
+              .velocity{0.5, 0.5},
+          },
+          .angular{},
+      },
+      0.5);
+  auto b = newCircle(
+      ecs::Transformable{
+          .position{0.5, 0},
+          .rotation = 0,
+      },
+      ecs::Physical{
+          .linear{
+              .velocity{-0.5, 0.5},
+          },
+          .angular{},
+      },
+      0.5);
+
+  // for (auto i = 0u; i < 10; i++) {
   //   const auto size = random_vec({0.1, 0.1}, {0.25, 0.25});
-  //   const BoundingBox bounds{-size, +size};
-  //   const auto pos = random_vec({-3, -3}, {+3, +3});
-  //   newBound(bounds, pos);
+  //   newPhys({-size, +size},
+  //           random_vec(data.BOUNDS.min + size, data.BOUNDS.max - size),
+  //           random_vec({-2, -2}, {+2, +2}),
+  //           /*random_vec({-1, -1}, {+1, +1})*/ {},
+  //           random_float(0.1f, 2.0f));
   // }
-
-  for (auto i = 0u; i < 10; i++) {
-    const auto size = random_vec({0.1, 0.1}, {0.25, 0.25});
-    newPhys({-size, +size},
-            random_vec(data.BOUNDS.min + size, data.BOUNDS.max - size),
-            random_vec({-2, -2}, {+2, +2}),
-            /*random_vec({-1, -1}, {+1, +1})*/ {}, random_float(0.1f, 2.0f));
-  }
 
   debugln(false, "SCENE COMPLETE\n"
                  "==================================");
@@ -69,22 +86,69 @@ void Scene::init() {
 
 void Scene::update(const double dt) {
   // debugln(false, "===NEW FRAME===");
-  for (auto [id, trans, phys] :
-       ecs.viewComponents<ecs::Transformable, ecs::Physical>()) {
-    auto &[position, rotation] = *trans;
-    auto &[lin, rot] = *phys;
+  using namespace ecs;
+  for (auto [id, trans, phys] : ecs.viewComponents<Transformable, Physical>()) {
+    auto &[pos, rot] = *trans;
+    auto &[lin, ang] = *phys;
     {
       auto &[vel, acc, mass] = lin;
       vel += acc * static_cast<float>(dt);
-      position += vel * static_cast<float>(dt);
+      pos += vel * static_cast<float>(dt);
     }
     {
-      auto &[vel, acc, mass] = rot;
+      auto &[vel, acc, mass] = ang;
       vel += acc * static_cast<float>(dt);
-      rotation += vel * static_cast<float>(dt);
+      rot += vel * static_cast<float>(dt);
     }
   }
-  // std::vector<std::pair<bool, bool>> pairs;
+  std::vector<std::pair<std::size_t, std::size_t>> pairs;
+  for (auto [id, trans, bounds] :
+       ecs.viewComponents<Transformable, Boundable>()) {
+    auto [pos, rot] = *trans;
+    const auto box = bounds->localBounds + pos;
+    for (const auto [other, box] : data.queryAll(box, id)) {
+      if (id < other)
+        pairs.emplace_back(id, other);
+      else
+        pairs.emplace_back(other, id);
+    }
+  }
+  std::ranges::sort(pairs, [](const std::pair<std::size_t, std::size_t> &a,
+                              const std::pair<std::size_t, std::size_t> &b) {
+    if (a.first == b.first)
+      return a.second < b.second;
+    return a.first < b.first;
+  });
+  const auto remove = std::ranges::unique(pairs);
+  pairs.erase(remove.begin(), remove.end());
+
+  for (const auto [a, b] : pairs) {
+    auto [at, ap, ac] =
+        ecs.getComponents<Transformable, Physical, Collidable>(a);
+    auto [bt, bp, bc] =
+        ecs.getComponents<Transformable, Physical, Collidable>(b);
+    using namespace collision;
+    ac->collider.visit(
+        [bc](const Wall &wall) {
+          bc->collider.visit([](const Wall &wall) {},
+                             [](const Circle &circle) {},
+                             [](const Polygon &polygon) {});
+        },
+        [bc](const Circle &circle) {
+          bc->collider.visit([](const Wall &wall) {},
+                             [](const Circle &circle) {},
+                             [](const Polygon &polygon) {});
+        },
+        [bc](const Polygon &polygon) {
+          bc->collider.visit([](const Wall &wall) {},
+                             [](const Circle &circle) {},
+                             [](const Polygon &polygon) {});
+        });
+  }
+
+  // println("==========");
+  // for (const auto [a, b] : pairs)
+  //   println("{}-{}", a, b);
 
   data.cleanup();
 }

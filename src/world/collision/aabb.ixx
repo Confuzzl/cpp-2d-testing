@@ -85,6 +85,12 @@ export struct BoundingBox {
                                          const glm::vec2 size) {
     return {start, start + size};
   }
+  static constexpr BoundingBox checked(const glm::vec2 a, const glm::vec2 b) {
+    return {
+        {std::min(a.x, b.x), std::min(a.y, b.y)},
+        {std::max(a.x, b.x), std::max(a.y, b.y)},
+    };
+  }
 };
 
 import <format>;

@@ -25,7 +25,7 @@ import <sstream>;
 
 export constexpr unsigned long long DEBUG_ANY = -1;
 export constexpr auto DEBUG_QUADTREE = 0x0001;
-export constexpr unsigned long long DEBUG_MASK = 0 | DEBUG_QUADTREE;
+export constexpr unsigned long long DEBUG_MASK = 0 /*| DEBUG_QUADTREE*/;
 export struct DebugOutput {
   static constexpr auto LOG_SIZE = 256u;
 

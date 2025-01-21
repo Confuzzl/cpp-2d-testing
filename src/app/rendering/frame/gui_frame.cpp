@@ -40,7 +40,10 @@ static glm::vec2 point(const unsigned int i) {
 GUIFrame::GUIFrame() { matrix = App::UI_MATRIX; }
 
 void GUIFrame::render() {
-  shaders::getUBO<shaders::uniform::ViewBlock>().update({matrix});
+  {
+    using namespace shaders::uniform;
+    shaders::getUBO<ViewBlock>().update({matrix});
+  }
 
   // drawBezier({point(0), point(1), point(2), point(3)}, colors::GREEN,
   //            colors::YELLOW, 5.0f, true);

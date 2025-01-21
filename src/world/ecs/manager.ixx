@@ -168,14 +168,11 @@ private:
 public:
   Manager();
 
-  template <typename T> T &getComponentUnchecked(const EntID ent) {
-    return *getComponentPool<T>().get(ent);
+  template <typename T> T *getComponent(const EntID ent) {
+    return getComponentPool<T>().get(ent);
   }
-  template <typename T> T &getComponent(const EntID ent) {
-    if (auto comp = getComponentPool<T>().get(ent); comp)
-      return *comp;
-    throw std::runtime_error{
-        std::format("{} NOT A COMPONENT OF {}", typeid(T).name(), ent)};
+  template <typename... Ts> std::tuple<Ts *...> getComponents(const EntID ent) {
+    return {getComponent<Ts>(ent)...};
   }
 
   template <typename T> T *add(const EntID ent, T &&comp) {
@@ -246,7 +243,7 @@ public:
       if ((signature & sig) != sig)
         continue;
       for (const EntID ent : group.data())
-        out.emplace_back(ent, &getComponent<Ts>(ent)...);
+        out.emplace_back(ent, getComponent<Ts>(ent)...);
     }
     return out;
   }
